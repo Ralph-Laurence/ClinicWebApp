@@ -18,9 +18,20 @@ try
     $pdo = new PDO($dsn, $uid, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    return $pdo;
+    //return $pdo;
 } 
 catch (\Throwable $th) 
 {
     die("Connection to server failed!");
+}
+
+class TableNames
+{
+    public static $categories = "categories";
+    public static $checkup = "checkup";
+    public static $illness = "illness";
+    public static $items = "items";
+    public static $prescription = "prescription";
+    public static $suppleirs = "suppliers";
+    public static $unit_measures = "unit_measures";
 }

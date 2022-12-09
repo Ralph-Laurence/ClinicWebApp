@@ -70,3 +70,7 @@ html, body
 .font-hilight {
     color: var(--hilight-color) !important;
 }
+
+.font-base {
+    color: var(--base-color) !important;
+}
