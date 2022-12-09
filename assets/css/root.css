@@ -1,0 +1,72 @@
+:root
+{
+    --main-font: "Figtree";
+    --accent-font: "Montserrat";
+
+    --base-color: #192456;
+    --accent-color: #F48225;
+    --hilight-color: #453190;
+
+    --control-border: #ADADAD;
+    --control-background: #E1E1E1;
+    --document-background: #F0F0F0;
+
+    --bluegray-900: #263238;
+    --red-500: #f44336;
+    --teal-500: #009688;
+}
+
+@font-face {
+    font-family: "Figtree";
+    src: url('Figtree.ttf');
+}
+
+@font-face {
+    font-family: "Montserrat";
+    src: url('Montserrat.ttf');
+}
+
+* {
+    box-sizing: border-box !important;
+}
+
+html, body
+{
+    font-family: var(--main-font) !important; 
+    background-color: var(--document-background);
+    color: var(--bluegray-900);
+    height: 100%;
+    min-width: 330px;
+} 
+
+.bg-base {
+    background-color: var(--base-color) !important;
+}
+
+.bg-accent {
+    background-color: var(--accent-color) !important;
+}
+
+.bg-document {
+    background-color: var(--document-background) !important;
+}
+
+.bg-control {
+    background-color: var(--control-background) !important;
+}
+
+.font-red {
+    color: var(--red-500) !important;
+}
+
+.font-teal {
+    color: var(--teal-500) !important;
+}
+
+.font-accent {
+    color: var(--accent-color) !important;
+}
+
+.font-hilight {
+    color: var(--hilight-color) !important;
+}

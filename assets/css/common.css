@@ -1,0 +1,9 @@
+/* -----------STYLES FOR NAVIGATION VIEW----------- */
+.side-nav
+{
+    width: 280px;
+    max-width: 280px;
+    background-color: #EEEEEE;
+    overflow-y: auto;
+} 
+ 
