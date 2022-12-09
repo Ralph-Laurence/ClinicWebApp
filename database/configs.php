@@ -6,10 +6,10 @@ function IsLocalhost($whitelist = ['127.0.0.1', '::1'])
     return in_array($_SERVER['REMOTE_ADDR'], $whitelist);
 }
 
-$host = IsLocalhost() ? "localhost" : "";
-$uid = IsLocalhost() ? "root" : "";
-$password = IsLocalhost() ? "" : "";
-$db = IsLocalhost() ? "patient_infosys" : "";
+$host = IsLocalhost() ? "localhost" : "sql310.epizy.com";
+$uid = IsLocalhost() ? "root" : "epiz_33161880";
+$password = IsLocalhost() ? "" : "0WaqnWunBVB0FM";
+$db = IsLocalhost() ? "patient_infosys" : "epiz_33161880_patient_infosys";
 $pdo = null;
 
 try 
