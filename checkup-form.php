@@ -15,10 +15,18 @@ include("layout-header.php") ;
         <!-- MAIN CONTENT -->
         <main class="main-content-wrapper d-flex h-100 pt-5">
 
-            <section class="d-flex flex-grow-1 mt-2 flex-column overflow-hidden">
+            <section class="d-flex flex-grow-1 mt-2 overflow-hidden">
 
                 <!-- NAVIGATION -->
                 <?php include("layouts/navigation.php") ?>
+
+                <!--WORKAREA-->
+                <section class="workarea w-100">
+                    <div class="bg-secondary welcome-banner bg-control d-flex align-items-center px-2 fw-bold fs-6">
+                        <span class="welcome-text me-auto">Welcome, user!</span>
+                        <span class="date-banner"><?php echo Dates::dateToday("l, F d, Y"); ?></span>
+                    </div>
+                </section>
 
             </section>
         </main> 

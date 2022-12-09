@@ -1,7 +1,7 @@
 <div class="side-nav h-100 border-2 border-end border-secondary">
 
     <!-- NAVIGATION TITLE TEXT -->
-    <div class="bg-primary text-white py-2 px-4 align-items-center d-flex">
+    <div class="bg-primary side-nav-title text-white py-2 px-4 align-items-center d-flex">
         <div class="fas fa-compass me-2"></div>
         <span>Navigation Menu</span>
     </div>
@@ -90,7 +90,7 @@
 
                     <div class="row px-3 py-2">
                         <div class="col-2">
-                            <i class="fas fa-bacterium me-2 font-hilight"></i>
+                            <i class="fas fa-bacterium me-2 font-teal"></i>
                         </div>
                         <div class="col fw-bold">Illness</div>
                     </div>

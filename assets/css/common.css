@@ -2,8 +2,14 @@
 .side-nav
 {
     width: 280px;
+    min-width: 280px;
     max-width: 280px;
     background-color: #EEEEEE;
     overflow-y: auto;
 } 
  
+.side-nav .side-nav-title,
+.workarea .welcome-banner
+{
+    height: 42px;
+}
