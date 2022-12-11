@@ -307,10 +307,10 @@ $checkupFormNumber = Dates::dateToday() . "-" . str_pad(($lastCheckupFormId + 1)
     ?>
 
     <!--SCRIPTS-->
-    <script src="lib/jquery/jquery-3.6.1.min.js"></script>
-    <script src="lib/mdb5/js/mdb.min.js"></script>
-    <script src="lib/momentjs/moment-with-locales.js"></script>
-    <script src="lib/jquery.nicescroll/jquery.nicescroll.min.js"></script>
+    <script src="assets/lib/jquery/jquery-3.6.1.min.js"></script>
+    <script src="assets/lib/mdb5/js/mdb.min.js"></script>
+    <script src="assets/lib/momentjs/moment-with-locales.js"></script>
+    <script src="assets/lib/jquery.nicescroll/jquery.nicescroll.min.js"></script>
     <script src="assets/js/nicescroll.js"></script>
     <script src="assets/js/system.js"></script>
     <script src="assets/js/checkup-form.js"></script>
