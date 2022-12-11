@@ -291,8 +291,7 @@ $checkupFormNumber = Dates::dateToday() . "-" . str_pad(($lastCheckupFormId + 1)
 
     <!--SNACKBAR -->
     <?php
-
-    echo $_SESSION['checkupFormMsg'];
+ 
     // if ($checkupFormMsg != "")
     // {
     //     echo "<div class=\"snackbar w-100 snackbar-success py-2 px-4 position-fixed bottom-0 d-flex flex-row align-items-center\">$checkupFormMsg</div>";
