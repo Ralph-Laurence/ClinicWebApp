@@ -139,7 +139,7 @@ $checkupFormNumber = Dates::dateToday() . "-" . str_pad(($lastCheckupFormId + 1)
                                                 <h6 class="text-muted">Birthday</h6>
                                             </div>
                                             <div class="mb-2">
-                                                <input type="date" name="input-bday" class="customized-date-picker" required>
+                                                <input type="date" name="input-bday" class="customized-date-picker input-bday" required>
                                             </div>
                                         </div>
                                         <!--AGE AND GENDER-->
@@ -148,7 +148,7 @@ $checkupFormNumber = Dates::dateToday() . "-" . str_pad(($lastCheckupFormId + 1)
                                                 <h6 class="text-muted">Gender</h6>
                                             </div>
                                             <div class="">
-                                                <select name="input-gender" class="customized-combo-box" required>
+                                                <select name="input-gender" class="customized-combo-box input-gender" required>
                                                     <option disabled selected value="">Select Gender</option>
                                                     <option value="Male">Male</option>
                                                     <option value="Female">Female</option>
@@ -315,7 +315,7 @@ $checkupFormNumber = Dates::dateToday() . "-" . str_pad(($lastCheckupFormId + 1)
     <script src="assets/js/system.js"></script>
     <script src="assets/js/checkup-form.js"></script>
     <script src="assets/js/welcome-banner.js"></script> 
-    
+
 </body>
 
 </html>
