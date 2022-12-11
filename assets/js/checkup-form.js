@@ -1,24 +1,3 @@
-var input_checkupDate = undefined;
-var input_checkupTime = undefined;
-
-var input_firstName = undefined;
-var input_middleName = undefined;
-var input_lastName = undefined;
-var input_address = undefined;
-var input_contact = undefined;
-var input_fathersName = undefined;
-var input_mothersName = undefined;
-
-var input_bday = undefined;
-var input_gender = undefined;
-var input_age = undefined;
-var input_weight = undefined;
-var input_systolicBp = undefined;
-var input_diastolicBp = undefined;
-
-var input_illness = undefined;
-var input_illness_id = undefined;
-
 var fields = [];
 
 var btn_submit = undefined;
@@ -33,10 +12,11 @@ function onAwake()
 {
     // cache input field references
  
-    var fields =
+    fields =
     {
         input_checkupDate: $(".input-checkup-date"),
         input_checkupTime: $(".input-checkup-time"),
+        input_formNumber: $(".input-form-number"),
         input_firstName: $(".input-fname"),
         input_middleName: $(".input-mname"),
         input_lastName: $(".input-lname"),
@@ -95,6 +75,8 @@ function onBind()
     btn_submit.click(() => 
     {
         var allFieldsValid = validateRequiredFields();
+        
+        //alert(allFieldsValid);
 
         if (allFieldsValid)
             sendDataToServer();
@@ -106,46 +88,88 @@ function onBind()
 //-------------- BUSINESS LOGIC ---------------
 //=============================================
 function validateRequiredFields()
-{
-
+{ 
+    for (var field in fields)
+    {
+        //console.log("key= " + field + " => val: " + fields[field].val());
+        var val = fields[field].val();
+        if (val == undefined || val == null || val == "")
+        {
+            return false;
+        }
+    }
+ 
+    return true; 
 }
 
 function sendDataToServer()
 {
+    var obj = {};
 
+    for (var f in fields)
+    { 
+        obj[f] = fields[f].val();
+        //data.push(obj);
+
+        //console.log(obj);
+    } 
+ 
+    // var data = [];
+
+    // for (var f in fields)
+    // {
+    //     var obj = {};
+    //     obj[f] = fields[f].val();
+    //     data.push(obj);
+
+    //     console.log(obj);
+    // } 
+
+    $.ajax(
+    {
+        type: "POST",
+        url: "ajax.save-checkup-info.php",
+        data: { jsonData: JSON.stringify(obj) },
+        // data: 
+        // {
+        //     checkupDate: fields.input_checkupDate.val(),
+        //     checkupTime: fields.input_checkupTime.val(),
+        //     formNumber: fields.input_formNumber.val(),
+        //     firstname: fields.input_firstName.val(),
+        //     middlename: fields.input_middleName.val(),
+        //     lastname: fields.input_lastName.val(),
+        //     address: fields.input_address.val(),
+        //     contact: fields.input_contact.val(),
+        //     fathersName: fields.input_fathersName.val(),
+        //     mothersName: fields.input_mothersName.val(),
+        //     bday: fields.input_bday.val(),
+        //     gender: fields.input_gender.val(),
+        //     age: fields.input_age.val(),
+        //     weight: fields.input_weight.val(),
+        //     systolicBp: fields.input_systolicBp.val(),
+        //     diastolicBp: fields.input_diastolicBp.val(),
+        //     illness: fields.input_illness_id.val()
+        // },
+        dataType: "json",
+        success: function (s) 
+        {
+            if (s) 
+            {
+                //alert(s.statusCode);
+                alert(s.message);
+                // $.each(s, function(k, v)
+                // {
+                //     alert(k + " => " + v);
+                // });
+            }
+        },
+        error: function (jqXHR, exception)
+        {
+            alert("err: " + jqXHR.responseText);
+        }
+    });
 }
 
 // only execute this entire script after the page has fully loaded
 $(document).ready(() => onAwake());
-
-/*
-$(document).ready(() => 
-        {
-            $.ajax(
-            {
-                type: "POST",
-                url: "ajax.save-checkup-info.php",
-                data: 
-                {
-                    // msg: "Here it comes!"
-                },
-                dataType: "json",
-                success: function(s) 
-                {
-                    if (s)
-                    {
-                        //alert(s.statusCode);
-                        alert(s.message);
-                        // $.each(s, function(k, v)
-                        // {
-                        //     alert(k + " => " + v);
-                        // });
-                    }
-                },
-                error: function(e) 
-                {
-                    alert("err: " + e);
-                }
-            });
-        });
-*/
+ 

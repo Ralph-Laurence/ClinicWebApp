@@ -9,8 +9,7 @@ class Dates
 }
 
 class Requests
-{ 
-
+{  
     /**
     * Check if request is an AJAX call
     */ 
@@ -20,6 +19,23 @@ class Requests
         strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest'; 
 
         return $isAjax;
+    }
+}
+
+class Response
+{
+    public static function write($statusCode, $message, $httpCode = -1)
+    {
+        $response =
+        [
+            "statusCode" => $statusCode,
+            "message" => $message
+        ];
+
+        if ($httpCode > -1)
+            http_response_code($httpCode);
+
+        echo json_encode($response);
     }
 }
 
