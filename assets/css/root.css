@@ -14,6 +14,7 @@
     --bluegray-900: #263238;
     --red-500: #f44336;
     --teal-500: #009688;
+    --amber-400: #ffca28;
 }
 
 @font-face {
@@ -73,4 +74,8 @@ html, body
 
 .font-base {
     color: var(--base-color) !important;
+}
+
+.bg-amber {
+    background-color: var(--amber-400) !important;
 }

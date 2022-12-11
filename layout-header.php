@@ -9,8 +9,6 @@
 
     <!-- STYLES -->
     <link rel="stylesheet" href="lib/mdb5/css/mdb.min.css">
-    <link rel="stylesheet" href="lib/material-icons/material-icons.css">
-    <link rel="stylesheet" href="lib/material-symbols/material-symbols.css">
     <link rel="stylesheet" href="lib/fontawesome/css/all.css">
     <link rel="stylesheet" href="assets/css/root.css">
     <link rel="stylesheet" href="assets/css/common.css">

@@ -9,8 +9,8 @@
 } 
  
 .side-nav .side-nav-title,
-.workarea .welcome-banner
-{
+
+.workarea .welcome-banner {
     height: 42px;
 }
 
@@ -26,4 +26,14 @@
 .breadcrumb-arrow
 {
     font-size: 12px;
+}
+
+.snackbar {
+    height: 40px;
+    z-index: 100;
+}
+
+.snackbar-success {
+    background-color: #20B22D;
+    color: white;
 }

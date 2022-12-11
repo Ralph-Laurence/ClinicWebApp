@@ -1,12 +1,10 @@
 <div class="side-nav h-100 border-2 border-end border-secondary">
-
     <!-- NAVIGATION TITLE TEXT -->
     <div class="bg-primary side-nav-title text-white py-2 px-4 align-items-center d-flex">
         <div class="fas fa-compass me-2"></div>
         <span>Navigation Menu</span>
     </div>
 
-    <!--COLLAPSIBLE LINKS-->
     <div class="accordion">
         <div class="accordion-item">
             <h2 class="accordion-header">
@@ -15,7 +13,7 @@
                     <span>Transaction</span>
                 </button>
             </h2>
-            <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-mdb-parent="#accordionExample">
+            <div id="collapseOne" class="accordion-collapse collapse show">
 
                 <div class="accordion-body">
 
@@ -37,7 +35,7 @@
                     View
                 </button>
             </h2>
-            <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-mdb-parent="#accordionExample">
+            <div id="collapseTwo" class="accordion-collapse collapse">
                 <div class="accordion-body">
 
                     <div class="row px-3 py-2">
@@ -78,7 +76,7 @@
                     Maintenance
                 </button>
             </h2>
-            <div id="collapseMaintenance" class="accordion-collapse collapse" aria-labelledby="headingMaintenance" data-mdb-parent="#accordionExample">
+            <div id="collapseMaintenance" class="accordion-collapse collapse">
                 <div class="accordion-body">
 
                     <div class="row px-3 py-2">
@@ -98,6 +96,33 @@
                 </div>
             </div>
         </div>
-    </div>
 
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingProfile">
+                <button class="accordion-button collapsed" type="button" data-mdb-toggle="collapse" data-mdb-target="#collapseProfile" aria-expanded="true" aria-controls="collapseProfile">
+                    <i class="fas fa-user-alt me-2 text-primary"></i>
+                    Profile
+                </button>
+            </h2>
+            <div id="collapseProfile" class="accordion-collapse collapse show">
+                <div class="accordion-body">
+
+                    <div class="row px-3 py-2">
+                        <div class="col-2">
+                            <i class="fas fa-shield-alt me-2 font-teal"></i>
+                        </div>
+                        <div class="col fw-bold">My Account</div>
+                    </div>
+
+                    <div class="row px-3 py-2">
+                        <div class="col-2">
+                            <i class="fas fa-sign-out-alt me-2 font-accent"></i>
+                        </div>
+                        <div class="col fw-bold">Logout</div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

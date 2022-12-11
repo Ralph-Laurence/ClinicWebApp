@@ -1,5 +1,9 @@
 <?php
 
+date_default_timezone_set("Asia/Manila");
+
+define('base_url', "http://localhost/projects/clinic/"); //$_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI']);
+
 // check wether we are running on production or development (local) server
 function IsLocalhost($whitelist = ['127.0.0.1', '::1']) 
 {
@@ -10,20 +14,21 @@ $host = IsLocalhost() ? "localhost" : "sql310.epizy.com";
 $uid = IsLocalhost() ? "root" : "epiz_33161880";
 $password = IsLocalhost() ? "" : "0WaqnWunBVB0FM";
 $db = IsLocalhost() ? "patient_infosys" : "epiz_33161880_patient_infosys";
-$pdo = null;
+// $pdo = null;
 
 try 
 {
     $dsn = "mysql:host=$host;dbname=$db;";
-    $pdo = new PDO($dsn, $uid, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    //$pdo = 
+    define('pdo', new PDO($dsn, $uid, $password));
+    constant('pdo')->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     //return $pdo;
 } 
 catch (\Throwable $th) 
 {
     die("Connection to server failed!");
-}
+} 
 
 class TableNames
 {
