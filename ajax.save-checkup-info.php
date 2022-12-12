@@ -6,6 +6,7 @@
 require_once("database/configs.php");
 require_once("database/dbhelper.php");
 require_once("includes/system.php");
+require_once("includes/utils.php");
 
 $request = new Requests();
 
@@ -83,7 +84,20 @@ try
     
     $db->insert($pdo, TableNames::$checkup, $fields);
 
-    Response::write(ResponseCodes::success(), "Record successfully saved!");
+    // Response::write(ResponseCodes::success(), "Record successfully saved!");
+
+    // generate new form number
+    $lastCheckupFormId = Helpers::getLastId($pdo, TableNames::$checkup); 
+    $checkupFormNumber = Dates::dateToday() . "-" . str_pad(($lastCheckupFormId + 1), 5, "0", STR_PAD_LEFT);
+
+    $response =
+    [
+        "statusCode" => ResponseCodes::success(),
+        "message" => "Record successfully saved!",
+        "newFormNumber" => $checkupFormNumber
+    ];
+
+    echo json_encode($response);
     exit;
 } 
 catch (\Throwable $th) 

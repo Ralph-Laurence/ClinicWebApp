@@ -1,3 +1,4 @@
+var checkupForm = undefined;
 var fields = [];
 
 var btn_submit = undefined;
@@ -10,6 +11,8 @@ var checkbox_confirm = undefined;
 //=============================================
 function onAwake()
 {
+    checkupForm = $("#checkup-form")[0];
+
     // cache input field references
  
     fields =
@@ -60,11 +63,16 @@ function onBind()
     checkbox_confirm.on("change", function() 
     {
         var checked = $(this).prop('checked');
-        btn_submit.prop('disabled', (!checked));
+        
+        if (checked) {
+            btn_submit.prop('disabled', false);
+        } else {
+            btn_submit.prop('disabled', true);
+        }
     }); 
 
     // get current date and time then bind it onto date time input fields
-    btn_dateTimeNow.click(() => 
+    btn_dateTimeNow.click(function()
     {
         fields.input_checkupDate.val(moment().format("YYYY-MM-DD"));
         fields.input_checkupTime.val(moment().format("HH:mm"));
@@ -72,15 +80,19 @@ function onBind()
 
     // apply validations to submit button before sending data to server.
     // disable the submit button on success to prevent resubmit
-    btn_submit.click(() => 
+    btn_submit.click(function()
     {
         var allFieldsValid = validateRequiredFields();
         
-        //alert(allFieldsValid);
-
         if (allFieldsValid)
+        {
+            btn_submit.prop('disabled', true);
             sendDataToServer();
-
+        }
+        else 
+        {
+            alert("Please fill out all fields!");
+        }
         // $(".checkup-form").reset();
     });
 }
@@ -90,9 +102,9 @@ function onBind()
 function validateRequiredFields()
 { 
     for (var field in fields)
-    {
-        //console.log("key= " + field + " => val: " + fields[field].val());
+    { 
         var val = fields[field].val();
+
         if (val == undefined || val == null || val == "")
         {
             return false;
@@ -108,53 +120,22 @@ function sendDataToServer()
 
     for (var f in fields)
     { 
-        obj[f] = fields[f].val();
-        //data.push(obj);
-
-        //console.log(obj);
-    } 
- 
-    // var data = [];
-
-    // for (var f in fields)
-    // {
-    //     var obj = {};
-    //     obj[f] = fields[f].val();
-    //     data.push(obj);
-
-    //     console.log(obj);
-    // } 
+        obj[f] = fields[f].val(); 
+    }  
 
     $.ajax(
     {
         type: "POST",
         url: "ajax.save-checkup-info.php",
         data: { jsonData: JSON.stringify(obj) },
-        // data: 
-        // {
-        //     checkupDate: fields.input_checkupDate.val(),
-        //     checkupTime: fields.input_checkupTime.val(),
-        //     formNumber: fields.input_formNumber.val(),
-        //     firstname: fields.input_firstName.val(),
-        //     middlename: fields.input_middleName.val(),
-        //     lastname: fields.input_lastName.val(),
-        //     address: fields.input_address.val(),
-        //     contact: fields.input_contact.val(),
-        //     fathersName: fields.input_fathersName.val(),
-        //     mothersName: fields.input_mothersName.val(),
-        //     bday: fields.input_bday.val(),
-        //     gender: fields.input_gender.val(),
-        //     age: fields.input_age.val(),
-        //     weight: fields.input_weight.val(),
-        //     systolicBp: fields.input_systolicBp.val(),
-        //     diastolicBp: fields.input_diastolicBp.val(),
-        //     illness: fields.input_illness_id.val()
-        // },
         dataType: "json",
         success: function (s) 
         {
             if (s) 
             {
+                checkupForm.reset();
+                fields.input_formNumber.val(s.newFormNumber);
+
                 //alert(s.statusCode);
                 alert(s.message);
                 // $.each(s, function(k, v)
