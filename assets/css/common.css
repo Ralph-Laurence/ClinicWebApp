@@ -19,7 +19,10 @@
     font-size: 12px;
 }
 
-.snackbar {
+.snackbar 
+{
+    display: none;
+    opacity: 0;
     height: 40px;
     z-index: 100;
 }

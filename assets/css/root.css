@@ -65,6 +65,10 @@ html, body
     background-color: var(--teal-500) !important;
 }
 
+.bg-red {
+    background-color: var(--red-500) !important;
+}
+
 .font-red {
     color: var(--red-500) !important;
 }

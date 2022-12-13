@@ -11,6 +11,7 @@ var btn_clearIllness = undefined;
 var checkbox_confirm = undefined; 
 
 var dialog = undefined;
+var snackbar = undefined;
  
 //=============================================
 //------------- PRE INITIALIZATION ------------
@@ -83,6 +84,7 @@ function onAwake()
     Input.forceDecimals(System.getClass(fields.input_weight));
 
     dialog = new AlertDialog();
+    snackbar = new SnackBar();
 
     // bind events 
     onBind();
@@ -124,7 +126,7 @@ function onBind()
         }
         else 
         {
-            alert("Please fill out all fields!");
+            dialog.warn("Please fill out all fields!\n\nFor fields that do not apply to you, please enter \"N/A\" (or '0' for number field) instead.");
         }
         // $(".checkup-form").reset();
     });
@@ -150,7 +152,7 @@ function validateRequiredFields()
 
         if (val == undefined || val == null || val == "")
         {
-            alert(field);
+            // alert(field);
             return false;
         }
     }
@@ -177,11 +179,12 @@ function sendDataToServer()
         {
             if (s) 
             {
-                checkupForm.reset();
+                resetForm();
                 fields.input_formNumber.val(s.newFormNumber);
 
                 //alert(s.statusCode);
-                alert(s.message);
+                // alert(s.message);
+                snackbar.show(s.message);
                 // $.each(s, function(k, v)
                 // {
                 //     alert(k + " => " + v);
@@ -295,7 +298,10 @@ function selectIllness(id, name)
     $(".input-illness-id").val(id);
 }
 
-
+function resetForm()
+{
+    checkupForm.reset();
+}
 
 // only execute this entire script after the page has fully loaded
 $(document).ready(() => onAwake());

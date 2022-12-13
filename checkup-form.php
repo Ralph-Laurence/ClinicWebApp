@@ -274,19 +274,10 @@ $checkupFormNumber = Dates::dateToday() . "-" . str_pad(($lastCheckupFormId + 1)
     </div>
     <!-- END CONTAINER -->
 
-    <!--SNACKBAR -->
+    <!--SNACKBAR AND MODAL-->
     <?php
-    include("components/alert-dialog/alert-dialog.php");
-    // if ($checkupFormMsg != "")
-    // {
-    //     echo "<div class=\"snackbar w-100 snackbar-success py-2 px-4 position-fixed bottom-0 d-flex flex-row align-items-center\">$checkupFormMsg</div>";
-
-    //     echo "<script>$(document).ready(() => {
-    //         $('snackbar').fadeTo(1000, 0, function() {
-    //             $(this).hide();
-    //         });
-    //     });</script>";
-    // } 
+        include("components/alert-dialog/alert-dialog.php");
+        include("components/snackbar/snackbar.php"); 
     ?>
 
     <div class="modal fade" id="illnessSelectorModal" tabindex="-1" aria-labelledby="illnessSelectorModalLabel" aria-hidden="true">
@@ -343,6 +334,7 @@ $checkupFormNumber = Dates::dateToday() . "-" . str_pad(($lastCheckupFormId + 1)
     <script src="assets/js/checkup-form.js"></script>
     <script src="assets/js/welcome-banner.js"></script>
     <script src="components/alert-dialog/alert-dialog.js"></script>
+    <script src="components/snackbar/snackbar.js"></script>
 </body>
 
 </html>
