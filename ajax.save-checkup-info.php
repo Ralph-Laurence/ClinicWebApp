@@ -13,7 +13,7 @@ $request = new Requests();
 if ($_SERVER['REQUEST_METHOD'] != 'POST' || !$request->isAjax())
 {
     http_response_code(404);
-    exit;
+    die();
 }
 
 //=========================================================
@@ -40,9 +40,9 @@ $fields =
 
     'patient_address'       => $payload["input_address"] ?? "",
     'patient_contact'       => $payload["input_contact"] ?? "",
-    'patient_father_name'   => $payload["input_fathersName"] ?? "N/A",
-    'patient_mother_name'   => $payload["input_mothersName"] ?? "N/A",
-    //'patient_bp'            => $patientBp,
+    'parent_guardian_name'  => $payload["input_parentsGuardian"] ?? "N/A",
+    'patient_type'          => $payload["input_patientType"] ?? "0",
+    
     'patient_weight'        => $payload["input_weight"] ?? "",
     'illness_id'            => $payload["input_illness_id"] ?? ""
 ];

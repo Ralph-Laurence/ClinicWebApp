@@ -12,5 +12,6 @@
     <link rel="stylesheet" href="assets/lib/fontawesome/css/all.css">
     <link rel="stylesheet" href="assets/css/root.css">
     <link rel="stylesheet" href="assets/css/common.css">
+    <link rel="stylesheet" href="assets/lib/jquery-ui-1.13.2.custom/jquery-ui.min.css"> 
 
 </head>

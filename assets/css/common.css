@@ -12,15 +12,6 @@
 
 .workarea .welcome-banner {
     height: 42px;
-}
-
-.customized-date-picker,
-.customized-combo-box
-{
-    height: 32px;
-    min-width: 150px;
-    width: 100%;
-    font-family: var(--main-font), Arial, Helvetica, sans-serif;
 } 
 
 .breadcrumb-arrow
@@ -36,4 +27,23 @@
 .snackbar-success {
     background-color: #20B22D;
     color: white;
+} 
+
+.dropdown-menu .dropdown-item-custom-dark
+{ 
+    color: white !important; 
+    background-color: var(--base-color) !important;
+}
+
+.dropdown-menu .dropdown-item-custom-dark:hover  
+{
+    background-color: var(--amber-400) !important;
+    color: var(--base-color) !important; 
+    font-weight: bold;
+}
+
+.illness-selector-table-wrapper
+{
+    height: 240px; 
+    overflow-y: auto;
 }

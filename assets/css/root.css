@@ -15,6 +15,7 @@
     --red-500: #f44336;
     --teal-500: #009688;
     --amber-400: #ffca28;
+    --amber-300: #ffd54f;
 }
 
 @font-face {
@@ -56,6 +57,14 @@ html, body
     background-color: var(--control-background) !important;
 }
 
+.bg-amber {
+    background-color: var(--amber-400) !important;
+}
+  
+.bg-teal {
+    background-color: var(--teal-500) !important;
+}
+
 .font-red {
     color: var(--red-500) !important;
 }
@@ -74,8 +83,12 @@ html, body
 
 .font-base {
     color: var(--base-color) !important;
+} 
+
+div.ui-selectmenu-open 
+{
+    position: absolute;
+    z-index: 65535;
 }
 
-.bg-amber {
-    background-color: var(--amber-400) !important;
-}
+.ui-selectmenu-menu .ui-menu {max-height: 200px;}

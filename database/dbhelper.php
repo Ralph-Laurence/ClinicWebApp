@@ -28,4 +28,18 @@ class DbHelper
 
         $sth->execute();
     }
+
+    public function get($pdo, $table)
+    {
+        if ($pdo == null)
+            die("Server Error");
+
+        $sql = "SELECT * FROM $table";
+        $sth = $pdo->prepare($sql);
+        $sth->execute();
+
+        $result = $sth->fetchAll(PDO::FETCH_ASSOC);
+
+        return $result;
+    } 
 }
