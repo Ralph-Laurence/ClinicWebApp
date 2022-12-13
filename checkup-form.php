@@ -11,13 +11,14 @@ require_once("layout-header.php");
 $pdo = constant('pdo'); 
 
 // Find the the last created checkup ID on checkups table
-$lastCheckupFormId = Helpers::getLastId($pdo, TableNames::$checkup);
+//$lastCheckupFormId = Helpers::getLastId($pdo, TableNames::$checkup) + 1;
 
 // Generate a unique form number with a combination of 
 // Date today, and add +1 onto the last id, then pad with 
 // 4 leading zeros. ex: Y-m-d-0000id
-$checkupFormNumber = Dates::dateToday() . "-" . str_pad(($lastCheckupFormId + 1), 5, "0", STR_PAD_LEFT);
+// $checkupFormNumber = Dates::dateToday() . "-" . str_pad($lastCheckupFormId, 5, "0", STR_PAD_LEFT);
 
+$checkupFormNumber = Helpers::generateFormNumber($pdo);
 ?>
 
 <body>
@@ -258,7 +259,7 @@ $checkupFormNumber = Dates::dateToday() . "-" . str_pad(($lastCheckupFormId + 1)
                                 <!-- CONTROL BUTTONS -->
                                 <div class="d-flex flex-row-reverse gap-2">
                                     <button type="button" class="btn btn-primary bg-base btn-submit" disabled>SUBMIT</button>
-                                    <button type="reset" class="btn btn-secondary fw-bold btn-reset">RESET</button>
+                                    <button type="button" class="btn btn-secondary fw-bold btn-reset">RESET</button>
                                 </div>
                             </form>
                         </div>
@@ -329,10 +330,12 @@ $checkupFormNumber = Dates::dateToday() . "-" . str_pad(($lastCheckupFormId + 1)
     <script src="assets/lib/mdb5/js/mdb.min.js"></script>
     <script src="assets/lib/momentjs/moment-with-locales.js"></script>
     <script src="assets/lib/jquery.nicescroll/jquery.nicescroll.min.js"></script>
+
     <script src="assets/js/nicescroll.js"></script>
     <script src="assets/js/system.js"></script>
     <script src="assets/js/checkup-form.js"></script>
     <script src="assets/js/welcome-banner.js"></script>
+
     <script src="components/alert-dialog/alert-dialog.js"></script>
     <script src="components/snackbar/snackbar.js"></script>
 </body>

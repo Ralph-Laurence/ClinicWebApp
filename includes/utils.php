@@ -19,4 +19,12 @@ class Helpers
 
         return $result;
     }
+
+    public static function generateFormNumber($pdo)
+    {
+        $lastCheckupFormId = self::getLastId($pdo, TableNames::$checkup) + 1; 
+        $checkupFormNumber = Dates::dateToday() . "-" . str_pad($lastCheckupFormId, 5, "0", STR_PAD_LEFT);
+
+        return $checkupFormNumber;
+    }
 }

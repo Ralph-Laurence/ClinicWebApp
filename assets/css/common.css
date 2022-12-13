@@ -9,10 +9,20 @@
 } 
  
 .side-nav .side-nav-title,
-
 .workarea .welcome-banner {
     height: 42px;
 } 
+
+.side-nav-link-item
+{
+    cursor: pointer;
+}
+
+.side-nav-link-item:hover
+{
+    background-color: var(--amber-300) !important;
+    border-radius: 4px;
+}
 
 .breadcrumb-arrow
 {

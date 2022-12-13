@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST' || !$request->isAjax())
     http_response_code(404);
     die();
 }
-
+ 
 //=========================================================
 //----- KEY NAMES ARE EXACTLY TABLE COLUMN NAMES ----------
 //=========================================================
@@ -24,11 +24,17 @@ $jsonData = $_POST['jsonData'];
 
 $payload = json_decode($jsonData, true);
 
+$pdo = constant('pdo');
+$db = new DbHelper($pdo);
+
+// generate new form number 
+$checkupFormNumber = Helpers::generateFormNumber($pdo);
+
 $fields =
 [
     'checkup_date'          => $payload["input_checkupDate"] ?? "",
     'checkup_time'          => $payload["input_checkupTime"] ?? "",
-    'form_number'           => $payload["input_formNumber"],
+    'form_number'           => $checkupFormNumber, //$payload["input_formNumber"],
 
     'patient_fname'         => $payload["input_firstName"] ?? "",
     'patient_mname'         => $payload["input_middleName"] ?? "",
@@ -51,13 +57,10 @@ $fields =
 // if valid, push them to fields array
 $input_systolic = $payload["input_systolicBp"];
 $input_diastolic = $payload["input_diastolicBp"];
-// $input_systolic = $_POST['systolicBp'];
-// $input_diastolic = $_POST['diastolicBp'];
 
-if (empty($input_systolic) || empty($input_diastolic))
+if ($input_systolic == "" || $input_diastolic == "")
 {
-    Response::write(ResponseCodes::warning(), 
-    "Blood pressure values are invalid.");
+    echo "Blood pressure values are invalid.";
     exit;
 }
 
@@ -68,7 +71,7 @@ $fields['patient_bp'] = $patientBp;
 // then immediately stop the execution
 foreach(array_values($fields) as $v)
 {
-    if (empty($v))
+    if ($v == "" || $v == null)
     {
         echo "You have one or more fields with empty or invalid values. Please double check your entrues before submitting.";
         http_response_code(400);
@@ -78,23 +81,13 @@ foreach(array_values($fields) as $v)
 
 // If all goes well, then save the record to the database
 try 
-{
-    $pdo = constant('pdo');
-    $db = new DbHelper($pdo);
-    
+{ 
     $db->insert($pdo, TableNames::$checkup, $fields);
-
-    // Response::write(ResponseCodes::success(), "Record successfully saved!");
-
-    // generate new form number
-    $lastCheckupFormId = Helpers::getLastId($pdo, TableNames::$checkup); 
-    $checkupFormNumber = Dates::dateToday() . "-" . str_pad(($lastCheckupFormId + 1), 5, "0", STR_PAD_LEFT);
-
+  
     $response =
     [
         "statusCode" => ResponseCodes::success(),
-        "message" => "Record successfully saved!",
-        "newFormNumber" => $checkupFormNumber
+        "message" => "Record successfully saved!"
     ];
 
     echo json_encode($response);

@@ -17,7 +17,7 @@
 
                 <div class="accordion-body">
 
-                    <div class="row px-3 py-2">
+                    <div class="row side-nav-link-item px-3 py-2">
                         <div class="col-2">
                             <i class="fas fa-heartbeat me-2 font-red"></i>
                         </div>
@@ -30,36 +30,36 @@
 
         <div class="accordion-item">
             <h2 class="accordion-header">
-                <button class="accordion-button collapsed" type="button" data-mdb-toggle="collapse" data-mdb-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                <button class="accordion-button collapsed" type="button" data-mdb-toggle="collapse" data-mdb-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
                     <i class="fas fa-folder-open me-2 font-accent"></i>
                     View
                 </button>
             </h2>
-            <div id="collapseTwo" class="accordion-collapse collapse">
+            <div id="collapseTwo" class="accordion-collapse collapse show">
                 <div class="accordion-body">
 
-                    <div class="row px-3 py-2">
+                    <div class="row side-nav-link-item px-3 py-2">
                         <div class="col-2">
                             <i class="fas fa-warehouse me-2 font-teal"></i>
                         </div>
                         <div class="col fw-bold">Stocks Inventory</div>
                     </div>
 
-                    <div class="row px-3 py-2">
+                    <div class="row side-nav-link-item px-3 py-2">
                         <div class="col-2">
                             <i class="fas fa-ticket-alt me-2 font-accent"></i>
                         </div>
                         <div class="col fw-bold">Suppliers</div>
                     </div>
 
-                    <div class="row px-3 py-2">
+                    <div class="row side-nav-link-item px-3 py-2">
                         <div class="col-2">
                             <i class="fas fa-upload me-2 font-hilight"></i>
                         </div>
                         <div class="col fw-bold">Stock in / out</div>
                     </div>
 
-                    <div class="row px-3 py-2">
+                    <div class="row side-nav-link-item px-3 py-2">
                         <div class="col-2">
                             <i class="fas fa-notes-medical me-2 font-red"></i>
                         </div>
@@ -79,18 +79,18 @@
             <div id="collapseMaintenance" class="accordion-collapse collapse">
                 <div class="accordion-body">
 
-                    <div class="row px-3 py-2">
-                        <div class="col-2">
-                            <i class="fas fa-cogs me-2 font-accent"></i>
-                        </div>
-                        <div class="col fw-bold">Settings</div>
-                    </div>
-
-                    <div class="row px-3 py-2">
+                    <div class="row side-nav-link-item px-3 py-2">
                         <div class="col-2">
                             <i class="fas fa-bacterium me-2 font-teal"></i>
                         </div>
                         <div class="col fw-bold">Illness</div>
+                    </div>
+
+                    <div class="row side-nav-link-item px-3 py-2">
+                        <div class="col-2">
+                            <i class="fas fa-cogs me-2 font-accent"></i>
+                        </div>
+                        <div class="col fw-bold">Settings</div>
                     </div>
 
                 </div>
@@ -107,14 +107,14 @@
             <div id="collapseProfile" class="accordion-collapse collapse show">
                 <div class="accordion-body">
 
-                    <div class="row px-3 py-2">
+                    <div class="row side-nav-link-item px-3 py-2">
                         <div class="col-2">
                             <i class="fas fa-shield-alt me-2 font-teal"></i>
                         </div>
                         <div class="col fw-bold">My Account</div>
                     </div>
 
-                    <div class="row px-3 py-2">
+                    <div class="row side-nav-link-item px-3 py-2">
                         <div class="col-2">
                             <i class="fas fa-sign-out-alt me-2 font-accent"></i>
                         </div>

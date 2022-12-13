@@ -5,6 +5,7 @@ var patientDropButton = undefined;
 var genderDropButton = undefined; 
 
 var btn_submit = undefined;
+var btn_reset = undefined;
 var btn_dateTimeNow = undefined;
 var btn_clearIllness = undefined;
  
@@ -44,6 +45,8 @@ function onAwake()
         input_illness_id: $(".input-illness-id")
     };
   
+    requestNewFormNumber();
+
     $(function() 
     { 
         fields.input_bday.datepicker(); 
@@ -70,6 +73,7 @@ function onAwake()
     genderDropButton = $("#gender-dropdown-button");
   
     btn_submit = $(".btn-submit");
+    btn_reset = $(".btn-reset");
     btn_dateTimeNow = $(".btn-date-time-now");
     btn_clearIllness = $(".btn-clear-illness");
 
@@ -127,9 +131,10 @@ function onBind()
         else 
         {
             dialog.warn("Please fill out all fields!\n\nFor fields that do not apply to you, please enter \"N/A\" (or '0' for number field) instead.");
-        }
-        // $(".checkup-form").reset();
+        } 
     });
+
+    btn_reset.click(() => resetForm());
 
     btn_clearIllness.click(function()
     {
@@ -179,21 +184,15 @@ function sendDataToServer()
         {
             if (s) 
             {
-                resetForm();
-                fields.input_formNumber.val(s.newFormNumber);
-
-                //alert(s.statusCode);
-                // alert(s.message);
-                snackbar.show(s.message);
-                // $.each(s, function(k, v)
-                // {
-                //     alert(k + " => " + v);
-                // });
+                resetForm();  
+                snackbar.show(s.message);  
+                requestNewFormNumber();
             }
         },
         error: function (jqXHR, exception)
         {
-            alert("err: " + jqXHR.responseText);
+            dialog.danger("Process failed because of an error. Reload the page and try again.\n\nIf this error persists, please contact the Administrator.");
+            btn_submit.prop('disabled', false);
         }
     });
 }
@@ -287,7 +286,7 @@ function getIllnessDataSet(filter = 'all')
         },
         error: function(jqXHR, exception)
         {
-            console.log("something went wrong " + jqXHR.responseText);
+            dialog.danger("Failed to retrieve illness records because of an error.");
         }
     });
 }
@@ -298,9 +297,33 @@ function selectIllness(id, name)
     $(".input-illness-id").val(id);
 }
 
-function resetForm()
+function requestNewFormNumber()
 {
+    $.ajax(
+    {
+        type: "POST",
+        url: "ajax.generate-form-number.php",
+        success: function (i) 
+        {
+            if (i) {
+                fields.input_formNumber.val(i);
+            }
+        },
+        error: function (jqXHR, exception)
+        {
+            dialog.warn("Failed to request a new form number. Please reload the page.");
+        }
+    });
+}
+
+function resetForm()
+{  
     checkupForm.reset();
+    genderDropButton.text("Select Gender");
+    fields.input_gender.val('');
+
+    patientDropButton.text("Patient Type");
+    fields.input_patientType.val(''); 
 }
 
 // only execute this entire script after the page has fully loaded

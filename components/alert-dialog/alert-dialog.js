@@ -64,7 +64,7 @@ class AlertDialog
     // SHOW ERROR DIALOG
     //-----------------------------------
     //
-    danger(message, title = "Failure", mode = 1)
+    danger(message, title = "Failure")
     {
         // skip if modal parent is undefined or null
         if (this.modalParentClassName == undefined || this.modalParentClassName == null)

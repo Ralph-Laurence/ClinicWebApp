@@ -19,17 +19,19 @@ $pdo = constant('pdo');
 // wraps basic sql functions like SELECT, INSERT etc..
 $db = new DbHelper($pdo);
 
+$table = TableNames::$illness;
+
 $filter = $_POST['filter'] ?? "all";
 
 $illnessDataSet = null;
 
 if ($filter == 'all') 
 {
-    $illnessDataSet = $db->get($pdo, TableNames::$illness); 
+    $illnessDataSet = $db->get($pdo, $table); 
 } 
 else 
 {
-    $sth = $pdo->prepare("SELECT * FROM illness WHERE name LIKE ?");
+    $sth = $pdo->prepare("SELECT * FROM $table WHERE name LIKE ?");
     $sth->bindValue(1, "$filter%", PDO::PARAM_STR);
     $sth->execute();
     $illnessDataSet = $sth->fetchAll(PDO::FETCH_ASSOC);
@@ -38,7 +40,7 @@ else
 // foreach illness name, get all first letters ... 
 // we will use them later for dropdown filter
 $illnessLeadingChars = [];
-$leadingCharsDataSet = $db->get($pdo, TableNames::$illness); 
+$leadingCharsDataSet = $db->get($pdo, $table); 
 
 if (count($leadingCharsDataSet) > 0)
 {
