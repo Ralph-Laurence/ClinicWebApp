@@ -156,8 +156,7 @@ function validateRequiredFields()
         var val = fields[field].val();
 
         if (val == undefined || val == null || val == "")
-        {
-            // alert(field);
+        { 
             return false;
         }
     }

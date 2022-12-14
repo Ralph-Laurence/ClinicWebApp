@@ -11,13 +11,9 @@ require_once("layout-header.php");
 $pdo = constant('pdo'); 
 
 // Find the the last created checkup ID on checkups table
-//$lastCheckupFormId = Helpers::getLastId($pdo, TableNames::$checkup) + 1;
-
 // Generate a unique form number with a combination of 
 // Date today, and add +1 onto the last id, then pad with 
 // 4 leading zeros. ex: Y-m-d-0000id
-// $checkupFormNumber = Dates::dateToday() . "-" . str_pad($lastCheckupFormId, 5, "0", STR_PAD_LEFT);
-
 $checkupFormNumber = Helpers::generateFormNumber($pdo);
 ?>
 

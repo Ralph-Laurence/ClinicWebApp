@@ -1,3 +1,16 @@
+<?php 
+require_once("rootcwd.php");
+
+$cwd = constant("ROOT_URL");
+
+function echoOnclick($url)
+{
+    global $cwd;
+    $href = $cwd . $url;
+    echo "onclick=\"navHref('$href')\"";
+}
+
+?>
 <div class="side-nav h-100 border-2 border-end border-secondary">
     <!-- NAVIGATION TITLE TEXT -->
     <div class="bg-primary side-nav-title text-white py-2 px-4 align-items-center d-flex">
@@ -17,7 +30,7 @@
 
                 <div class="accordion-body">
 
-                    <div class="row side-nav-link-item px-3 py-2">
+                    <div class="row side-nav-link-item px-3 py-2" <?php echoOnclick('checkup-form.php'); ?> >
                         <div class="col-2">
                             <i class="fas fa-heartbeat me-2 font-red"></i>
                         </div>
@@ -126,3 +139,22 @@
         </div>
     </div>
 </div>
+
+<script>
+    function navHref(url)
+    {
+        window.location.replace(url)
+
+        try
+        {
+            window.history.pushState(null, null, window.location.href);
+            window.onpopstate = function () {
+                window.history.go(1);
+            };
+        }
+        catch
+        {
+
+        }
+    }
+</script>

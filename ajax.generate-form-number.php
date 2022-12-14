@@ -16,13 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST' || !$request->isAjax())
     die();
 }
 
-$pdo = constant('pdo');
-// $db = new DbHelper($pdo);
-
-// // generate new form number
-// $lastCheckupFormId = Helpers::getLastId($pdo, TableNames::$checkup) + 1; 
-// $checkupFormNumber = Dates::dateToday() . "-" . str_pad($lastCheckupFormId, 5, "0", STR_PAD_LEFT);
-
+$pdo = constant('pdo'); 
 $checkupFormNumber = Helpers::generateFormNumber($pdo);
 
 echo $checkupFormNumber;
