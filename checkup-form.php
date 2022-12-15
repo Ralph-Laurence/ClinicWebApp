@@ -1,14 +1,13 @@
-
 <?php
 @session_start();
 
 require_once("database/configs.php");
 require_once("includes/system.php");
 require_once("includes/utils.php");
-require_once("layout-header.php"); 
+require_once("layout-header.php");
 
 // global reference to PDO object
-$pdo = constant('pdo'); 
+$pdo = constant('pdo');
 
 // Find the the last created checkup ID on checkups table
 // Generate a unique form number with a combination of 
@@ -196,7 +195,7 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
                                                     <label class="form-label" for="input-illness">Illness / Disease</label>
                                                 </div>
                                                 <input type="hidden" name="input-illness-id" class="input-illness-id">
-                                            </div> 
+                                            </div>
                                             <div class="col-4 text-end">
                                                 <button type="button" class="btn btn-secondary btn-clear-illness fw-bold">Clear</button>
                                             </div>
@@ -232,7 +231,7 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
                                             </table>
                                         </div>
                                         <div class="table-buttons d-flex flex-row-reverse gap-2">
-                                            <button type="button" class="btn btn-secondary fw-bold">Add Medicine</button>
+                                            <button type="button" class="btn btn-secondary fw-bold" data-mdb-toggle="modal" data-mdb-target="#medicineSelectorModal">Add Medicine</button>
                                             <button type="button" class="btn btn-secondary fw-bold">Clear All</button>
                                         </div>
                                     </div>
@@ -273,11 +272,12 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
 
     <!--SNACKBAR AND MODAL-->
     <?php
-        include("components/alert-dialog/alert-dialog.php");
-        include("components/snackbar/snackbar.php"); 
+    include("components/alert-dialog/alert-dialog.php");
+    include("components/snackbar/snackbar.php");
     ?>
 
-    <div class="modal fade" id="illnessSelectorModal" tabindex="-1" aria-labelledby="illnessSelectorModalLabel" aria-hidden="true">
+    <!-- ILLNESS SELECTOR -->
+    <div class="modal fade" id="illnessSelectorModal" tabindex="-1" aria-labelledby="illnessSelectorModalLabel" aria-hidden="true" data-mdb-backdrop="static">
         <div class="modal-dialog pt-3">
             <div class="modal-content mt-5">
                 <div class="modal-header bg-base text-white py-0 ps-4 pe-0">
@@ -292,7 +292,7 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
                     <div class="select-box mb-3">
                         <select name="illness-starts-with" id="illness-starts-with">
                             <option selected value="all">Show All</option>
-                            <option disabled value="">Begins With :</option>  
+                            <option disabled value="">Begins With :</option>
 
                         </select>
                     </div>
@@ -306,7 +306,7 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
                                     <th scope="col" class="fw-bold">Action</th>
                                 </tr>
                             </thead>
-                            <tbody class="illness-selector-dataset"> 
+                            <tbody class="illness-selector-dataset">
 
                             </tbody>
                         </table>
@@ -314,7 +314,54 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
                 </div>
 
                 <div class="modal-footer py-2">
-                    <button type="button" class="btn btn-secondary text-dark fw-bold" data-mdb-dismiss="modal">Cancel</button> 
+                    <button type="button" class="btn btn-secondary text-dark fw-bold" data-mdb-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MEDICINES SELECTOR -->
+    <div class="modal fade" id="medicineSelectorModal" tabindex="-1" aria-labelledby="medicineSelectorModalLabel" aria-hidden="true" data-mdb-backdrop="static">
+        <div class="modal-dialog pt-3">
+            <div class="modal-content mt-5">
+                <div class="modal-header bg-teal text-white py-0 ps-4 pe-0">
+                    <h6 class="modal-title" id="medicineSelectorModalLabel">Select Medicine</h6>
+                    <button type="button" class="btn shadow-0 fs-5 text-white" data-mdb-dismiss="modal">
+                        <i class="fas fa-times-circle"></i>
+                    </button>
+                </div>
+
+                <div class="modal-body px-4">
+
+                    <div class="select-box mb-3">
+                        <select name="medicine-starts-with" id="medicine-starts-with">
+                            <option selected value="all">Show All</option>
+                            <option disabled value="">Begins With :</option>
+
+                        </select>
+                    </div>
+
+                    <div class="w-100 border border-1 border-secondary mb-2 illness-selector-table-wrapper">
+
+                        <table class="table table-sm table-striped table-hover">
+                            <thead class="bg-base text-white">
+                                <tr>
+                                    <th class="d-none">Item Id</th>
+                                    <th class="d-none">Category</th>
+                                    <th scope="col">Item Name</th>
+                                    <th scope="col">Stock</th>
+                                    <th scope="col">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody class="medicine-selector-dataset">
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="modal-footer py-2">
+                    <button type="button" class="btn btn-secondary text-dark fw-bold" data-mdb-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>

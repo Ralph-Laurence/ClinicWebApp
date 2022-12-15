@@ -72,7 +72,7 @@ function echoOnclick($url)
                         <div class="col fw-bold">Stock in / out</div>
                     </div>
 
-                    <div class="row side-nav-link-item px-3 py-2">
+                    <div class="row side-nav-link-item px-3 py-2" <?php echoOnclick('patient-records.php'); ?>>
                         <div class="col-2">
                             <i class="fas fa-notes-medical me-2 font-red"></i>
                         </div>

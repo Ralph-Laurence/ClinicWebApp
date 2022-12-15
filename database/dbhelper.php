@@ -29,12 +29,18 @@ class DbHelper
         $sth->execute();
     }
 
-    public function get($pdo, $table)
+    public function get($pdo, $table, $orderBy = 'ASC', $orderColumn = '')
     {
         if ($pdo == null)
             die("Server Error");
 
-        $sql = "SELECT * FROM $table";
+        $sort = '';
+
+        if ($orderColumn != '' && ($orderBy == 'ASC' || $orderBy == 'DESC'))
+            $sort = " ORDER BY $orderColumn $orderBy";
+
+        
+        $sql = "SELECT * FROM $table" . $sort;
         $sth = $pdo->prepare($sql);
         $sth->execute();
 

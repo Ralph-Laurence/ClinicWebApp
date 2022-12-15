@@ -49,7 +49,10 @@ function onAwake()
 
     $(function() 
     { 
-        fields.input_bday.datepicker(); 
+        fields.input_bday.datepicker({
+            changeMonth: true,
+            changeYear: true
+        }); 
         fields.input_checkupDate.datepicker();
         fields.input_checkupDate.datepicker('setDate', new Date()); 
 
@@ -62,12 +65,25 @@ function onAwake()
                 getIllnessDataSet($(this).val());
             }
         });
+
+        $("#medicine-starts-with") 
+        .selectmenu
+        ({
+            change: function (event, ui) 
+            {
+                // filter illness record by selected leading char
+                getMedicineDataSet($(this).val());
+            }
+        });
     });  
 
     // load all illness record from table, then
     // - bind illness leading names into combobox
     // - bind illness record to <table>
     getIllnessDataSet();
+
+    // do the same thing for medicines
+    getMedicineDataSet();
 
     patientDropButton = $("#patient-dropdown-button");
     genderDropButton = $("#gender-dropdown-button");
@@ -296,6 +312,77 @@ function selectIllness(id, name)
     $(".input-illness-id").val(id);
 }
 
+function appendMedicineSelectOptions(bindingSource = undefined)
+{
+    var selected = $("#medicine-starts-with").val();
+    
+    $("#medicine-starts-with")
+    .empty()
+    .append(`<option selected value='all'>Show All</option>`)
+    .append(`<option disabled value=''>Begins With :</option>`);
+
+    if (bindingSource != undefined)
+    {
+        bindingSource.forEach(item => 
+        {
+            var attr = "";
+
+            if (item == selected)
+                attr = "selected";
+
+            $("#medicine-starts-with")
+            .append(`<option ${attr} value='${item}'>${item}</option>`);
+        });
+    }
+
+    $("#medicine-starts-with").selectmenu("refresh"); 
+}
+
+function getMedicineDataSet(filter = 'all')
+{
+    $.ajax(
+        {
+            url: "ajax.get-medicines.php",
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                filter: filter
+            },
+            success: function(res)
+            {   
+                if (res)
+                { 
+                    if (!res.leadingChars || !res.dataSet)
+                        return;
+                    
+                    appendMedicineSelectOptions(res.leadingChars); 
+                    
+                    var tableElem = $(".medicine-selector-dataset");
+                    tableElem.empty()
+    
+                    res.dataSet.forEach(i => 
+                    {
+                        tableElem
+                        .append(`<tr class="align-middle">
+                                     <td>${i.item_name}</td>
+                                     <td>Available</td>
+                                     <td>
+                                        <button class="btn btn-primary" onclick="selectMedicine(${i.id}, '${i.item_name}')" data-mdb-dismiss="modal">
+                                        Add
+                                        </button>
+                                     </td>
+                                 </tr>`);
+                    });
+                    
+                }
+            },
+            error: function(jqXHR, exception)
+            {
+                dialog.danger("Failed to retrieve medicine records because of an error.");
+            }
+        });
+}
+
 function requestNewFormNumber()
 {
     $.ajax(
@@ -328,3 +415,5 @@ function resetForm()
 // only execute this entire script after the page has fully loaded
 $(document).ready(() => onAwake());
  
+
+// https://stackoverflow.com/questions/5737272/jquery-dynamically-show-table-rows
