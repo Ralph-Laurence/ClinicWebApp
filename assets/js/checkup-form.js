@@ -103,6 +103,8 @@ function onAwake()
     Input.forceNumeric(System.getClass(fields.input_contact));
     Input.forceDecimals(System.getClass(fields.input_weight));
 
+    Input.forceNumeric("input-qty-consume");
+
     dialog = new AlertDialog();
     snackbar = new SnackBar();
 
@@ -265,45 +267,45 @@ function appendIllnessSelectOptions(bindingSource = undefined)
 // load the records found in Illness table
 function getIllnessDataSet(filter = 'all')
 {  
-    $.ajax(
-    {
-        url: "ajax.get-illness.php",
-        type: 'POST',
-        dataType: 'json',
-        data: {
-            filter: filter
-        },
-        success: function(res)
-        {   
-            if (res)
-            { 
-                if (!res.leadingChars || !res.dataSet)
-                    return;
+    // $.ajax(
+    // {
+    //     url: "ajax.get-illness.php",
+    //     type: 'POST',
+    //     dataType: 'json',
+    //     data: {
+    //         filter: filter
+    //     },
+    //     success: function(res)
+    //     {   
+    //         if (res)
+    //         { 
+    //             if (!res.leadingChars || !res.dataSet)
+    //                 return;
                 
-                appendIllnessSelectOptions(res.leadingChars); 
+    //             appendIllnessSelectOptions(res.leadingChars); 
                 
-                $(".illness-selector-dataset").empty()
+    //             $(".illness-selector-dataset").empty()
 
-                res.dataSet.forEach(i => 
-                {
-                    $(".illness-selector-dataset") 
-                    .append(`<tr class="align-middle">
-                                 <td>${i.name}</td>
-                                 <td>
-                                    <button class="btn btn-primary" onclick="selectIllness(${i.id}, '${i.name}')" data-mdb-dismiss="modal">
-                                    Select
-                                    </button>
-                                 </td>
-                             </tr>`);
-                });
+    //             res.dataSet.forEach(i => 
+    //             {
+    //                 $(".illness-selector-dataset") 
+    //                 .append(`<tr class="align-middle">
+    //                              <td>${i.name}</td>
+    //                              <td>
+    //                                 <button class="btn btn-primary" onclick="selectIllness(${i.id}, '${i.name}')" data-mdb-dismiss="modal">
+    //                                 Select
+    //                                 </button>
+    //                              </td>
+    //                          </tr>`);
+    //             });
                 
-            }
-        },
-        error: function(jqXHR, exception)
-        {
-            dialog.danger("Failed to retrieve illness records because of an error.");
-        }
-    });
+    //         }
+    //     },
+    //     error: function(jqXHR, exception)
+    //     {
+    //         dialog.danger("Failed to retrieve illness records because of an error.");
+    //     }
+    // });
 }
 
 function selectIllness(id, name)
@@ -340,47 +342,47 @@ function appendMedicineSelectOptions(bindingSource = undefined)
 
 function getMedicineDataSet(filter = 'all')
 {
-    $.ajax(
-        {
-            url: "ajax.get-medicines.php",
-            type: 'POST',
-            dataType: 'json',
-            data: {
-                filter: filter
-            },
-            success: function(res)
-            {   
-                if (res)
-                { 
-                    if (!res.leadingChars || !res.dataSet)
-                        return;
+    // $.ajax(
+    //     {
+    //         url: "ajax.get-medicines.php",
+    //         type: 'POST',
+    //         dataType: 'json',
+    //         data: {
+    //             filter: filter
+    //         },
+    //         success: function(res)
+    //         {   
+    //             if (res)
+    //             { 
+    //                 if (!res.leadingChars || !res.dataSet)
+    //                     return;
                     
-                    appendMedicineSelectOptions(res.leadingChars); 
+    //                 appendMedicineSelectOptions(res.leadingChars); 
                     
-                    var tableElem = $(".medicine-selector-dataset");
-                    tableElem.empty()
+    //                 var tableElem = $(".medicine-selector-dataset");
+    //                 tableElem.empty()
     
-                    res.dataSet.forEach(i => 
-                    {
-                        tableElem
-                        .append(`<tr class="align-middle">
-                                     <td>${i.item_name}</td>
-                                     <td>Available</td>
-                                     <td>
-                                        <button class="btn btn-primary" onclick="selectMedicine(${i.id}, '${i.item_name}')" data-mdb-dismiss="modal">
-                                        Add
-                                        </button>
-                                     </td>
-                                 </tr>`);
-                    });
+    //                 res.dataSet.forEach(i => 
+    //                 {
+    //                     tableElem
+    //                     .append(`<tr class="align-middle">
+    //                                  <td>${i.item_name}</td>
+    //                                  <td>Available</td>
+    //                                  <td>
+    //                                     <button class="btn btn-primary" onclick="selectMedicine(${i.id}, '${i.item_name}')" data-mdb-dismiss="modal">
+    //                                     Add
+    //                                     </button>
+    //                                  </td>
+    //                              </tr>`);
+    //                 });
                     
-                }
-            },
-            error: function(jqXHR, exception)
-            {
-                dialog.danger("Failed to retrieve medicine records because of an error.");
-            }
-        });
+    //             }
+    //         },
+    //         error: function(jqXHR, exception)
+    //         {
+    //             dialog.danger("Failed to retrieve medicine records because of an error.");
+    //         }
+    //     });
 }
 
 function requestNewFormNumber()

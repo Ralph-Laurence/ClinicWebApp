@@ -5,6 +5,7 @@ require_once("database/configs.php");
 require_once("includes/system.php");
 require_once("includes/utils.php");
 require_once("layout-header.php");
+require_once("includes/get-medicines.php");
 
 // global reference to PDO object
 $pdo = constant('pdo');
@@ -322,7 +323,7 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
 
     <!-- MEDICINES SELECTOR -->
     <div class="modal fade" id="medicineSelectorModal" tabindex="-1" aria-labelledby="medicineSelectorModalLabel" aria-hidden="true" data-mdb-backdrop="static">
-        <div class="modal-dialog pt-3">
+        <div class="modal-dialog modal-lg pt-3">
             <div class="modal-content mt-5">
                 <div class="modal-header bg-teal text-white py-0 ps-4 pe-0">
                     <h6 class="modal-title" id="medicineSelectorModalLabel">Select Medicine</h6>
@@ -337,7 +338,15 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
                         <select name="medicine-starts-with" id="medicine-starts-with">
                             <option selected value="all">Show All</option>
                             <option disabled value="">Begins With :</option>
-
+                            <?php
+                                if (!empty($medicineLeadingChars)) 
+                                {
+                                    foreach ($medicineLeadingChars as $lead) 
+                                    { 
+                                        echo "<option value='$lead'>$lead</option>";
+                                    }
+                                }
+                            ?>
                         </select>
                     </div>
 
@@ -350,11 +359,42 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
                                     <th class="d-none">Category</th>
                                     <th scope="col">Item Name</th>
                                     <th scope="col">Stock</th>
+                                    <th scope="col">Qty Consume</th>
                                     <th scope="col">Action</th>
                                 </tr>
                             </thead>
                             <tbody class="medicine-selector-dataset">
+                                <?php
+                                if (!empty($medicineDataSet)) {
+                                    foreach ($medicineDataSet as $row) {
+                                        $id = $row['id'];
+                                        $item = $row['item_name'];
+                                        $category = $row['item_category'];
 
+                                        echo "
+                                    <tr class=\"align-middle\">
+                                        <td class=\"d-none\">$id</td>
+                                        <td class=\"d-none\">$category</td>
+                                        <td>$item</td> 
+                                        <td>Available</td>
+                                        <td>
+                                            <input type=\"text\" class=\"input-qty-consume\">
+                                        </td>
+                                        <td>
+                                            <div class=\"d-flex flex-row gap-2\">
+                                                <button class=\"btn btn-danger bg-red text-white fw-bold py-1 px-2\">
+                                                    <i class=\"fas fa-minus\"></i>
+                                                </button>
+                                                <button class=\"btn btn-primary bg-teal text-white fw-bold py-1 px-2\">
+                                                    <i class=\"fas fa-plus\"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    ";
+                                    }
+                                }
+                                ?>
                             </tbody>
                         </table>
                     </div>

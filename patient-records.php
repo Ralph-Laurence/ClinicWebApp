@@ -4,7 +4,7 @@ require_once("database/configs.php");
 require_once("includes/system.php");
 require_once("includes/utils.php");
 require_once("layout-header.php");
-
+require_once("includes/get-checkup-records.inc.php");
 ?>
 
 <body>
@@ -46,52 +46,87 @@ require_once("layout-header.php");
 
                             <!--SEARCH BARS-->
                             <div class="searchbar-wrapper d-flex flex-row gap-2">
-                                <div class="form-outline w-25">
-                                    <input type="text" id="form12" class="form-control" />
-                                    <label class="form-label" for="form12">Find Records</label>
-                                </div>
-                                <select name="" id="find-patient-option">
-                                    <option value="">By Firstname</option>
-                                    <option value="">By Lastname</option>
-                                    <option value="">By Month</option>
-                                    <option value="">By Record Number</option>
-                                </select>
-                                <select name="" id="month-options">
-                                    <option value="" disabled selected>Select Month</option>
-
-                                </select>
-                                <button class="btn btn-primary bg-base">
-                                    <i class="fas fa-search me-2"></i>
-                                    <span>Find</span>
-                                </button>
-                                <button class="btn btn-primary display-none">
+                                <form action="" method="POST" class="d-flex flex-row gap-2 filter-form">
+                                    <div class="form-outline">
+                                        <input type="text" id="input-keyword" name="input-keyword" class="form-control"
+                                        value="<?php if (!empty($keyword)) echo $keyword; ?>" 
+                                        <?php if (!empty($monthOptions)) echo "disabled"; ?>/>
+                                        <label class="form-label" for="form12">Find Records</label>
+                                    </div>
+                                    <select name="find-patient-option" id="find-patient-option">
+                                        <option value="filter-fname" <?php if (!empty($findBy) && $findBy == "filter-fname") echo "selected"; ?> >By Firstname</option>
+                                        <option value="filter-lname" <?php if (!empty($findBy) && $findBy == "filter-lname") echo "selected"; ?> >By Lastname</option>
+                                        <option value="filter-month" <?php if (!empty($findBy) && $findBy == "filter-month") echo "selected"; ?> >By Month</option>
+                                        <option value="filter-rec-num" <?php if (!empty($findBy) && $findBy == "filter-rec-num") echo "selected"; ?> >By Record Number</option>
+                                    </select>
+                                    <select name="month-options" id="month-options" <?php if (empty($monthOptions)) echo "disabled"; ?>>
+                                        <option value="" disabled selected>Select Month</option>
+                                        <?php 
+                                            
+                                        for($i = 1; $i <= 12; $i++)
+                                        {
+                                            $monthName = date("F", mktime(0, 0, 0, $i, 10));
+                                            $monthIndex = str_pad($i, 2, '0', STR_PAD_LEFT);
+                                            $selected = $monthIndex == $monthOptions ? "selected" : "";
+                                            echo "<option $selected value='$monthIndex'>$monthName</option>";
+                                        }
+                                            
+                                        ?>
+                                    </select>
+                                    <button type="button" class="btn btn-primary bg-base btn-find">
+                                        <i class="fas fa-search me-2"></i>
+                                        <span>Find</span>
+                                    </button>
+                                </form>
+                                <button <?php echoOnclick('patient-records.php'); ?> class="btn btn-primary <?php if (empty($condition)) echo 'display-none'; ?>">
                                     <i class="fas fa-undo me-2"></i>
                                     <span>Clear</span>
                                 </button>
                             </div>
 
-                            <!--DIVIDER--> 
+                            <!--DIVIDER-->
                             <div class="divider-separator border border-1 border-bottom my-3"></div>
+
+                            <h6>Total Records Found: <?php if(!empty($checkupDataSet)) echo count($checkupDataSet) ?></h6>
 
                             <!-- WORKSHEET TABLE-->
                             <div class="w-100 flex-grow-1 border border-1 border-secondary mb-2 worksheet-table-wrapper" style="overflow-y: auto;">
-
                                 <table class="table table-sm table-striped table-hover position-relative">
                                     <thead class="bg-amber text-dark" style="position: sticky; top: 0;">
-                                        <tr> 
+                                        <tr>
                                             <th class="fw-bold" scope="col">Checkup #</th>
                                             <th class="fw-bold" scope="col">Patient</th>
                                             <th class="fw-bold" scope="col">Type</th>
-                                            <th class="fw-bold" scope="col">Illness</th> 
+                                            <th class="fw-bold" scope="col">Illness</th>
                                             <th class="fw-bold" scope="col">Checkup Date</th>
                                             <th class="fw-bold" scope="col">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody class="checkup-dataset bg-white">
-                                         
+                                        <?php
+                                        if (!empty($checkupDataSet)) {
+                                            foreach ($checkupDataSet as $row) {
+                                                $formNumber = $row['form_number'];
+                                                $patientName = $row['patient_name'];
+                                                $patientType = $row['patient_type'];
+                                                $illness = $row['illness'];
+                                                $checkupDate = date("M d, Y h:i A");
+
+                                                echo
+                                                "<tr>
+                                                    <td>$formNumber</td>
+                                                    <td>$patientName</td>
+                                                    <td>$patientType</td>
+                                                    <td>$illness</td>
+                                                    <td>$checkupDate</td>
+                                                    <td>Action</td>
+                                                </tr>";
+                                            }
+                                        }
+                                        ?>
                                     </tbody>
                                 </table>
-                            </div> 
+                            </div>
                         </div>
 
                     </div>
@@ -105,6 +140,10 @@ require_once("layout-header.php");
     </div>
     <!-- END CONTAINER -->
 
+    <?php 
+        include("components/alert-dialog/alert-dialog.php");
+    ?>
+
     <!--SCRIPTS-->
     <!--SCRIPTS-->
     <script src="assets/lib/jquery/jquery-3.6.1.min.js"></script>
@@ -115,6 +154,8 @@ require_once("layout-header.php");
 
     <script src="assets/js/nicescroll.js"></script>
     <script src="assets/js/patient-records.js"></script>
+
+    <script src="components/alert-dialog/alert-dialog.js"></script>
 
 </body>
 

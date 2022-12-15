@@ -1,3 +1,7 @@
+var inputKeyword = undefined; 
+var btnFind = undefined;
+var dialog = undefined;
+
 $(document).ready(() => 
 {
     onAwake();
@@ -5,80 +9,60 @@ $(document).ready(() =>
 
 function onAwake()
 { 
+    inputKeyword = $("#input-keyword"); 
+    btnFind = $(".btn-find");
+    dialog = new AlertDialog();
+
     $(function () 
     {
         $("#find-patient-option").selectmenu({
-            width: 164
+            width: 200,
+            change: function(event, ui)
+            {
+                var selected = $(this).val();
+
+                if (selected == "filter-month")
+                {
+                    $( "#month-options" ).selectmenu( "option", "disabled", false );
+                    inputKeyword.prop("disabled", true); 
+                }
+                else 
+                {
+                    $( "#month-options" ).selectmenu( "option", "disabled", true );
+                    inputKeyword.prop("disabled", false); 
+                } 
+            }
         });
+
         $("#month-options").selectmenu({
             width: 180
         });
-    });
-
-    appendMonthNames();
-
-    loadCheckupRecord();
+    }); 
 
     onBind();
 }
 
 function onBind()
 {
+    btnFind.click(() => searchRecord());
+} 
 
-}
-
-function appendMonthNames()
+function searchRecord()
 {
-    $("#month-options")
-    .empty()
-    .append(`<option selected disabled value=''>Select Month</option>`);
+    var filter = $("#find-patient-option").val();
 
-    var months = moment.months();
-
-    months.forEach(m => {
-        $("#month-options").append(`<option>${m}</option>`);
-    });
-
-    $(function () 
+    if (filter != "filter-month" && inputKeyword.val() == "") 
     {
-        $("#month-options").selectmenu("refresh");
-    }); 
+        dialog.warn("Please enter a search term.");
+        return;
+    }
+
+    if (filter == "filter-month" && $("#month-options").val() == null)
+    {
+        dialog.warn("Please select a month.");
+        return;
+    }
+
+    $(".filter-form").trigger("submit");
 }
-
-function loadCheckupRecord(filter = 'all')
-{
-    $.ajax({
-        url: "ajax.get-checkup-records.php",
-        type: "POST",
-        dataType: "json",
-        data: {filter: filter},
-        success: function(res)
-        {
-            if (res)
-            {
-                $(".checkup-dataset").empty();
-
-                res.dataSet.forEach(d => 
-                {
-                    var checkupDate = moment(`${d.checkup_date} ${d.checkup_time}`).format('MMM DD, YYYY h:mm A')
-
-                    $(".checkup-dataset").
-                    append(`
-                    <tr>
-                        <td>${d.form_number}</td>
-                        <td>${d.patient_name}</td>
-                        <td>${d.patient_type}</td>
-                        <td>${d.illness}</td>
-                        <td>${checkupDate}</td>
-                        <td>action</td>
-                    </tr>
-                    `);
-                });
-            }
-        },
-        error: function(jqXHR, exception)
-        {
-
-        }
-    });
-}
+ 
