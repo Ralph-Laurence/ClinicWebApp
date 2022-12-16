@@ -8,11 +8,17 @@ var btn_submit = undefined;
 var btn_reset = undefined;
 var btn_dateTimeNow = undefined;
 var btn_clearIllness = undefined;
+var btn_clearPrescriptions = undefined;
  
 var checkbox_confirm = undefined; 
 
 var dialog = undefined;
 var snackbar = undefined;
+
+var medicinePickerCarousel = undefined;
+var medicinePickerCarousel_BackBtn = undefined;
+var medicinePickerCarousel_NextBtn = undefined;
+var medicinePickerCarousel_OkBtn = undefined;
  
 //=============================================
 //------------- PRE INITIALIZATION ------------
@@ -71,19 +77,16 @@ function onAwake()
         ({
             change: function (event, ui) 
             {
-                // filter illness record by selected leading char
+                // filter illness record by selected categories
                 filterMedicine($(this).val());
             }
         });
     });  
-
-    // load all illness record from table, then
-    // - bind illness leading names into combobox
-    // - bind illness record to <table>
-    //getIllnessDataSet();
-
-    // do the same thing for medicines
-    //getMedicineDataSet();
+  
+    medicinePickerCarousel = $("#medicinePickerCarousel");
+    medicinePickerCarousel_BackBtn = $(".btn-carsl-back");
+    medicinePickerCarousel_NextBtn = $(".btn-carsl-next");
+    medicinePickerCarousel_OkBtn = $(".btn-carsl-ok");
 
     patientDropButton = $("#patient-dropdown-button");
     genderDropButton = $("#gender-dropdown-button");
@@ -92,6 +95,7 @@ function onAwake()
     btn_reset = $(".btn-reset");
     btn_dateTimeNow = $(".btn-date-time-now");
     btn_clearIllness = $(".btn-clear-illness");
+    btn_clearPrescriptions = $(".btn-clear-prescriptions");
 
     checkbox_confirm = $("#chk-confirm"); 
 
@@ -165,6 +169,42 @@ function onBind()
     fields.input_checkupDate.on("change", () => fields.input_checkupDate.focus().blur());
 
     bindSelectMedicine();
+    
+    // fire events after carousel has finished sliding
+    medicinePickerCarousel.on("slid.mdb.carousel", () => 
+    {
+        // reference to each carousel pages
+        var carousel_page1 = $(".carousel-page-1");
+        var carousel_page2 = $(".carousel-page-2");
+
+        // track each carousel page's visibility by checking if class 'active' is present
+        // if page 2 is active, enable the back button and hide the next button. 
+        // then show the OK button
+        if (carousel_page2.hasClass("active"))
+        {
+            medicinePickerCarousel_NextBtn.hide();
+            medicinePickerCarousel_BackBtn.show();
+            medicinePickerCarousel_OkBtn.show();
+        }
+        // if page 1 is active, enable the next button and hide the back button. 
+        // also hide the OK button.
+        if (carousel_page1.hasClass("active"))
+        {
+            medicinePickerCarousel_BackBtn.hide();
+            medicinePickerCarousel_NextBtn.show();
+            medicinePickerCarousel_OkBtn.hide();
+        }
+    });
+
+    medicinePickerCarousel_NextBtn.click(() => getSelectedMedicinesOnNext());
+
+    // grab a copy of medicine picker modal's table
+    $(".medicines-table").data('medicines-table-old-state', $(".medicines-table").html());
+
+    btn_clearPrescriptions.click(() => 
+    {
+        $(".medicines-table").html($(".medicines-table").data('medicines-table-old-state'));
+    })
 }
 //=============================================
 //-------------- BUSINESS LOGIC ---------------
@@ -291,6 +331,10 @@ function requestNewFormNumber()
     });
 }
 
+//=============================================
+//--------- MEDICINE PICKER CAROUSEL ----------
+//=============================================
+
 function bindSelectMedicine()
 {
     $(".medicines-table").on("click", ".btn-select-medicine", function()
@@ -367,6 +411,31 @@ function filterMedicine(category)
     }); 
 }
 
+function getSelectedMedicinesOnNext()
+{
+    var table = $(".medicines-table");
+    var rows = table.find("tbody tr");
+
+    // if there are no rows present, exit
+    if (rows.length == 0)
+        return;
+
+    rows.each(function (i, row) 
+    {
+        var flagCell = $(rows[i].cells[4]).text();
+        var itemNameCell = $(rows[i].cells[0]).text();
+        var itemIdCell = $(rows[i].cells[5]).text();
+        var remainingCell = $(rows[i].cells[6]).text();
+
+        // for every selected row, find its 
+        // Item ID, Remaining qty
+        if (flagCell == "true")
+        {
+            alert(`${itemIdCell} => ${itemNameCell} => ${flagCell} => ${remainingCell}`);
+        }  
+    });
+}
+
 function resetForm()
 {  
     checkupForm.reset();
@@ -382,3 +451,5 @@ $(document).ready(() => onAwake());
  
 
 // https://stackoverflow.com/questions/5737272/jquery-dynamically-show-table-rows
+// reset divs
+// https://stackoverflow.com/a/5557716

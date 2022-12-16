@@ -211,29 +211,26 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
                                                     <tr>
                                                         <th class="fw-bold" scope="col">Product Name</th>
                                                         <th class="fw-bold" scope="col">Category</th>
-                                                        <th class="fw-bold" scope="col">Qty</th>
-                                                        <th class="fw-bold" scope="col">Action</th>
+                                                        <th class="fw-bold" scope="col">Qty</th> 
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     <tr>
                                                         <td scope="row">Biogesic</td>
                                                         <td>Paracetamol</td>
-                                                        <td>1</td>
-                                                        <td>undefined</td>
+                                                        <td>1</td> 
                                                     </tr>
                                                     <tr>
                                                         <td scope="row">Neozep</td>
                                                         <td>Paracetamol</td>
-                                                        <td>2</td>
-                                                        <td>undefined</td>
+                                                        <td>2</td> 
                                                     </tr>
                                                 </tbody>
                                             </table>
                                         </div>
                                         <div class="table-buttons d-flex flex-row-reverse gap-2">
                                             <button type="button" class="btn btn-secondary fw-bold" data-mdb-toggle="modal" data-mdb-target="#medicineSelectorModal">Add Medicine</button>
-                                            <button type="button" class="btn btn-secondary fw-bold">Clear All</button>
+                                            <button type="button" class="btn btn-secondary fw-bold btn-clear-prescriptions">Clear All</button>
                                         </div>
                                     </div>
                                 </div>
@@ -334,23 +331,31 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
 
                 <div class="modal-body px-4">
 
-                    <div id="carouselExampleControls" class="carousel slide" data-mdb-ride="carousel"  data-mdb-interval="false">
+                    <div id="medicinePickerCarousel" class="carousel slide" data-mdb-ride="carousel"  data-mdb-interval="false">
                         <div class="carousel-inner">
-                            <div class="carousel-item active">
+                            <div class="carousel-item carousel-page-1  active">
 
-                                <div class="select-box mb-2">
+                                <div class="select-box mb-2 d-flex flex-row align-items-center">
                                     <select name="filter-medicine-category" id="filter-medicine-category">
                                         <option selected value="all">Show All</option>
                                         <option value="only-selected">Only Selected</option>
                                         <option disabled value="">CATEGORIES :</option>
                                         <?php
-                                        if (!empty($medicineCategories)) {
-                                            foreach ($medicineCategories as $c) {
+                                        if (!empty($medicineCategories)) 
+                                        {
+                                            foreach ($medicineCategories as $c) 
+                                            {
                                                 echo "<option value='$c'>$c</option>";
                                             }
                                         }
                                         ?>
                                     </select>
+                                    <div class="d-flex align-items-center flex-row gap-2 px-3">
+                                        <div class="badge badge-secondary">Low on stock: </div>
+                                        <div class="badge badge-warning me-4"><?php echo $criticalItemsCount; ?></div>
+                                        <div class="badge badge-secondary">Sold Out: </div>
+                                        <div class="badge badge-danger"><?php echo $soldOutItemsCount; ?></div>
+                                    </div>
                                 </div> 
                                 <div class="w-100 border border-1 border-secondary mb-2 illness-selector-table-wrapper mb-2" style="height: 320px;">
 
@@ -362,29 +367,46 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
                                                 <th scope="col">Stock</th> 
                                                 <th scope="col">Action</th>
                                                 <th class="d-none">IsSelected</th>
+                                                <th class="d-none">ItemId</th>
+                                                <th class="d-none">Remaining</th>
                                             </tr>
                                         </thead>
                                         <tbody class="medicine-selector-dataset">
                                             <?php
-                                            if (!empty($medicineDataSet)) {
+                                            if (!empty($medicineDataSet)) 
+                                            {
                                                 foreach ($medicineDataSet as $row) 
                                                 { 
+                                                    $id = $row['item_id'];
                                                     $item = $row['item_name'];
                                                     $category = $row['category'];
+                                                    
+                                                    $remaining = $row['remaining'];
+                                                    $criticalLevel = $row['critical_level'];
+                                                    
+                                                    $stock = "<span class=\"badge badge-success\">Available</span>";
+                                                    $btn_disableOnSoldOut = ($remaining == 0) ? "disabled" : "";
+
+                                                    if ($remaining <= $criticalLevel)
+                                                        $stock = "<span class=\"badge badge-warning\">Low on stock</span>";
+                                                    
+                                                    if ($remaining == 0)
+                                                        $stock = "<span class=\"badge badge-danger\">Sold out</span>";
 
                                                     echo "
                                                 <tr class=\"align-middle\"> 
                                                     <td>$item</td> 
                                                     <td class=\"d-nonex\">$category</td>
-                                                    <td>Available</td>
+                                                    <td>$stock</td>
                                                     <td>
-                                                        <button class=\"btn btn-primary btn-select-medicine bg-teal text-white py-1 px-2\">
+                                                        <button class=\"btn btn-primary btn-select-medicine bg-teal text-white py-1 px-0 text-center\" style=\"max-width: 92px; width: 92px;\" $btn_disableOnSoldOut>
                                                             Select
                                                         </button>
                                                     </td>
                                                     <td class=\"d-none\">false</td>
-                                                </tr>
-                                                ";
+                                                    <td class=\"d-none\">$id</td>
+                                                    <td class=\"d-none\">$remaining</td>
+                                                </tr>";
                                                 }
                                             } 
                                             ?>
@@ -392,7 +414,7 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
                                     </table>
                                 </div> 
                             </div>
-                            <div class="carousel-item">
+                            <div class="carousel-item carousel-page-2 ">
                                 <img src="temp/camera.png" class="d-block w-100" alt="Camera" />
                             </div> 
                         </div>
@@ -400,12 +422,15 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
                 </div>
 
                 <div class="modal-footer py-2">
-                    <button type="button" class="btn btn-secondary text-dark fw-bold" data-mdb-dismiss="modal">Close</button>
-                    <button class="btn btn-primary" type="button" data-mdb-target="#carouselExampleControls" data-mdb-slide="prev">
-                            Back
-                        </button>
-                    <button class="btn btn-primary bg-base" type="button" data-mdb-target="#carouselExampleControls" data-mdb-slide="next">
+                    <!-- <button type="button" class="btn btn-secondary text-dark fw-bold" data-mdb-dismiss="modal">Close</button> -->
+                    <button class="btn btn-primary btn-carsl-back display-none" type="button" data-mdb-target="#medicinePickerCarousel" data-mdb-slide="prev">
+                        BACK
+                    </button>
+                    <button class="btn btn-primary btn-carsl-next bg-base" type="button" data-mdb-target="#medicinePickerCarousel" data-mdb-slide="next">
                         NEXT
+                    </button>
+                    <button class="btn btn-primary btn-carsl-ok bg-base display-none" type="button" data-mdb-dismiss="modal">
+                        OK
                     </button>
                 </div>
             </div>
