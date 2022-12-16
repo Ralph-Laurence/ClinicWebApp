@@ -339,6 +339,22 @@ function filterMedicine(category)
         return;
     }
 
+    // show only selected medicines
+    if (category == "only-selected")
+    {
+        rows.each(function(i, row)
+        {
+            var flagCell = $(rows[i].cells[4]).text();
+
+            if (flagCell == "true")
+                $(rows[i]).show();
+            else
+                $(rows[i]).hide();
+        });
+
+        return;
+    }
+
     // show specific medicine by category
     rows.each(function(i, row)
     { 
@@ -348,20 +364,7 @@ function filterMedicine(category)
             $(rows[i]).hide();
         else
             $(rows[i]).show();
-    });
-  
-    // hide rows that do not match category
-    // for (let row of rows)
-    // {
-    //     var cell_category = row.cells[1];
-        
-    //     if (cell_category.innerText != category)
-    //         cell_category.hide();
-    //     // for (let cell of row.cells)
-    //     // {
-    //     //     alert(cell.innerText);
-    //     // }
-    // } 
+    }); 
 }
 
 function resetForm()

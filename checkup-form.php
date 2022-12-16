@@ -338,10 +338,11 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
                         <div class="carousel-inner">
                             <div class="carousel-item active">
 
-                                <div class="select-box mb-3">
+                                <div class="select-box mb-2">
                                     <select name="filter-medicine-category" id="filter-medicine-category">
                                         <option selected value="all">Show All</option>
-                                        <option disabled value="">Categories :</option>
+                                        <option value="only-selected">Only Selected</option>
+                                        <option disabled value="">CATEGORIES :</option>
                                         <?php
                                         if (!empty($medicineCategories)) {
                                             foreach ($medicineCategories as $c) {
@@ -350,13 +351,12 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
                                         }
                                         ?>
                                     </select>
-                                </div>
+                                </div> 
+                                <div class="w-100 border border-1 border-secondary mb-2 illness-selector-table-wrapper mb-2" style="height: 320px;">
 
-                                <div class="w-100 border border-1 border-secondary mb-2 illness-selector-table-wrapper">
-
-                                    <table class="table table-sm table-striped table-hover medicines-table">
-                                        <thead class="bg-base text-white">
-                                            <tr> 
+                                    <table class="table table-sm table-striped table-hover medicines-table position-relative">
+                                        <thead class="bg-base text-white position-sticky top-0">
+                                            <tr class=""> 
                                                 <th scope="col">Item Name</th>
                                                 <th class="d-nonex">Category</th>
                                                 <th scope="col">Stock</th> 
@@ -386,24 +386,11 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
                                                 </tr>
                                                 ";
                                                 }
-                                            }
-                                            /*
-                                                    <td>
-                                                        <div class=\"d-flex flex-row gap-2\">
-                                                            <button class=\"btn btn-danger bg-red text-white fw-bold py-1 px-2\">
-                                                                <i class=\"fas fa-minus\"></i>
-                                                            </button>
-                                                            <button class=\"btn btn-primary bg-teal text-white fw-bold py-1 px-2\">
-                                                                <i class=\"fas fa-plus\"></i>
-                                                            </button>
-                                                        </div>
-                                                    </td>
-                                            */
+                                            } 
                                             ?>
                                         </tbody>
                                     </table>
-                                </div>
-
+                                </div> 
                             </div>
                             <div class="carousel-item">
                                 <img src="temp/camera.png" class="d-block w-100" alt="Camera" />
