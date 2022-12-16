@@ -323,8 +323,8 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
 
     <!-- MEDICINES SELECTOR -->
     <div class="modal fade" id="medicineSelectorModal" tabindex="-1" aria-labelledby="medicineSelectorModalLabel" aria-hidden="true" data-mdb-backdrop="static">
-        <div class="modal-dialog modal-lg pt-3">
-            <div class="modal-content mt-5">
+        <div class="modal-dialog modal-lg pt-2">
+            <div class="modal-content">
                 <div class="modal-header bg-teal text-white py-0 ps-4 pe-0">
                     <h6 class="modal-title" id="medicineSelectorModalLabel">Select Medicine</h6>
                     <button type="button" class="btn shadow-0 fs-5 text-white" data-mdb-dismiss="modal">
@@ -334,74 +334,92 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
 
                 <div class="modal-body px-4">
 
-                    <div class="select-box mb-3">
-                        <select name="medicine-starts-with" id="medicine-starts-with">
-                            <option selected value="all">Show All</option>
-                            <option disabled value="">Begins With :</option>
-                            <?php
-                                if (!empty($medicineLeadingChars)) 
-                                {
-                                    foreach ($medicineLeadingChars as $lead) 
-                                    { 
-                                        echo "<option value='$lead'>$lead</option>";
-                                    }
-                                }
-                            ?>
-                        </select>
-                    </div>
+                    <div id="carouselExampleControls" class="carousel slide" data-mdb-ride="carousel"  data-mdb-interval="false">
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
 
-                    <div class="w-100 border border-1 border-secondary mb-2 illness-selector-table-wrapper">
+                                <div class="select-box mb-3">
+                                    <select name="filter-medicine-category" id="filter-medicine-category">
+                                        <option selected value="all">Show All</option>
+                                        <option disabled value="">Categories :</option>
+                                        <?php
+                                        if (!empty($medicineCategories)) {
+                                            foreach ($medicineCategories as $c) {
+                                                echo "<option value='$c'>$c</option>";
+                                            }
+                                        }
+                                        ?>
+                                    </select>
+                                </div>
 
-                        <table class="table table-sm table-striped table-hover">
-                            <thead class="bg-base text-white">
-                                <tr>
-                                    <th class="d-none">Item Id</th>
-                                    <th class="d-none">Category</th>
-                                    <th scope="col">Item Name</th>
-                                    <th scope="col">Stock</th>
-                                    <th scope="col">Qty Consume</th>
-                                    <th scope="col">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody class="medicine-selector-dataset">
-                                <?php
-                                if (!empty($medicineDataSet)) {
-                                    foreach ($medicineDataSet as $row) {
-                                        $id = $row['id'];
-                                        $item = $row['item_name'];
-                                        $category = $row['item_category'];
+                                <div class="w-100 border border-1 border-secondary mb-2 illness-selector-table-wrapper">
 
-                                        echo "
-                                    <tr class=\"align-middle\">
-                                        <td class=\"d-none\">$id</td>
-                                        <td class=\"d-none\">$category</td>
-                                        <td>$item</td> 
-                                        <td>Available</td>
-                                        <td>
-                                            <input type=\"text\" class=\"input-qty-consume\">
-                                        </td>
-                                        <td>
-                                            <div class=\"d-flex flex-row gap-2\">
-                                                <button class=\"btn btn-danger bg-red text-white fw-bold py-1 px-2\">
-                                                    <i class=\"fas fa-minus\"></i>
-                                                </button>
-                                                <button class=\"btn btn-primary bg-teal text-white fw-bold py-1 px-2\">
-                                                    <i class=\"fas fa-plus\"></i>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    ";
-                                    }
-                                }
-                                ?>
-                            </tbody>
-                        </table>
+                                    <table class="table table-sm table-striped table-hover medicines-table">
+                                        <thead class="bg-base text-white">
+                                            <tr> 
+                                                <th scope="col">Item Name</th>
+                                                <th class="d-nonex">Category</th>
+                                                <th scope="col">Stock</th> 
+                                                <th scope="col">Action</th>
+                                                <th class="d-none">IsSelected</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="medicine-selector-dataset">
+                                            <?php
+                                            if (!empty($medicineDataSet)) {
+                                                foreach ($medicineDataSet as $row) 
+                                                { 
+                                                    $item = $row['item_name'];
+                                                    $category = $row['category'];
+
+                                                    echo "
+                                                <tr class=\"align-middle\"> 
+                                                    <td>$item</td> 
+                                                    <td class=\"d-nonex\">$category</td>
+                                                    <td>Available</td>
+                                                    <td>
+                                                        <button class=\"btn btn-primary btn-select-medicine bg-teal text-white py-1 px-2\">
+                                                            Select
+                                                        </button>
+                                                    </td>
+                                                    <td class=\"d-none\">false</td>
+                                                </tr>
+                                                ";
+                                                }
+                                            }
+                                            /*
+                                                    <td>
+                                                        <div class=\"d-flex flex-row gap-2\">
+                                                            <button class=\"btn btn-danger bg-red text-white fw-bold py-1 px-2\">
+                                                                <i class=\"fas fa-minus\"></i>
+                                                            </button>
+                                                            <button class=\"btn btn-primary bg-teal text-white fw-bold py-1 px-2\">
+                                                                <i class=\"fas fa-plus\"></i>
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                            */
+                                            ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                            <div class="carousel-item">
+                                <img src="temp/camera.png" class="d-block w-100" alt="Camera" />
+                            </div> 
+                        </div>
                     </div>
                 </div>
 
                 <div class="modal-footer py-2">
                     <button type="button" class="btn btn-secondary text-dark fw-bold" data-mdb-dismiss="modal">Close</button>
+                    <button class="btn btn-primary" type="button" data-mdb-target="#carouselExampleControls" data-mdb-slide="prev">
+                            Back
+                        </button>
+                    <button class="btn btn-primary bg-base" type="button" data-mdb-target="#carouselExampleControls" data-mdb-slide="next">
+                        NEXT
+                    </button>
                 </div>
             </div>
         </div>

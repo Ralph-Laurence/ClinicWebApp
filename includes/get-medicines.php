@@ -19,32 +19,55 @@ $pdo = constant('pdo');
 // wraps basic sql functions like SELECT, INSERT etc..
 $db = new DbHelper($pdo);
 
-$table = TableNames::$items;
+$items_table = TableNames::$items;
   
 $medicineDataSet = null;
 
-$sth = $pdo->prepare("SELECT * FROM $table ORDER BY ? ASC"); // WHERE item_name LIKE ?
-//$sth->bindValue(1, "$filter%", PDO::PARAM_STR);
-$sth->bindValue(1, "item_name", PDO::PARAM_STR);
+$sql = "SELECT 
+i.item_name,
+c.name AS category,
+u.measurement,
+i.total_stock,
+i.remaining,
+i.critical_level
+FROM $items_table i 
+LEFT JOIN categories c ON c.id = i.item_category
+LEFT JOIN unit_measures u ON u.id = i.unit_measure
+ORDER BY i.item_name ASC";
+
+$sth = $pdo->prepare($sql); 
 $sth->execute();
 $medicineDataSet = $sth->fetchAll(PDO::FETCH_ASSOC);
  
+$medicineCategories = [];
+
+if (count($medicineDataSet) > 0)
+{
+    foreach($medicineDataSet as $row)
+    { 
+        $category = $row['category'];
+        
+        if (!in_array($category, $medicineCategories))
+            array_push($medicineCategories, $category);
+    }
+}
+
 // foreach medicine name, get all first letters ... 
 // we will use them later for dropdown filter
-$medicineLeadingChars = [];
-$leadingCharsDataSet = $db->get($pdo, $table, 'ASC', 'item_name'); 
+// $medicineLeadingChars = [];
+// $leadingCharsDataSet = $db->get($pdo, $table, 'ASC', 'item_name'); 
 
-if (count($leadingCharsDataSet) > 0)
-{
-    foreach($leadingCharsDataSet as $row)
-    {
-        $medicine = $row['item_name'];
-        $lead = substr($medicine, 0, 1);
+// if (count($leadingCharsDataSet) > 0)
+// {
+//     foreach($leadingCharsDataSet as $row)
+//     {
+//         $medicine = $row['item_name'];
+//         $lead = substr($medicine, 0, 1);
 
-        if (!(in_array($lead, $medicineLeadingChars)))
-            array_push($medicineLeadingChars, $lead);
-    } 
-}
+//         if (!(in_array($lead, $medicineLeadingChars)))
+//             array_push($medicineLeadingChars, $lead);
+//     } 
+// }
 
 // echo json_encode([
 //     "dataSet" => $medicineDataSet,

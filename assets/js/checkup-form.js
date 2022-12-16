@@ -62,17 +62,17 @@ function onAwake()
             change: function (event, ui) 
             {
                 // filter illness record by selected leading char
-                getIllnessDataSet($(this).val());
+                //getIllnessDataSet($(this).val());
             }
         });
 
-        $("#medicine-starts-with") 
+        $("#filter-medicine-category") 
         .selectmenu
         ({
             change: function (event, ui) 
             {
                 // filter illness record by selected leading char
-                getMedicineDataSet($(this).val());
+                filterMedicine($(this).val());
             }
         });
     });  
@@ -80,10 +80,10 @@ function onAwake()
     // load all illness record from table, then
     // - bind illness leading names into combobox
     // - bind illness record to <table>
-    getIllnessDataSet();
+    //getIllnessDataSet();
 
     // do the same thing for medicines
-    getMedicineDataSet();
+    //getMedicineDataSet();
 
     patientDropButton = $("#patient-dropdown-button");
     genderDropButton = $("#gender-dropdown-button");
@@ -163,6 +163,8 @@ function onBind()
     // focus on birthday picker after binding value
     fields.input_bday.on("change", () => fields.input_bday.focus().blur());
     fields.input_checkupDate.on("change", () => fields.input_checkupDate.focus().blur());
+
+    bindSelectMedicine();
 }
 //=============================================
 //-------------- BUSINESS LOGIC ---------------
@@ -262,127 +264,12 @@ function appendIllnessSelectOptions(bindingSource = undefined)
     }
 
     $("#illness-starts-with").selectmenu("refresh"); 
-}
-
-// load the records found in Illness table
-function getIllnessDataSet(filter = 'all')
-{  
-    // $.ajax(
-    // {
-    //     url: "ajax.get-illness.php",
-    //     type: 'POST',
-    //     dataType: 'json',
-    //     data: {
-    //         filter: filter
-    //     },
-    //     success: function(res)
-    //     {   
-    //         if (res)
-    //         { 
-    //             if (!res.leadingChars || !res.dataSet)
-    //                 return;
-                
-    //             appendIllnessSelectOptions(res.leadingChars); 
-                
-    //             $(".illness-selector-dataset").empty()
-
-    //             res.dataSet.forEach(i => 
-    //             {
-    //                 $(".illness-selector-dataset") 
-    //                 .append(`<tr class="align-middle">
-    //                              <td>${i.name}</td>
-    //                              <td>
-    //                                 <button class="btn btn-primary" onclick="selectIllness(${i.id}, '${i.name}')" data-mdb-dismiss="modal">
-    //                                 Select
-    //                                 </button>
-    //                              </td>
-    //                          </tr>`);
-    //             });
-                
-    //         }
-    //     },
-    //     error: function(jqXHR, exception)
-    //     {
-    //         dialog.danger("Failed to retrieve illness records because of an error.");
-    //     }
-    // });
-}
+} 
 
 function selectIllness(id, name)
 { 
     $(".input-illness").val(name);
     $(".input-illness-id").val(id);
-}
-
-function appendMedicineSelectOptions(bindingSource = undefined)
-{
-    var selected = $("#medicine-starts-with").val();
-    
-    $("#medicine-starts-with")
-    .empty()
-    .append(`<option selected value='all'>Show All</option>`)
-    .append(`<option disabled value=''>Begins With :</option>`);
-
-    if (bindingSource != undefined)
-    {
-        bindingSource.forEach(item => 
-        {
-            var attr = "";
-
-            if (item == selected)
-                attr = "selected";
-
-            $("#medicine-starts-with")
-            .append(`<option ${attr} value='${item}'>${item}</option>`);
-        });
-    }
-
-    $("#medicine-starts-with").selectmenu("refresh"); 
-}
-
-function getMedicineDataSet(filter = 'all')
-{
-    // $.ajax(
-    //     {
-    //         url: "ajax.get-medicines.php",
-    //         type: 'POST',
-    //         dataType: 'json',
-    //         data: {
-    //             filter: filter
-    //         },
-    //         success: function(res)
-    //         {   
-    //             if (res)
-    //             { 
-    //                 if (!res.leadingChars || !res.dataSet)
-    //                     return;
-                    
-    //                 appendMedicineSelectOptions(res.leadingChars); 
-                    
-    //                 var tableElem = $(".medicine-selector-dataset");
-    //                 tableElem.empty()
-    
-    //                 res.dataSet.forEach(i => 
-    //                 {
-    //                     tableElem
-    //                     .append(`<tr class="align-middle">
-    //                                  <td>${i.item_name}</td>
-    //                                  <td>Available</td>
-    //                                  <td>
-    //                                     <button class="btn btn-primary" onclick="selectMedicine(${i.id}, '${i.item_name}')" data-mdb-dismiss="modal">
-    //                                     Add
-    //                                     </button>
-    //                                  </td>
-    //                              </tr>`);
-    //                 });
-                    
-    //             }
-    //         },
-    //         error: function(jqXHR, exception)
-    //         {
-    //             dialog.danger("Failed to retrieve medicine records because of an error.");
-    //         }
-    //     });
 }
 
 function requestNewFormNumber()
@@ -402,6 +289,79 @@ function requestNewFormNumber()
             dialog.warn("Failed to request a new form number. Please reload the page.");
         }
     });
+}
+
+function bindSelectMedicine()
+{
+    $(".medicines-table").on("click", ".btn-select-medicine", function()
+    {
+        var currentRow = $(this).closest("tr");
+        var flagText = currentRow.find("td:eq(4)").text(); 
+ 
+        // get the flag text then check if true or false string
+        var flag = (flagText == "true");
+
+        // flip the flags .. if true then set to false vice-versa
+        flag = !flag;
+
+        // update the flag text in td
+        currentRow.find("td:eq(4)").text(flag); 
+        
+        // if flag is true, button appearance should be Red background with text as "Unselect";
+        // if flag is false, button appearance should be Teal background with text as "Select";
+        if (flag)
+        {
+            currentRow.find('.btn-select-medicine').text("Unselect").removeClass('bg-teal').addClass('bg-red');
+        }
+        else 
+        {
+            currentRow.find('.btn-select-medicine').text("Select").removeClass('bg-red').addClass('bg-teal');
+        }
+    });
+}
+
+function filterMedicine(category)
+{ 
+    var table = $(".medicines-table");
+    var rows = table.find("tbody tr");
+
+    // if there are no rows present, exit
+    if (rows.length == 0)
+        return;
+
+    // show all medicines
+    if (category == "all")
+    {
+        rows.each(function(i, row){
+            $(rows[i]).show();
+        });
+
+        return;
+    }
+
+    // show specific medicine by category
+    rows.each(function(i, row)
+    { 
+        var categoryCell = $(rows[i].cells[1]).text();
+
+        if (categoryCell != category)
+            $(rows[i]).hide();
+        else
+            $(rows[i]).show();
+    });
+  
+    // hide rows that do not match category
+    // for (let row of rows)
+    // {
+    //     var cell_category = row.cells[1];
+        
+    //     if (cell_category.innerText != category)
+    //         cell_category.hide();
+    //     // for (let cell of row.cells)
+    //     // {
+    //     //     alert(cell.innerText);
+    //     // }
+    // } 
 }
 
 function resetForm()
