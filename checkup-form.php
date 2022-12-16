@@ -320,7 +320,7 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
 
     <!-- MEDICINES SELECTOR -->
     <div class="modal fade" id="medicineSelectorModal" tabindex="-1" aria-labelledby="medicineSelectorModalLabel" aria-hidden="true" data-mdb-backdrop="static">
-        <div class="modal-dialog modal-lg pt-2">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header bg-teal text-white py-0 ps-4 pe-0">
                     <h6 class="modal-title" id="medicineSelectorModalLabel">Select Medicine</h6>
@@ -359,10 +359,10 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
                                         <div class="badge badge-danger"><?php echo $soldOutItemsCount; ?></div>
                                     </div>
                                 </div>
-                                <div class="w-100 border border-1 border-secondary mb-2 illness-selector-table-wrapper mb-2" style="height: 320px;">
+                                <div class="w-100 border border-1 border-secondary mb-2 illness-selector-table-wrapper mb-2">
 
                                     <table class="table table-sm table-striped table-hover medicines-table position-relative">
-                                        <thead class="bg-base text-white position-sticky top-0">
+                                        <thead class="bg-base text-white position-sticky top-0 z-10">
                                             <tr class="">
                                                 <th scope="col">Item Name</th>
                                                 <th scope="col">Category</th>
@@ -428,44 +428,24 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
                                         Picked the wrong medicine? Go back then click "Unselect" from the list of medicines.
                                     </small>
                                 </div>
-                                <div class="w-100 border border-1 border-secondary mb-2" style="height: 320px;">
+                                <div class="w-100 border border-1 border-secondary mb-2 selected-medicines-table-wrapper">
 
                                     <table class="table table-sm table-striped table-hover selected-medicines-table position-relative">
-                                        <thead class="bg-base text-white position-sticky top-0">
+                                        <thead class="bg-base text-white position-sticky top-0 z-10">
                                             <tr>
                                                 <th scope="col">Item Name</th>
                                                 <th scope="col">Category</th>
                                                 <th scope="col">Total Stock</th>
-                                                <th scope="col">Amount</th>
+                                                <th scope="col" class="amount-header">Amount</th>
                                                 <th class="d-none">ItemId</th>
                                                 <th class="d-none">Remaining</th>
-
                                             </tr>
                                         </thead>
                                         <tbody class="selected-medicine-dataset">
-                                            <!-- <tr class="align-middle">
-                                                <td>item</td>
-                                                <td>catg</td>
-                                                <td>10pic</td>
-                                                <td class="w-25">
-                                                    <div class="d-flex flex-row gap-2">
-                                                        <button class="btn btn-danger btn-decrease-amount bg-red text-white px-3">
-                                                            <i class="fas fa-minus"></i>
-                                                        </button>
-                                                        <div class="form-outline">
-                                                            <input type="text" class="form-control input-medicine-amount text-center" value="1"/>
-                                                        </div>
-                                                        <button class="btn btn-primary btn-increase-amount bg-teal text-white px-3">
-                                                            <i class="fas fa-plus"></i>
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                                <td class="d-none">id</td>
-                                                <td class="d-none">8pic</td>
-                                            </tr> -->
+                                             
                                         </tbody>
                                     </table>
-                                </div>
+                                </div>  
                             </div>
                         </div>
                     </div>
@@ -476,7 +456,7 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
                     <button class="btn btn-primary btn-carsl-back display-none" type="button" data-mdb-target="#medicinePickerCarousel" data-mdb-slide="prev">
                         BACK
                     </button>
-                    <button class="btn btn-primary btn-carsl-next bg-base" type="button" data-mdb-target="#medicinePickerCarousel" data-mdb-slide="next">
+                    <button class="btn btn-primary btn-carsl-next bg-base" type="button" data-mdb-target="#medicinePickerCarousel" data-mdb-slide="next" disabled>
                         NEXT
                     </button>
                     <button class="btn btn-primary btn-carsl-ok bg-base display-none" type="button" data-mdb-dismiss="modal">

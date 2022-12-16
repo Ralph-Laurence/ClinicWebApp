@@ -53,6 +53,21 @@ class Input
                 this.value = newValue;
         });
     } 
+
+    /**
+    * Force newly appended textbox to only accept numbers
+    * @param {string} inputClass - The input field's classname. Requires type=text
+    */
+    static forceNumericOnAppend(inputClass) 
+    {
+        $(document).on("input", "." + inputClass, function (e) 
+        {
+            var newValue = this.value.replace(/[^0-9]/g, '').replace(/(\..*)\./g, '$1');
+
+            if (this.value != newValue)
+                this.value = newValue;
+        });
+    }
 }
 
 class System

@@ -57,8 +57,20 @@
     font-weight: bold;
 }
 
-.illness-selector-table-wrapper
+.illness-selector-table-wrapper,
+.selected-medicines-table-wrapper
 {
-    height: 240px; 
+    height: 320px; 
     overflow-y: auto;
+}
+
+.selected-medicines-table .amount-header
+{
+    min-width: 200px; 
+    width: 200px;
+}
+
+.z-10
+{
+    z-index: 10;
 }

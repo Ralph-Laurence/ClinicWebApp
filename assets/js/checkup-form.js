@@ -106,9 +106,9 @@ function onAwake()
     Input.forceNumeric(System.getClass(fields.input_diastolicBp));
     Input.forceNumeric(System.getClass(fields.input_contact));
     Input.forceDecimals(System.getClass(fields.input_weight));
-
-    Input.forceNumeric("input-qty-consume");
-
+ 
+    Input.forceNumericOnAppend("input-medicine-amount");
+ 
     dialog = new AlertDialog();
     snackbar = new SnackBar();
 
@@ -168,7 +168,11 @@ function onBind()
     fields.input_bday.on("change", () => fields.input_bday.focus().blur());
     fields.input_checkupDate.on("change", () => fields.input_checkupDate.focus().blur());
 
+    // control the select button on medicine selector modal
     bindSelectMedicine();
+
+    // control the plus and minus buttons on medicine selector modal
+    bindPlusMinusOnSelectMedicine();
     
     // fire events after carousel has finished sliding
     medicinePickerCarousel.on("slid.mdb.carousel", () => 
@@ -196,15 +200,21 @@ function onBind()
         }
     });
 
-    //medicinePickerCarousel_NextBtn.click(() => enqueueSelectedMedicines());
-
     // grab a copy of medicine picker modal's table
     $(".medicines-table").data('medicines-table-old-state', $(".medicines-table").html());
 
     btn_clearPrescriptions.click(() => 
     {
         $(".medicines-table").html($(".medicines-table").data('medicines-table-old-state'));
-    })
+    });
+
+    // force medicine selector input fields to set value as 1 when 
+    // the user entered 0 or empty
+    $(document).on("blur", ".input-medicine-amount", function()
+    {
+        if ($(this).val() == '' || $(this).val() < 1)
+            $(this).val(1);
+    });
 }
 //=============================================
 //-------------- BUSINESS LOGIC ---------------
@@ -335,6 +345,17 @@ function requestNewFormNumber()
 //--------- MEDICINE PICKER CAROUSEL ----------
 //=============================================
 
+function unlockNextButton()
+{
+    var table = $(".selected-medicines-table");
+    var rowLength = table.find("tbody tr").length;
+
+    var noneSelected = (rowLength < 1);
+
+    // enable the next button ONLY WHEN there are medicines selected
+    medicinePickerCarousel_NextBtn.prop('disabled', noneSelected);
+}
+
 function bindSelectMedicine()
 {
     $(".medicines-table").on("click", ".btn-select-medicine", function()
@@ -372,6 +393,46 @@ function bindSelectMedicine()
             var itemId = currentRow.find("td:eq(5)").text(); 
             dequeueSelectedMedicine(itemId)
         }
+    });
+}
+
+function bindPlusMinusOnSelectMedicine()
+{ 
+    $(".selected-medicines-table")
+    
+    // the green plus button
+    .on("click", ".btn-increase-amount", function()
+    {
+        var currentRow = $(this).closest("tr");
+        var amountText = currentRow.find(".input-medicine-amount").val(); 
+        var remainingText = currentRow.find("td:eq(5)").text(); 
+        var amount = parseInt(amountText) || 0;
+        var remaining = parseInt(remainingText) || 0;
+
+        if (remaining == 0)
+            return;
+
+        // increase the amount but it should not go higher than remaining
+        if (amount < remaining)
+        {
+            amount++;
+            currentRow.find(".input-medicine-amount").val(amount);
+        } 
+    })
+    
+    // the red minus button
+    .on("click", ".btn-decrease-amount", function()
+    {
+        var currentRow = $(this).closest("tr");
+        var amountText = currentRow.find(".input-medicine-amount").val();  
+        var amount = parseInt(amountText) || 0;
+
+        // decrease the amount but it should not go lower than 1
+        if (amount > 1)
+        {
+            amount--;
+            currentRow.find(".input-medicine-amount").val(amount);
+        } 
     });
 }
 
@@ -449,7 +510,7 @@ function enqueueSelectedMedicines(itemId, itemName, itemCategory, remaining, mea
     
     // append the newly selected medicine
     tbody.append(`<tr class="align-middle">
-        <td>${itemName}</td>
+        <td class=\"fw-bold\">${itemName}</td>
         <td>${itemCategory}</td>
         <td>${remaining} ${measurement}(s)</td>
         <td class="w-25">
@@ -458,7 +519,7 @@ function enqueueSelectedMedicines(itemId, itemName, itemCategory, remaining, mea
                     <i class="fas fa-minus"></i>
                 </button>
                 <div class="form-outline">
-                    <input type="text" class="form-control input-medicine-amount text-center" value="1"/>
+                    <input type="text" class="form-control input-medicine-amount text-center" value="1" oninput=\"trackAmountInput(${remaining}, this.value, this)\" />
                 </div>
                 <button class="btn btn-primary btn-increase-amount bg-teal text-white px-3">
                     <i class="fas fa-plus"></i>
@@ -468,13 +529,15 @@ function enqueueSelectedMedicines(itemId, itemName, itemCategory, remaining, mea
         <td class="d-none">${itemId}</td>
         <td class="d-none">${remaining}</td>
     </tr>`);
+
+    unlockNextButton();
+ 
 }
  
 function dequeueSelectedMedicine(itemId)
 {
     var table = $(".selected-medicines-table");
-    var rows = table.find("tbody tr");
-    var tbody = $(".selected-medicine-dataset");
+    var rows = table.find("tbody tr"); 
 
     var rowExists = false;
     var rowIndex = -1;
@@ -499,8 +562,20 @@ function dequeueSelectedMedicine(itemId)
         return;
 
     table.find("tbody tr:eq(" + rowIndex + ")").remove();
+
+    unlockNextButton();
 }
 
+function trackAmountInput(totalRemaining, amount, element)
+{
+    if (amount != '' && amount < 1)
+    $(element).val(1);
+
+    // amount entered should not go higher than remaining
+    if (amount > totalRemaining)
+        $(element).val(totalRemaining);
+    // alert(amount);
+}
 
 function resetForm()
 {  
