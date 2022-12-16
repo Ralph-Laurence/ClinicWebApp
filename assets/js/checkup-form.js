@@ -196,7 +196,7 @@ function onBind()
         }
     });
 
-    medicinePickerCarousel_NextBtn.click(() => getSelectedMedicinesOnNext());
+    //medicinePickerCarousel_NextBtn.click(() => enqueueSelectedMedicines());
 
     // grab a copy of medicine picker modal's table
     $(".medicines-table").data('medicines-table-old-state', $(".medicines-table").html());
@@ -356,10 +356,21 @@ function bindSelectMedicine()
         if (flag)
         {
             currentRow.find('.btn-select-medicine').text("Unselect").removeClass('bg-teal').addClass('bg-red');
+            
+            var itemId = currentRow.find("td:eq(5)").text();  
+            var itemName = currentRow.find("td:eq(0)").text();  
+            var itemCategory = currentRow.find("td:eq(1)").text();  
+            var remaining = currentRow.find("td:eq(6)").text();  
+            var measurement = currentRow.find("td:eq(7)").text();  
+
+            enqueueSelectedMedicines(itemId, itemName, itemCategory, remaining, measurement);
         }
         else 
         {
             currentRow.find('.btn-select-medicine').text("Select").removeClass('bg-red').addClass('bg-teal');
+
+            var itemId = currentRow.find("td:eq(5)").text(); 
+            dequeueSelectedMedicine(itemId)
         }
     });
 }
@@ -411,30 +422,85 @@ function filterMedicine(category)
     }); 
 }
 
-function getSelectedMedicinesOnNext()
-{
-    var table = $(".medicines-table");
+function enqueueSelectedMedicines(itemId, itemName, itemCategory, remaining, measurement)
+{ 
+    var table = $(".selected-medicines-table");
     var rows = table.find("tbody tr");
+    var tbody = $(".selected-medicine-dataset");
 
-    // if there are no rows present, exit
-    if (rows.length == 0)
-        return;
+    var rowExists = false;
 
+    // check the table's rows when the medicine item already exists
+    // then do not add this row. We can do the checking by comparing the
+    // item ids
     rows.each(function (i, row) 
     {
-        var flagCell = $(rows[i].cells[4]).text();
-        var itemNameCell = $(rows[i].cells[0]).text();
-        var itemIdCell = $(rows[i].cells[5]).text();
-        var remainingCell = $(rows[i].cells[6]).text();
+        var itemIdCell = $(rows[i].cells[4]).text();
 
-        // for every selected row, find its 
-        // Item ID, Remaining qty
-        if (flagCell == "true")
+        if (itemIdCell == itemId)
         {
-            alert(`${itemIdCell} => ${itemNameCell} => ${flagCell} => ${remainingCell}`);
-        }  
+            rowExists = true;
+            return false;
+        }
     });
+
+    if (rowExists)
+        return;
+    
+    // append the newly selected medicine
+    tbody.append(`<tr class="align-middle">
+        <td>${itemName}</td>
+        <td>${itemCategory}</td>
+        <td>${remaining} ${measurement}(s)</td>
+        <td class="w-25">
+            <div class="d-flex flex-row gap-2">
+                <button class="btn btn-danger btn-decrease-amount bg-red text-white px-3">
+                    <i class="fas fa-minus"></i>
+                </button>
+                <div class="form-outline">
+                    <input type="text" class="form-control input-medicine-amount text-center" value="1"/>
+                </div>
+                <button class="btn btn-primary btn-increase-amount bg-teal text-white px-3">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+        </td>
+        <td class="d-none">${itemId}</td>
+        <td class="d-none">${remaining}</td>
+    </tr>`);
 }
+ 
+function dequeueSelectedMedicine(itemId)
+{
+    var table = $(".selected-medicines-table");
+    var rows = table.find("tbody tr");
+    var tbody = $(".selected-medicine-dataset");
+
+    var rowExists = false;
+    var rowIndex = -1;
+
+    // check the table's rows when the medicine item exists
+    // then remove this row. We can do the checking by comparing the
+    // item ids. We will remove the row by its 0-based RowIndex
+    rows.each(function (i, row) 
+    {
+        var itemIdCell = $(rows[i].cells[4]).text();
+
+        if (itemIdCell == itemId)
+        {
+            rowExists = true;
+            rowIndex = i;
+            
+            return false;
+        }
+    });
+
+    if (!rowExists || rowIndex < 0)
+        return;
+
+    table.find("tbody tr:eq(" + rowIndex + ")").remove();
+}
+
 
 function resetForm()
 {  

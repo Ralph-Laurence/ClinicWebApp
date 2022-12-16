@@ -211,20 +211,20 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
                                                     <tr>
                                                         <th class="fw-bold" scope="col">Product Name</th>
                                                         <th class="fw-bold" scope="col">Category</th>
-                                                        <th class="fw-bold" scope="col">Qty</th> 
+                                                        <th class="fw-bold" scope="col">Qty</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <tr>
+                                                    <!-- <tr>
                                                         <td scope="row">Biogesic</td>
                                                         <td>Paracetamol</td>
-                                                        <td>1</td> 
+                                                        <td>1</td>
                                                     </tr>
                                                     <tr>
                                                         <td scope="row">Neozep</td>
                                                         <td>Paracetamol</td>
-                                                        <td>2</td> 
-                                                    </tr>
+                                                        <td>2</td>
+                                                    </tr> -->
                                                 </tbody>
                                             </table>
                                         </div>
@@ -331,9 +331,13 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
 
                 <div class="modal-body px-4">
 
-                    <div id="medicinePickerCarousel" class="carousel slide" data-mdb-ride="carousel"  data-mdb-interval="false">
+                    <div id="medicinePickerCarousel" class="carousel slide" data-mdb-ride="carousel" data-mdb-interval="false">
                         <div class="carousel-inner">
-                            <div class="carousel-item carousel-page-1  active">
+
+                            <!-- 
+                                PAGE 1 CONTAINS THE TABLE FOR SELECTING THE MEDICINES 
+                            -->
+                            <div class="carousel-item carousel-page-1 active">
 
                                 <div class="select-box mb-2 d-flex flex-row align-items-center">
                                     <select name="filter-medicine-category" id="filter-medicine-category">
@@ -341,10 +345,8 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
                                         <option value="only-selected">Only Selected</option>
                                         <option disabled value="">CATEGORIES :</option>
                                         <?php
-                                        if (!empty($medicineCategories)) 
-                                        {
-                                            foreach ($medicineCategories as $c) 
-                                            {
+                                        if (!empty($medicineCategories)) {
+                                            foreach ($medicineCategories as $c) {
                                                 echo "<option value='$c'>$c</option>";
                                             }
                                         }
@@ -356,47 +358,46 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
                                         <div class="badge badge-secondary">Sold Out: </div>
                                         <div class="badge badge-danger"><?php echo $soldOutItemsCount; ?></div>
                                     </div>
-                                </div> 
+                                </div>
                                 <div class="w-100 border border-1 border-secondary mb-2 illness-selector-table-wrapper mb-2" style="height: 320px;">
 
                                     <table class="table table-sm table-striped table-hover medicines-table position-relative">
                                         <thead class="bg-base text-white position-sticky top-0">
-                                            <tr class=""> 
+                                            <tr class="">
                                                 <th scope="col">Item Name</th>
-                                                <th class="d-nonex">Category</th>
-                                                <th scope="col">Stock</th> 
+                                                <th scope="col">Category</th>
+                                                <th scope="col">Stock</th>
                                                 <th scope="col">Action</th>
                                                 <th class="d-none">IsSelected</th>
                                                 <th class="d-none">ItemId</th>
                                                 <th class="d-none">Remaining</th>
+                                                <th class="d-none">Measurement</th>
                                             </tr>
                                         </thead>
                                         <tbody class="medicine-selector-dataset">
                                             <?php
-                                            if (!empty($medicineDataSet)) 
-                                            {
-                                                foreach ($medicineDataSet as $row) 
-                                                { 
+                                            if (!empty($medicineDataSet)) {
+                                                foreach ($medicineDataSet as $row) {
                                                     $id = $row['item_id'];
                                                     $item = $row['item_name'];
                                                     $category = $row['category'];
-                                                    
+                                                    $measurement = $row['measurement'];
                                                     $remaining = $row['remaining'];
                                                     $criticalLevel = $row['critical_level'];
-                                                    
+
                                                     $stock = "<span class=\"badge badge-success\">Available</span>";
                                                     $btn_disableOnSoldOut = ($remaining == 0) ? "disabled" : "";
 
                                                     if ($remaining <= $criticalLevel)
                                                         $stock = "<span class=\"badge badge-warning\">Low on stock</span>";
-                                                    
+
                                                     if ($remaining == 0)
                                                         $stock = "<span class=\"badge badge-danger\">Sold out</span>";
 
                                                     echo "
                                                 <tr class=\"align-middle\"> 
                                                     <td>$item</td> 
-                                                    <td class=\"d-nonex\">$category</td>
+                                                    <td>$category</td>
                                                     <td>$stock</td>
                                                     <td>
                                                         <button class=\"btn btn-primary btn-select-medicine bg-teal text-white py-1 px-0 text-center\" style=\"max-width: 92px; width: 92px;\" $btn_disableOnSoldOut>
@@ -406,17 +407,66 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
                                                     <td class=\"d-none\">false</td>
                                                     <td class=\"d-none\">$id</td>
                                                     <td class=\"d-none\">$remaining</td>
+                                                    <td class=\"d-none\">$measurement</td>
                                                 </tr>";
                                                 }
-                                            } 
+                                            }
                                             ?>
                                         </tbody>
                                     </table>
-                                </div> 
+                                </div>
                             </div>
+
+                            <!-- 
+                                PAGE 2 CONTAINS THE CONTROLS FOR CONTROLLING THE PULL OUT AMOUNT
+                            -->
                             <div class="carousel-item carousel-page-2 ">
-                                <img src="temp/camera.png" class="d-block w-100" alt="Camera" />
-                            </div> 
+                                <div class="mb-2 d-flex flex-column">
+                                    <span class="h6 fw-bold">Enter the amount for each medicine to take.</span>
+                                    <small class="fst-italic text-primary">
+                                        <i class="fas fa-info-circle"></i>
+                                        Picked the wrong medicine? Go back then click "Unselect" from the list of medicines.
+                                    </small>
+                                </div>
+                                <div class="w-100 border border-1 border-secondary mb-2" style="height: 320px;">
+
+                                    <table class="table table-sm table-striped table-hover selected-medicines-table position-relative">
+                                        <thead class="bg-base text-white position-sticky top-0">
+                                            <tr>
+                                                <th scope="col">Item Name</th>
+                                                <th scope="col">Category</th>
+                                                <th scope="col">Total Stock</th>
+                                                <th scope="col">Amount</th>
+                                                <th class="d-none">ItemId</th>
+                                                <th class="d-none">Remaining</th>
+
+                                            </tr>
+                                        </thead>
+                                        <tbody class="selected-medicine-dataset">
+                                            <!-- <tr class="align-middle">
+                                                <td>item</td>
+                                                <td>catg</td>
+                                                <td>10pic</td>
+                                                <td class="w-25">
+                                                    <div class="d-flex flex-row gap-2">
+                                                        <button class="btn btn-danger btn-decrease-amount bg-red text-white px-3">
+                                                            <i class="fas fa-minus"></i>
+                                                        </button>
+                                                        <div class="form-outline">
+                                                            <input type="text" class="form-control input-medicine-amount text-center" value="1"/>
+                                                        </div>
+                                                        <button class="btn btn-primary btn-increase-amount bg-teal text-white px-3">
+                                                            <i class="fas fa-plus"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                                <td class="d-none">id</td>
+                                                <td class="d-none">8pic</td>
+                                            </tr> -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
