@@ -16,9 +16,17 @@ var dialog = undefined;
 var snackbar = undefined;
 
 var medicinePickerCarousel = undefined;
-var medicinePickerCarousel_BackBtn = undefined;
-var medicinePickerCarousel_NextBtn = undefined;
-var medicinePickerCarousel_OkBtn = undefined;
+
+var medicinePickerCarousel_mdb = undefined;
+
+var selectedMedicinesTable = undefined;
+
+var clonable_medicineSelectorWrapper = undefined;
+var clonable_selectedMedicinesWrapper = undefined;
+var clonable_medicineSelectorFooter = undefined;
+
+var carouselPage1 = undefined;
+var carouselPage2 = undefined;
  
 //=============================================
 //------------- PRE INITIALIZATION ------------
@@ -83,10 +91,14 @@ function onAwake()
         });
     });  
   
-    medicinePickerCarousel = $("#medicinePickerCarousel");
-    medicinePickerCarousel_BackBtn = $(".btn-carsl-back");
-    medicinePickerCarousel_NextBtn = $(".btn-carsl-next");
-    medicinePickerCarousel_OkBtn = $(".btn-carsl-ok");
+    //medicinePickerCarousel = $("#medicinePickerCarousel");
+
+    medicinePickerCarousel_mdb = new mdb.Carousel($("#medicinePickerCarousel"));
+
+    selectedMedicinesTable = $(".selected-medicines-table");
+
+    carouselPage1 = $(".carousel-page-1");
+    carouselPage2 = $(".carousel-page-2");
 
     patientDropButton = $("#patient-dropdown-button");
     genderDropButton = $("#gender-dropdown-button");
@@ -174,39 +186,15 @@ function onBind()
     // control the plus and minus buttons on medicine selector modal
     bindPlusMinusOnSelectMedicine();
     
-    // fire events after carousel has finished sliding
-    medicinePickerCarousel.on("slid.mdb.carousel", () => 
-    {
-        // reference to each carousel pages
-        var carousel_page1 = $(".carousel-page-1");
-        var carousel_page2 = $(".carousel-page-2");
+    // fire this event after the carousel slid event
+    bindCarouselSlid();
 
-        // track each carousel page's visibility by checking if class 'active' is present
-        // if page 2 is active, enable the back button and hide the next button. 
-        // then show the OK button
-        if (carousel_page2.hasClass("active"))
-        {
-            medicinePickerCarousel_NextBtn.hide();
-            medicinePickerCarousel_BackBtn.show();
-            medicinePickerCarousel_OkBtn.show();
-        }
-        // if page 1 is active, enable the next button and hide the back button. 
-        // also hide the OK button.
-        if (carousel_page1.hasClass("active"))
-        {
-            medicinePickerCarousel_BackBtn.hide();
-            medicinePickerCarousel_NextBtn.show();
-            medicinePickerCarousel_OkBtn.hide();
-        }
-    });
+    // create a copy of medicine picker modal's tables original state  
+    clonable_medicineSelectorWrapper = $(".medicine-selector-table-wrapper").clone(true, true);
+    clonable_selectedMedicinesWrapper = $(".selected-medicines-table-wrapper").clone(true, true);
+    clonable_medicineSelectorFooter = $(".medicine-picker-footer").clone(true, true);
 
-    // grab a copy of medicine picker modal's table
-    $(".medicines-table").data('medicines-table-old-state', $(".medicines-table").html());
-
-    btn_clearPrescriptions.click(() => 
-    {
-        $(".medicines-table").html($(".medicines-table").data('medicines-table-old-state'));
-    });
+    btn_clearPrescriptions.click(() => clearPrescriptions());
 
     // force medicine selector input fields to set value as 1 when 
     // the user entered 0 or empty
@@ -215,6 +203,9 @@ function onBind()
         if ($(this).val() == '' || $(this).val() < 1)
             $(this).val(1);
     });
+
+    // copy the selected medicines from the modal into the prescription table
+    $(document).on("click", ".btn-carsl-ok", () => createPrescription());
 }
 //=============================================
 //-------------- BUSINESS LOGIC ---------------
@@ -346,19 +337,17 @@ function requestNewFormNumber()
 //=============================================
 
 function unlockNextButton()
-{
-    var table = $(".selected-medicines-table");
-    var rowLength = table.find("tbody tr").length;
-
+{  
+    var rowLength = $(document.querySelector(".selected-medicines-table")).find("tbody tr").length;
+    var nextBtn = $(document.querySelector(".btn-carsl-next"));
     var noneSelected = (rowLength < 1);
-
     // enable the next button ONLY WHEN there are medicines selected
-    medicinePickerCarousel_NextBtn.prop('disabled', noneSelected);
+    nextBtn.prop('disabled', noneSelected);
 }
 
 function bindSelectMedicine()
 {
-    $(".medicines-table").on("click", ".btn-select-medicine", function()
+    $(document).on("click", ".medicines-table .btn-select-medicine", function()
     {
         var currentRow = $(this).closest("tr");
         var flagText = currentRow.find("td:eq(4)").text(); 
@@ -398,10 +387,10 @@ function bindSelectMedicine()
 
 function bindPlusMinusOnSelectMedicine()
 { 
-    $(".selected-medicines-table")
+    $(document)
     
     // the green plus button
-    .on("click", ".btn-increase-amount", function()
+    .on("click", ".selected-medicines-table .btn-increase-amount", function()
     {
         var currentRow = $(this).closest("tr");
         var amountText = currentRow.find(".input-medicine-amount").val(); 
@@ -417,11 +406,14 @@ function bindPlusMinusOnSelectMedicine()
         {
             amount++;
             currentRow.find(".input-medicine-amount").val(amount);
+
+            // update hidden amount cell
+            currentRow.find("td:eq(6)").text(amount);
         } 
     })
     
     // the red minus button
-    .on("click", ".btn-decrease-amount", function()
+    .on("click", ".selected-medicines-table .btn-decrease-amount", function()
     {
         var currentRow = $(this).closest("tr");
         var amountText = currentRow.find(".input-medicine-amount").val();  
@@ -432,7 +424,42 @@ function bindPlusMinusOnSelectMedicine()
         {
             amount--;
             currentRow.find(".input-medicine-amount").val(amount);
+
+            // update hidden amount cell
+            currentRow.find("td:eq(6)").text(amount);
         } 
+    });
+}
+
+function bindCarouselSlid()
+{
+    // fire events after carousel has finished sliding
+    //medicinePickerCarousel.on("slid.mdb.carousel", () => 
+    $(document).on("slid.mdb.carousel", "#medicinePickerCarousel", () => 
+    {
+        var nextBtn = $(document.querySelector(".btn-carsl-next"));
+        var backBtn = $(document.querySelector(".btn-carsl-back")); 
+        var okBtn = $(document.querySelector(".btn-carsl-ok")); 
+
+        // track each carousel page's visibility by checking if class 'active' is present
+        // if page 2 is active, enable the back button and hide the next button. 
+        // then show the OK button
+        //if (carousel_page2.hasClass("active"))
+        if (carouselPage2.hasClass("active"))
+        {
+            nextBtn.hide();
+            backBtn.show();
+            okBtn.show();
+        }
+        // if page 1 is active, enable the next button and hide the back button. 
+        // also hide the OK button.
+        //if (carousel_page1.hasClass("active"))
+        if (carouselPage1.hasClass("active"))
+        {
+            backBtn.hide();
+            nextBtn.show();
+            okBtn.hide();
+        }
     });
 }
 
@@ -528,8 +555,11 @@ function enqueueSelectedMedicines(itemId, itemName, itemCategory, remaining, mea
         </td>
         <td class="d-none">${itemId}</td>
         <td class="d-none">${remaining}</td>
+        <td class="d-none">1</td>
+        <td class="d-none">${measurement}</td>
     </tr>`);
 
+    //alert("line reached!");
     unlockNextButton();
  
 }
@@ -585,6 +615,59 @@ function resetForm()
 
     patientDropButton.text("Patient Type");
     fields.input_patientType.val(''); 
+
+    clearPrescriptions();
+}
+
+function createPrescription()
+{
+    var table = $(document.querySelector(".selected-medicines-table"));
+    var rows = table.find("tbody tr");
+    var tbody = $(".prescription-dataset");
+     
+    if (rows.length < 1)
+        return;
+
+    tbody.empty();
+
+    rows.each(function(i, row)
+    {
+        var idCell = $(rows[i].cells[4]).text();
+        var itemCell = $(rows[i].cells[0]).text();
+        var categoryCell = $(rows[i].cells[1]).text();
+        var amountCell = $(rows[i].cells[6]).text();
+        var unitsCell = $(rows[i].cells[7]).text(); 
+        
+        tbody.append(`<tr class=\"align-middle\">
+            <td class=\"d-none\">${idCell}</td>
+            <td>${itemCell}</td>
+            <td>${categoryCell}</td>
+            <td>${amountCell} ${unitsCell}(s)</td>
+            <td class=\"d-none\">${amountCell}</td>
+        </tr>`);
+        
+    });
+}
+
+function clearPrescriptions()
+{
+    // reset table wrappers to original state
+    var medicinesWrapper = document.querySelector(".medicine-selector-table-wrapper");
+    var selectedWrapper = document.querySelector(".selected-medicines-table-wrapper");
+    var footer = document.querySelector(".medicine-picker-footer");
+    var prescriptionTable = $(".prescription-dataset");
+
+    $(medicinesWrapper).replaceWith(clonable_medicineSelectorWrapper.clone(true, true));
+    $(selectedWrapper).replaceWith(clonable_selectedMedicinesWrapper.clone(true, true));
+    $(footer).replaceWith(clonable_medicineSelectorFooter.clone(true, true));
+
+    prescriptionTable.empty();
+
+    $("#filter-medicine-category").val('all').selectmenu('refresh');
+
+    // reset carousel to slide1
+    carouselPage1.addClass("active");
+    carouselPage2.removeClass("active");
 }
 
 // only execute this entire script after the page has fully loaded

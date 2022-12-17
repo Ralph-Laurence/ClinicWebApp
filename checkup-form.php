@@ -206,25 +206,18 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
 
                                         <div class="w-100 border border-1 border-secondary mb-2" style="height: 240px; overflow-y: auto;">
 
-                                            <table class="table table-sm table-hover">
-                                                <thead class="bg-amber text-dark">
+                                            <table class="table table-sm table-hover prescription-table position-relative">
+                                                <thead class="bg-amber text-dark position-sticky top-0">
                                                     <tr>
-                                                        <th class="fw-bold" scope="col">Product Name</th>
+                                                        <th class="d-none" scope="col">Id</th>
+                                                        <th class="fw-bold" scope="col">Medicine</th>
                                                         <th class="fw-bold" scope="col">Category</th>
                                                         <th class="fw-bold" scope="col">Qty</th>
+                                                        <th class="d-none" scope="col">Amount</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody>
-                                                    <!-- <tr>
-                                                        <td scope="row">Biogesic</td>
-                                                        <td>Paracetamol</td>
-                                                        <td>1</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td scope="row">Neozep</td>
-                                                        <td>Paracetamol</td>
-                                                        <td>2</td>
-                                                    </tr> -->
+                                                <tbody class="prescription-dataset">
+                                                     
                                                 </tbody>
                                             </table>
                                         </div>
@@ -320,9 +313,9 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
 
     <!-- MEDICINES SELECTOR -->
     <div class="modal fade" id="medicineSelectorModal" tabindex="-1" aria-labelledby="medicineSelectorModalLabel" aria-hidden="true" data-mdb-backdrop="static">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header bg-teal text-white py-0 ps-4 pe-0">
+        <div class="modal-dialog modal-lg pt-3">
+            <div class="modal-content mt-4 medicine-selector-clonable">
+                <div class="modal-header bg-base text-white py-0 ps-4 pe-0">
                     <h6 class="modal-title" id="medicineSelectorModalLabel">Select Medicine</h6>
                     <button type="button" class="btn shadow-0 fs-5 text-white" data-mdb-dismiss="modal">
                         <i class="fas fa-times-circle"></i>
@@ -359,10 +352,10 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
                                         <div class="badge badge-danger"><?php echo $soldOutItemsCount; ?></div>
                                     </div>
                                 </div>
-                                <div class="w-100 border border-1 border-secondary mb-2 illness-selector-table-wrapper mb-2">
+                                <div class="w-100 border border-1 border-secondary mb-2 medicine-selector-table-wrapper mb-2">
 
                                     <table class="table table-sm table-striped table-hover medicines-table position-relative">
-                                        <thead class="bg-base text-white position-sticky top-0 z-10">
+                                        <thead class="bg-amber text-dark position-sticky top-0 z-10">
                                             <tr class="">
                                                 <th scope="col">Item Name</th>
                                                 <th scope="col">Category</th>
@@ -439,6 +432,9 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
                                                 <th scope="col" class="amount-header">Amount</th>
                                                 <th class="d-none">ItemId</th>
                                                 <th class="d-none">Remaining</th>
+                                                <th class="d-none">AmountValue</th>
+                                                <th class="d-none">Measurement</th>
+
                                             </tr>
                                         </thead>
                                         <tbody class="selected-medicine-dataset">
@@ -451,7 +447,7 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
                     </div>
                 </div>
 
-                <div class="modal-footer py-2">
+                <div class="modal-footer medicine-picker-footer py-2">
                     <!-- <button type="button" class="btn btn-secondary text-dark fw-bold" data-mdb-dismiss="modal">Close</button> -->
                     <button class="btn btn-primary btn-carsl-back display-none" type="button" data-mdb-target="#medicinePickerCarousel" data-mdb-slide="prev">
                         BACK

@@ -101,7 +101,14 @@ function echoOnclick($url)
 
                     <div class="row side-nav-link-item px-3 py-2">
                         <div class="col-2">
-                            <i class="fas fa-cogs me-2 font-accent"></i>
+                            <i class="fas fa-layer-group me-2 font-accent"></i>
+                        </div>
+                        <div class="col fw-bold">Categories</div>
+                    </div>
+
+                    <div class="row side-nav-link-item px-3 py-2">
+                        <div class="col-2">
+                            <i class="fas fa-cogs me-2 font-hilight"></i>
                         </div>
                         <div class="col fw-bold">Settings</div>
                     </div>
