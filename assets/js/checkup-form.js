@@ -56,7 +56,8 @@ function onAwake()
         input_systolicBp: $(".input-systolic"),
         input_diastolicBp: $(".input-diastolic"),
         input_illness: $(".input-illness"),
-        input_illness_id: $(".input-illness-id")
+        input_illness_id: $(".input-illness-id"),
+        input_remarks: $(".input-remarks")
     };
   
     requestNewFormNumber();
@@ -76,7 +77,7 @@ function onAwake()
             change: function (event, ui) 
             {
                 // filter illness record by selected leading char
-                //getIllnessDataSet($(this).val());
+                filterIllnessDataSet($(this).val());
             }
         });
 
@@ -118,6 +119,7 @@ function onAwake()
     Input.forceNumeric(System.getClass(fields.input_diastolicBp));
     Input.forceNumeric(System.getClass(fields.input_contact));
     Input.forceDecimals(System.getClass(fields.input_weight));
+    Input.forceRemarks("input-remarks");
  
     Input.forceNumericOnAppend("input-medicine-amount");
  
@@ -158,7 +160,7 @@ function onBind()
         var allFieldsValid = validateRequiredFields();
         
         if (allFieldsValid)
-        {
+        {    
             btn_submit.prop('disabled', true);
             sendDataToServer();
         }
@@ -212,17 +214,29 @@ function onBind()
 //=============================================
 function validateRequiredFields()
 { 
-    for (var field in fields)
-    { 
-        var val = fields[field].val();
+    var optionalFields = 
+    [
+        "input_remarks",
+        "input_weight"
+    ]; 
 
-        if (val == undefined || val == null || val == "")
-        { 
-            return false;
+    var invalidFields = 0;
+
+    Object.entries(fields).map(entry => 
+    {
+        let key = entry[0];
+        let value = entry[1].val();
+  
+        if (!optionalFields.includes(key))
+        {
+            if (value == undefined || value == null || value == "")
+            {
+                invalidFields++;
+            }
         }
-    }
+    });
  
-    return true; 
+    return invalidFields == 0; 
 }
 
 function sendDataToServer()
@@ -231,8 +245,8 @@ function sendDataToServer()
 
     for (var f in fields)
     { 
-        obj[f] = fields[f].val(); 
-    }  
+        obj[f] = fields[f].val();  
+    }   
 
     $.ajax(
     {
@@ -311,6 +325,38 @@ function selectIllness(id, name)
 { 
     $(".input-illness").val(name);
     $(".input-illness-id").val(id);
+}
+
+function filterIllnessDataSet(leadingChar)
+{
+    var table = $(".illness-selector-table");
+    var rows = table.find("tbody tr");
+
+    // if there are no rows present, exit
+    if (rows.length == 0)
+        return;
+
+    // show all medicines
+    if (leadingChar == "all") 
+    {
+        rows.each(function (i, row) {
+            $(rows[i]).show();
+        });
+
+        return;
+    } 
+
+    // show specific medicine by leading character
+    rows.each(function (i, row) 
+    {
+        var illnessCell = $(rows[i].cells[0]).text();
+        var lead = Array.from(illnessCell)[0];
+ 
+        if (lead != leadingChar)
+            $(rows[i]).hide();
+        else
+            $(rows[i]).show();
+    });
 }
 
 function requestNewFormNumber()
@@ -559,7 +605,6 @@ function enqueueSelectedMedicines(itemId, itemName, itemCategory, remaining, mea
         <td class="d-none">${measurement}</td>
     </tr>`);
 
-    //alert("line reached!");
     unlockNextButton();
  
 }
@@ -604,7 +649,6 @@ function trackAmountInput(totalRemaining, amount, element)
     // amount entered should not go higher than remaining
     if (amount > totalRemaining)
         $(element).val(totalRemaining);
-    // alert(amount);
 }
 
 function resetForm()
@@ -672,8 +716,3 @@ function clearPrescriptions()
 
 // only execute this entire script after the page has fully loaded
 $(document).ready(() => onAwake());
- 
-
-// https://stackoverflow.com/questions/5737272/jquery-dynamically-show-table-rows
-// reset divs
-// https://stackoverflow.com/a/5557716

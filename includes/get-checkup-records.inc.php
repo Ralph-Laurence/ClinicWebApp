@@ -52,7 +52,7 @@ function generateCondition()
                     $condition = "WHERE c.patient_lname LIKE '$keyword%'";
                     break;
                 case "filter-rec-num":
-                    $condition = "WHERE c.form_number LIKE '$keyword%'";
+                    $condition = "WHERE c.form_number LIKE '%$keyword%'";
                     break;
             }
         }
@@ -72,7 +72,7 @@ FROM  $table c
 LEFT JOIN illness i ON i.id = c.illness_id
 LEFT JOIN patient_types t ON t.id = c.patient_type 
 $condition 
-ORDER BY c.checkup_date DESC";
+ORDER BY c.form_number DESC";
 
 $sth = $pdo->prepare($sql);
 $sth->execute();

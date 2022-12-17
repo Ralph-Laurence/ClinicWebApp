@@ -74,3 +74,11 @@
 {
     z-index: 10;
 }
+
+/* .optional-field::-webkit-input-placeholder,
+.optional-field::placeholder,
+.optional-field::-ms-input-placeholder
+{
+    color: var(--mdb-blue) !important;
+    opacity: 1 !important;
+} */

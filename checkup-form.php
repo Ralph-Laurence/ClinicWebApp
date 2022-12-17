@@ -5,7 +5,9 @@ require_once("database/configs.php");
 require_once("includes/system.php");
 require_once("includes/utils.php");
 require_once("layout-header.php");
-require_once("includes/get-medicines.php");
+
+require_once("includes/get-medicines.inc.php");
+require_once("includes/get-illness.inc.php");
 
 // global reference to PDO object
 $pdo = constant('pdo');
@@ -81,6 +83,22 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
 
                                 <!--DIVIDER-->
                                 <div class="divider-separator border border-1 border-bottom mb-3"></div>
+
+                                <div class="mb-3 text-start flex-wrap p-2" style="background-color: #E3EBF7;">
+                                    <h6>
+                                        <i class="fas fa-info-circle text-primary"></i>
+                                        <span class="fw-bold text-dark">Note</span>
+                                    </h6>
+                                    <div class="d-flex flex-row">
+                                        <small class="fw-bold fst-italic">
+                                            Fields with <span class="fw-bold text-primary">blue text</span> are optional.
+                                        </small>
+                                        <small class="ms-2">
+                                            If a field does not apply to you, enter "<span class="fw-bold text-primary">N/A</span>" 
+                                            or zero "<span class="fw-bold text-primary">0</span>" for numeric fields.
+                                        </small>
+                                    </div>
+                                </div>
 
                                 <div class="row">
                                     <div class="col-3">
@@ -166,15 +184,15 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
                                                 <label class="form-label" for="input-age">Age</label>
                                             </div>
                                             <div class="form-outline mb-3 ms-2">
-                                                <input type="text" name="input-weight" class="form-control input-weight" maxlength="6" required />
-                                                <label class="form-label" for="input-weight">Weight (Kg)</label>
+                                                <input type="text" name="input-weight" class="form-control input-weight text-primary" maxlength="6" required />
+                                                <label class="form-label text-primary" for="input-weight">Weight (Kg)</label>
                                             </div>
                                         </div>
                                         <!--BLOOD PRESSURE-->
                                         <div class="blood-pressure-wrapper mb-4">
                                             <h6 class="mb-3">Blood Pressure</h6>
                                         </div>
-                                        <div class="d-flex align-items-center mb-2">
+                                        <div class="d-flex align-items-center">
                                             <div class="form-outline mb-3 me-auto">
                                                 <input type="text" name="input-systolic" class="form-control input-systolic" maxlength="3" />
                                                 <label class="form-label" for="input-systolic">Systolic</label>
@@ -184,6 +202,11 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
                                                 <label class="form-label" for="input-diastolic">Diastolic</label>
                                             </div>
                                         </div>
+                                        <!--REMARKS-->
+                                        <div class="form-outline">
+                                            <textarea class="form-control input-remarks text-primary" id="input-remarks" rows="3" style="min-height: 90px; height: 90px; max-height: 90px;"></textarea>
+                                            <label class="form-label text-primary" for="input-remarks">Remarks (Optional)</label>
+                                        </div>
                                     </div>
 
                                     <!-- RIGHT -->
@@ -191,7 +214,7 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
 
                                         <div class="mb-3 row">
                                             <div class="col text-start">
-                                                <div class="form-outline mb-3 ms-2">
+                                                <div class="form-outline ms-2">
                                                     <input type="text" name="input-illness" class="form-control input-illness bg-white" readonly data-mdb-toggle="modal" data-mdb-target="#illnessSelectorModal" />
                                                     <label class="form-label" for="input-illness">Illness / Disease</label>
                                                 </div>
@@ -204,7 +227,7 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
 
                                         <h6 class="text-muted font-base">Prescription</h6>
 
-                                        <div class="w-100 border border-1 border-secondary mb-2" style="height: 240px; overflow-y: auto;">
+                                        <div class="w-100 border border-1 border-secondary mb-2 prescription-table-wrapper" style="height: 275px; overflow-y: auto;">
 
                                             <table class="table table-sm table-hover prescription-table position-relative">
                                                 <thead class="bg-amber text-dark position-sticky top-0">
@@ -217,7 +240,7 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
                                                     </tr>
                                                 </thead>
                                                 <tbody class="prescription-dataset">
-                                                     
+
                                                 </tbody>
                                             </table>
                                         </div>
@@ -270,7 +293,7 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
     <!-- ILLNESS SELECTOR -->
     <div class="modal fade" id="illnessSelectorModal" tabindex="-1" aria-labelledby="illnessSelectorModalLabel" aria-hidden="true" data-mdb-backdrop="static">
         <div class="modal-dialog pt-3">
-            <div class="modal-content mt-5">
+            <div class="modal-content mt-2">
                 <div class="modal-header bg-base text-white py-0 ps-4 pe-0">
                     <h6 class="modal-title" id="illnessSelectorModalLabel">Select Illness</h6>
                     <button type="button" class="btn shadow-0 fs-5 text-white" data-mdb-dismiss="modal">
@@ -284,21 +307,44 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
                         <select name="illness-starts-with" id="illness-starts-with">
                             <option selected value="all">Show All</option>
                             <option disabled value="">Begins With :</option>
-
+                            <?php
+                            if (count($illnessLeadingChars) > 0) {
+                                foreach ($illnessLeadingChars as $chars) {
+                                    echo "<option value=\"$chars\">$chars</option>";
+                                }
+                            }
+                            ?>
                         </select>
                     </div>
 
-                    <div class="w-100 border border-1 border-secondary mb-2 illness-selector-table-wrapper">
+                    <div class="w-100 border border-1 border-secondary mb-2 illness-selector-table-wrapper" style="overflow-y: auto;">
 
-                        <table class="table table-sm table-striped table-hover">
-                            <thead class="bg-amber text-dark">
+                        <table class="table table-sm table-striped table-hover illness-selector-table position-relative">
+                            <thead class="bg-amber text-dark position-sticky top-0 z-10">
                                 <tr>
                                     <th scope="col" class="fw-bold">Medical Illness / Disease</th>
                                     <th scope="col" class="fw-bold">Action</th>
                                 </tr>
                             </thead>
                             <tbody class="illness-selector-dataset">
+                                <?php
+                                if (count($illnessDataSet) > 0) {
+                                    foreach ($illnessDataSet as $row) {
+                                        $illness_id = $row['id'];
+                                        $illness_name = $row['name'];
 
+                                        echo "<tr>
+                                            <td>$illness_name</td>
+                                            <td>
+                                                <button class=\"btn btn-primary bg-base\" onclick=\"selectIllness($illness_id, '$illness_name')\"
+                                                data-mdb-dismiss=\"modal\">
+                                                Select
+                                                </button>
+                                            </td>
+                                        </tr>";
+                                    }
+                                }
+                                ?>
                             </tbody>
                         </table>
                     </div>
@@ -438,10 +484,10 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
                                             </tr>
                                         </thead>
                                         <tbody class="selected-medicine-dataset">
-                                             
+
                                         </tbody>
                                     </table>
-                                </div>  
+                                </div>
                             </div>
                         </div>
                     </div>

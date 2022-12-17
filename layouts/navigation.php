@@ -37,6 +37,20 @@ function echoOnclick($url)
                         <div class="col fw-bold">Checkup</div>
                     </div>
 
+                    <div class="row side-nav-link-item px-3 py-2" >
+                        <div class="col-2">
+                            <i class="fas fa-prescription-bottle me-2 font-hilight"></i>
+                        </div>
+                        <div class="col fw-bold">Prescriptions</div>
+                    </div>
+
+                    <div class="row side-nav-link-item px-3 py-2">
+                        <div class="col-2">
+                            <i class="fas fa-upload me-2 font-teal"></i>
+                        </div>
+                        <div class="col fw-bold">Stock in / out</div>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -63,13 +77,6 @@ function echoOnclick($url)
                             <i class="fas fa-ticket-alt me-2 font-accent"></i>
                         </div>
                         <div class="col fw-bold">Suppliers</div>
-                    </div>
-
-                    <div class="row side-nav-link-item px-3 py-2">
-                        <div class="col-2">
-                            <i class="fas fa-upload me-2 font-hilight"></i>
-                        </div>
-                        <div class="col fw-bold">Stock in / out</div>
                     </div>
 
                     <div class="row side-nav-link-item px-3 py-2" <?php echoOnclick('patient-records.php'); ?>>

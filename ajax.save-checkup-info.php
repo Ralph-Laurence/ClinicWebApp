@@ -47,9 +47,8 @@ $fields =
     'patient_address'       => $payload["input_address"] ?? "",
     'patient_contact'       => $payload["input_contact"] ?? "",
     'parent_guardian_name'  => $payload["input_parentsGuardian"] ?? "N/A",
-    'patient_type'          => $payload["input_patientType"] ?? "0",
-    
-    'patient_weight'        => $payload["input_weight"] ?? "",
+    'patient_type'          => $payload["input_patientType"] ?? "0", 
+
     'illness_id'            => $payload["input_illness_id"] ?? ""
 ];
 
@@ -66,18 +65,31 @@ if ($input_systolic == "" || $input_diastolic == "")
 
 $patientBp = $input_systolic . "/" . $input_diastolic;
 $fields['patient_bp'] = $patientBp;
-
+ 
 // Check all POST-ed fields if they have null or empty values
 // then immediately stop the execution
-foreach(array_values($fields) as $v)
+foreach($fields as $k => $v)
 {
     if ($v == "" || $v == null)
     {
-        echo "You have one or more fields with empty or invalid values. Please double check your entrues before submitting.";
+        echo "You have one or more fields with empty or invalid values. Please double check your entries before submitting.";
         http_response_code(400);
-        exit;
+        die();
     }
 }
+// foreach(array_values($fields) as $v)
+// {
+//     if ($v == "" || $v == null)
+//     {
+//         echo "You have one or more fields with empty or invalid values. Please double check your entries before submitting.";
+//         http_response_code(400);
+//         die();
+//     }
+// }
+
+// OPTIONAL FIELDS
+$fields['remarks'] = $payload["input_remarks"];
+$fields['patient_weight'] = $payload["input_weight"];
 
 // If all goes well, then save the record to the database
 try 
