@@ -1,13 +1,11 @@
 <?php
+require_once("rootcwd.inc.php");
 
-require_once("database/configs.php");
-require_once("includes/system.php");
-require_once("includes/utils.php"); 
-require_once("database/dbhelper.php");
-  
-// global reference to PDO object
-$pdo = constant('pdo');
-
+require_once($cwd . "database/configs.php");
+require_once($cwd . "includes/system.php");
+require_once($cwd . "includes/utils.php"); 
+require_once($cwd . "database/dbhelper.php");
+   
 // wraps basic sql functions like SELECT, INSERT etc..
 $db = new DbHelper($pdo);
 

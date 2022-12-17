@@ -1,16 +1,17 @@
 <?php
 @session_start();
 
-require_once("database/configs.php");
-require_once("includes/system.php");
-require_once("includes/utils.php");
-require_once("layout-header.php");
+require_once("rootcwd.php");
 
-require_once("includes/get-medicines.inc.php");
-require_once("includes/get-illness.inc.php");
+require_once($rootCwd . "database/configs.php");
+require_once($rootCwd . "includes/system.php");
+require_once($rootCwd . "includes/utils.php");
+require_once($rootCwd . "layout-header.php");
+
+require_once($rootCwd . "includes/inc.get-medicines.php");
+require_once($rootCwd . "includes/inc.get-illness.php");
 
 // global reference to PDO object
-$pdo = constant('pdo');
 
 // Find the the last created checkup ID on checkups table
 // Generate a unique form number with a combination of 

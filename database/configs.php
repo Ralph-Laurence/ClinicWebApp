@@ -14,13 +14,13 @@ $host = IsLocalhost() ? "localhost" : "sql310.epizy.com";
 $uid = IsLocalhost() ? "root" : "epiz_33161880";
 $password = IsLocalhost() ? "" : "0WaqnWunBVB0FM";
 $db = IsLocalhost() ? "patient_infosys" : "epiz_33161880_patient_infosys";
+$pdo = null;
 
 try 
 {
     $dsn = "mysql:host=$host;dbname=$db;";
-
-    define('pdo', new PDO($dsn, $uid, $password));
-    constant('pdo')->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $pdo = new PDO($dsn, $uid, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); 
 } 
 catch (\Throwable $th) 
 {

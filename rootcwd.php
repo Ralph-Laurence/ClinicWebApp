@@ -8,5 +8,7 @@ for ($i = 0; $i < count($parts) - 1; $i++) {
 }
 
 $rootUrl = (!empty($_SERVER['HTTPS']) ? 'https' : 'http') . "://" . $dir;
+ 
+$rootCwd = str_replace("\\", "/", dirname(__FILE__)) . "/";
 
-define("ROOT_URL", $rootUrl);
+define("cwd", $rootCwd);

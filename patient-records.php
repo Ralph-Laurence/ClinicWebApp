@@ -1,10 +1,12 @@
 <?php
 
-require_once("database/configs.php");
-require_once("includes/system.php");
-require_once("includes/utils.php");
-require_once("layout-header.php");
-require_once("includes/get-checkup-records.inc.php");
+require_once("rootcwd.php");
+
+require_once($rootCwd . "database/configs.php");
+require_once($rootCwd . "includes/system.php");
+require_once($rootCwd . "includes/utils.php");
+require_once($rootCwd . "layout-header.php");
+require_once($rootCwd . "includes/inc.get-checkup-records.php");
 ?>
 
 <body>
@@ -96,7 +98,7 @@ require_once("includes/get-checkup-records.inc.php");
                                         <tr>
                                             <th class="fw-bold" scope="col">Checkup #</th>
                                             <th class="fw-bold" scope="col">Patient</th>
-                                            <th class="fw-bold" scope="col">Type</th>
+                                            <th class="fw-bold" scope="col">Classification</th>
                                             <th class="fw-bold" scope="col">Illness</th>
                                             <th class="fw-bold" scope="col">Checkup Date</th>
                                             <th class="fw-bold" scope="col">Action</th>
@@ -113,13 +115,22 @@ require_once("includes/get-checkup-records.inc.php");
                                                 $checkupDate = date("M d, Y h:i A");
 
                                                 echo
-                                                "<tr>
+                                                "<tr class=\"align-middle\">
                                                     <td>$formNumber</td>
                                                     <td>$patientName</td>
                                                     <td>$patientType</td>
                                                     <td>$illness</td>
                                                     <td>$checkupDate</td>
-                                                    <td>Action</td>
+                                                    <td>
+                                                        <div class=\"d-flex flex-row gap-2\">
+                                                            <button type=\"button\" class=\"btn btn-primary bg-base px-3\">
+                                                                <i class=\"fas fa-clone text-white\"></i>
+                                                            </button>
+                                                            <button type=\"button\" class=\"btn btn-warning bg-amber px-3\">
+                                                                <i class=\"fas fa-pen text-dark\"></i>
+                                                            </button>
+                                                        </div>
+                                                    </td>
                                                 </tr>";
                                             }
                                         }

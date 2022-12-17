@@ -1,7 +1,7 @@
 <?php 
 require_once("rootcwd.php");
 
-$cwd = constant("ROOT_URL");
+$cwd = $rootUrl; //constant("ROOT_URL");
 
 function echoOnclick($url)
 {

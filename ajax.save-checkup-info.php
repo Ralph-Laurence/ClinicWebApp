@@ -3,10 +3,12 @@
 
 @session_start();
 
-require_once("database/configs.php");
-require_once("database/dbhelper.php");
-require_once("includes/system.php");
-require_once("includes/utils.php");
+require_once("rootcwd.php");
+
+require_once($rootCwd . "database/configs.php");
+require_once($rootCwd . "database/dbhelper.php");
+require_once($rootCwd . "includes/system.php");
+require_once($rootCwd . "includes/utils.php");
 
 $request = new Requests();
 
@@ -24,7 +26,6 @@ $jsonData = $_POST['jsonData'];
 
 $payload = json_decode($jsonData, true);
 
-$pdo = constant('pdo');
 $db = new DbHelper($pdo);
 
 // generate new form number 
