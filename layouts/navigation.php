@@ -11,15 +11,15 @@ function echoOnclick($url)
 }
 
 ?>
-<div class="side-nav h-100 border-2 border-end border-secondary">
+<div class="side-nav h-100 border-2 bg-white border-end border-secondary scrollable" style="overflow-y: auto;">
     <!-- NAVIGATION TITLE TEXT -->
-    <div class="bg-primary side-nav-title text-white py-2 px-4 align-items-center d-flex">
-        <div class="fas fa-compass me-2"></div>
+    <div class="bg-primary side-nav-title text-white py-2 px-4 align-items-center d-flex position-sticky top-0 z-100">
+        <div class="fas fa-chevron-left me-4"></div>
         <span>Navigation Menu</span>
     </div>
 
-    <div class="accordion">
-        <div class="accordion-item">
+    <div class="accordion px-2">
+        <div class="accordion-item border-start-0 border-end-0">
             <h2 class="accordion-header">
                 <button class="accordion-button" type="button" data-mdb-toggle="collapse" data-mdb-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
                     <i class="fas fa-laptop me-2 font-teal"></i>
@@ -35,18 +35,11 @@ function echoOnclick($url)
                             <i class="fas fa-heartbeat me-2 font-red"></i>
                         </div>
                         <div class="col fw-bold">Checkup</div>
-                    </div>
-
-                    <div class="row side-nav-link-item px-3 py-2" >
-                        <div class="col-2">
-                            <i class="fas fa-prescription-bottle me-2 font-hilight"></i>
-                        </div>
-                        <div class="col fw-bold">Prescriptions</div>
-                    </div>
+                    </div> 
 
                     <div class="row side-nav-link-item px-3 py-2">
                         <div class="col-2">
-                            <i class="fas fa-upload me-2 font-teal"></i>
+                            <i class="fas fa-upload me-2 font-hilight"></i>
                         </div>
                         <div class="col fw-bold">Stock in / out</div>
                     </div>
@@ -55,7 +48,7 @@ function echoOnclick($url)
             </div>
         </div>
 
-        <div class="accordion-item">
+        <div class="accordion-item border-start-0 border-end-0">
             <h2 class="accordion-header">
                 <button class="accordion-button collapsed" type="button" data-mdb-toggle="collapse" data-mdb-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
                     <i class="fas fa-folder-open me-2 font-accent"></i>
@@ -85,11 +78,19 @@ function echoOnclick($url)
                         </div>
                         <div class="col fw-bold">Patient Records</div>
                     </div>
+
+                    <div class="row side-nav-link-item px-3 py-2">
+                        <div class="col-2">
+                            <i class="fas fa-bell me-2 font-hilight"></i>
+                        </div>
+                        <div class="col fw-bold">Notifications</div>
+                    </div>
+
                 </div>
             </div>
         </div>
 
-        <div class="accordion-item">
+        <div class="accordion-item border-start-0 border-end-0">
             <h2 class="accordion-header" id="headingMaintenance">
                 <button class="accordion-button collapsed" type="button" data-mdb-toggle="collapse" data-mdb-target="#collapseMaintenance" aria-expanded="false" aria-controls="collapseMaintenance">
                     <i class="fas fa-wrench me-2 font-hilight"></i>
@@ -124,7 +125,7 @@ function echoOnclick($url)
             </div>
         </div>
 
-        <div class="accordion-item">
+        <div class="accordion-item border-start-0 border-end-0">
             <h2 class="accordion-header" id="headingProfile">
                 <button class="accordion-button collapsed" type="button" data-mdb-toggle="collapse" data-mdb-target="#collapseProfile" aria-expanded="true" aria-controls="collapseProfile">
                     <i class="fas fa-user-alt me-2 text-primary"></i>
@@ -168,7 +169,7 @@ function echoOnclick($url)
         }
         catch
         {
-
+            window.location.href = url;
         }
     }
 </script>

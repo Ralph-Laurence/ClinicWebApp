@@ -524,7 +524,7 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
     <script src="assets/js/nicescroll.js"></script>
     <script src="assets/js/system.js"></script>
     <script src="assets/js/checkup-form.js"></script>
-    <script src="assets/js/welcome-banner.js"></script>
+    <script src="assets/js/base-ui.js"></script>
 
     <script src="components/alert-dialog/alert-dialog.js"></script>
     <script src="components/snackbar/snackbar.js"></script>

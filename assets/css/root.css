@@ -28,6 +28,11 @@
     src: url('Montserrat.ttf');
 }
 
+@font-face {
+    font-family: "Slab";
+    src: url('RobotoSlab.ttf');
+}
+
 * {
     box-sizing: border-box !important;
 }
@@ -39,7 +44,7 @@ html, body
     color: var(--bluegray-900);
     height: 100%;
     min-width: 330px;
-} 
+}  
 
 .bg-base {
     background-color: var(--base-color) !important;

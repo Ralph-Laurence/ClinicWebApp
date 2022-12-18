@@ -24,6 +24,16 @@ class Input
                 this.value = newValue;
         });
     }
+    static forceAddress(inputClass)
+    {
+        $("." + inputClass).on("input", function(e)
+        {
+            var newValue = this.value.replace(/[^A-Za-z0-9.\s\-_#]/gi, "");
+
+            if (this.value != newValue)
+                this.value = newValue;
+        });
+    }
     /**
      * Force textbox to only accept numbers
      * @param {string} inputClass - The input field's classname. Requires type=text
