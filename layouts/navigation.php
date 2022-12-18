@@ -30,7 +30,7 @@ function echoOnclick($url)
 
                 <div class="accordion-body">
 
-                    <div class="row side-nav-link-item px-3 py-2" <?php echoOnclick('checkup-form.php'); ?> >
+                    <div class="row side-nav-link-item px-3 py-2" <?php echoOnclick('view.checkup-form.php'); ?> >
                         <div class="col-2">
                             <i class="fas fa-heartbeat me-2 font-red"></i>
                         </div>
@@ -79,7 +79,7 @@ function echoOnclick($url)
                         <div class="col fw-bold">Suppliers</div>
                     </div>
 
-                    <div class="row side-nav-link-item px-3 py-2" <?php echoOnclick('patient-records.php'); ?>>
+                    <div class="row side-nav-link-item px-3 py-2" <?php echoOnclick('view.patient-records.php'); ?>>
                         <div class="col-2">
                             <i class="fas fa-notes-medical me-2 font-red"></i>
                         </div>

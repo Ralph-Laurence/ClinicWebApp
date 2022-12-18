@@ -663,6 +663,8 @@ function resetForm()
     fields.input_patientType.val(''); 
 
     clearPrescriptions();
+
+    $(".checkup-form").getNiceScroll(0).doScrollTop(0, 300);
 }
 
 function createPrescription()
