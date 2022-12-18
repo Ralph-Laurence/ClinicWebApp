@@ -14,7 +14,10 @@ function echoOnclick($url)
 <div class="side-nav h-100 border-2 bg-white border-end border-secondary scrollable" style="overflow-y: auto;">
     <!-- NAVIGATION TITLE TEXT -->
     <div class="bg-primary side-nav-title text-white py-2 px-4 align-items-center d-flex position-sticky top-0 z-100">
-        <div class="fas fa-chevron-left me-4"></div>
+        <button type="button" class="btn px-3 me-2 border-0 shadow-0 btn-hide-sidenav" 
+        data-mdb-toggle="tooltip" title="Click to hide Navigation">
+            <i class="fas fa-chevron-left"></i>
+        </button>
         <span>Navigation Menu</span>
     </div>
 

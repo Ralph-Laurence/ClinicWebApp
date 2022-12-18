@@ -64,7 +64,8 @@ function onAwake()
     { 
         fields.input_bday.datepicker({
             changeMonth: true,
-            changeYear: true
+            changeYear: true,
+            yearRange: '1940:c'
         }); 
         fields.input_checkupDate.datepicker();
         fields.input_checkupDate.datepicker('setDate', new Date()); 

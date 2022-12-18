@@ -31,6 +31,18 @@
     border-radius: 4px;
 }
 
+.btn-hide-sidenav 
+{
+    color: white;
+}
+
+.btn-hide-sidenav:hover,
+.btn-show-sidenav:hover
+{
+    background-color: var(--amber-400) !important;
+    color: var(--base-color) !important;
+}
+
 .breadcrumb-arrow
 {
     font-size: 12px;
