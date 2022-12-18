@@ -22,8 +22,8 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST' || !$request->isAjax())
 //----- KEY NAMES ARE EXACTLY TABLE COLUMN NAMES ----------
 //=========================================================
 
+// checkup form data
 $jsonData = $_POST['jsonData']; 
-
 $payload = json_decode($jsonData, true);
 
 $db = new DbHelper($pdo);
@@ -77,26 +77,55 @@ foreach($fields as $k => $v)
         http_response_code(400);
         die();
     }
-}
-// foreach(array_values($fields) as $v)
-// {
-//     if ($v == "" || $v == null)
-//     {
-//         echo "You have one or more fields with empty or invalid values. Please double check your entries before submitting.";
-//         http_response_code(400);
-//         die();
-//     }
-// }
+} 
 
 // OPTIONAL FIELDS
 $fields['remarks'] = $payload["input_remarks"];
 $fields['patient_weight'] = $payload["input_weight"];
 
+// prescription data
+$prescriptionData = $_POST['prescription'] ?? "";
+$hasPrescriptions = !empty($prescriptionData);
+ 
 // If all goes well, then save the record to the database
 try 
 { 
+    // checkup info
     $db->insert($pdo, TableNames::$checkup, $fields);
-  
+
+    // make it sure that there are prescriptions selected
+    // before we store the record into database
+    if ($hasPrescriptions) 
+    { 
+        $prescriptions = json_decode($prescriptionData, true); 
+
+        foreach ($prescriptions as $obj) 
+        {
+            $itemId = $obj['itemId'];
+            $amount = $obj['amount'];
+
+            $rx_obj =
+            [
+                "item_id" => $itemId,
+                "amount" => $amount,
+                "unit_measure" => $obj['units'],
+                "checkup_number" => $checkupFormNumber
+            ];
+
+            // save prescription info
+            $db->insert($pdo, TableNames::$prescription, $rx_obj); 
+
+            $itemsTable = TableNames::$items;
+
+            // deduct medicine stock
+            $sql = "UPDATE $itemsTable SET remaining = (remaining - ?) WHERE id = ?";
+            $sth = $pdo->prepare($sql);
+            $sth->bindValue(1, $amount);
+            $sth->bindValue(2, $itemId);
+            $sth->execute();
+        }
+    }
+ 
     $response =
     [
         "statusCode" => ResponseCodes::success(),
@@ -108,7 +137,7 @@ try
 } 
 catch (\Throwable $th) 
 {
-    echo "Failed to save the record because of an error.";
+    echo "Failed to save the record because of an error. " . $th->getMessage();
     http_response_code(500);
     exit;
 }

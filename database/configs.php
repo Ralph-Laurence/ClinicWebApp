@@ -36,4 +36,5 @@ class TableNames
     public static $prescription = "prescription";
     public static $suppleirs = "suppliers";
     public static $unit_measures = "unit_measures";
+    public static $patient_types = "patient_types";
 }

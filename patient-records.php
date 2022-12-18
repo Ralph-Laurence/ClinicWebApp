@@ -165,6 +165,7 @@ require_once($rootCwd . "includes/inc.get-checkup-records.php");
 
     <script src="assets/js/nicescroll.js"></script>
     <script src="assets/js/patient-records.js"></script>
+    <script src="assets/js/welcome-banner.js"></script>
 
     <script src="components/alert-dialog/alert-dialog.js"></script>
 

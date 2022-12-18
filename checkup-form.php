@@ -238,6 +238,7 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
                                                         <th class="fw-bold" scope="col">Category</th>
                                                         <th class="fw-bold" scope="col">Qty</th>
                                                         <th class="d-none" scope="col">Amount</th>
+                                                        <th class="d-none" scope="col">Units</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody class="prescription-dataset">
@@ -394,9 +395,9 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
                                     </select>
                                     <div class="d-flex align-items-center flex-row gap-2 px-3">
                                         <div class="badge badge-secondary">Low on stock: </div>
-                                        <div class="badge badge-warning me-4"><?php echo $criticalItemsCount; ?></div>
+                                        <div class="badge badge-warning me-4 lbl-critical-counter"><?php echo $criticalItemsCount; ?></div>
                                         <div class="badge badge-secondary">Sold Out: </div>
-                                        <div class="badge badge-danger"><?php echo $soldOutItemsCount; ?></div>
+                                        <div class="badge badge-danger lbl-soldout-counter"><?php echo $soldOutItemsCount; ?></div>
                                     </div>
                                 </div>
                                 <div class="w-100 border border-1 border-secondary mb-2 medicine-selector-table-wrapper mb-2">
@@ -412,10 +413,11 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
                                                 <th class="d-none">ItemId</th>
                                                 <th class="d-none">Remaining</th>
                                                 <th class="d-none">Measurement</th>
+                                                <th class="d-none">Units</th>
                                             </tr>
                                         </thead>
                                         <tbody class="medicine-selector-dataset">
-                                            <?php
+                                        <?php
                                             if (!empty($medicineDataSet)) {
                                                 foreach ($medicineDataSet as $row) {
                                                     $id = $row['item_id'];
@@ -424,6 +426,7 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
                                                     $measurement = $row['measurement'];
                                                     $remaining = $row['remaining'];
                                                     $criticalLevel = $row['critical_level'];
+                                                    $unit_measure = $row['unit_measure'];
 
                                                     $stock = "<span class=\"badge badge-success\">Available</span>";
                                                     $btn_disableOnSoldOut = ($remaining == 0) ? "disabled" : "";
@@ -448,10 +451,11 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
                                                     <td class=\"d-none\">$id</td>
                                                     <td class=\"d-none\">$remaining</td>
                                                     <td class=\"d-none\">$measurement</td>
+                                                    <td class=\"d-none\">$unit_measure</td>
                                                 </tr>";
                                                 }
                                             }
-                                            ?>
+?>
                                         </tbody>
                                     </table>
                                 </div>
@@ -481,11 +485,11 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
                                                 <th class="d-none">Remaining</th>
                                                 <th class="d-none">AmountValue</th>
                                                 <th class="d-none">Measurement</th>
-
+                                                <th class="d-none">Units</th>
                                             </tr>
                                         </thead>
                                         <tbody class="selected-medicine-dataset">
-
+                                        
                                         </tbody>
                                     </table>
                                 </div>
@@ -495,7 +499,7 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
                 </div>
 
                 <div class="modal-footer medicine-picker-footer py-2">
-                    <!-- <button type="button" class="btn btn-secondary text-dark fw-bold" data-mdb-dismiss="modal">Close</button> -->
+                    
                     <button class="btn btn-primary btn-carsl-back display-none" type="button" data-mdb-target="#medicinePickerCarousel" data-mdb-slide="prev">
                         BACK
                     </button>

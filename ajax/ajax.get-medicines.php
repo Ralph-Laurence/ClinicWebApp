@@ -6,6 +6,14 @@ require_once($cwd . "includes/system.php");
 require_once($cwd . "includes/utils.php"); 
 require_once($cwd . "database/dbhelper.php");
    
+$request = new Requests();
+
+if (!$request->isAjax())
+{
+    http_response_code(404);
+    die();
+}
+ 
 // wraps basic sql functions like SELECT, INSERT etc..
 $db = new DbHelper($pdo);
 
@@ -41,10 +49,10 @@ if (count($medicineDataSet) > 0)
 {
     foreach($medicineDataSet as $row)
     { 
-        $category = $row['category'];
+        // $category = $row['category'];
         
-        if (!in_array($category, $medicineCategories))
-            array_push($medicineCategories, $category);
+        // if (!in_array($category, $medicineCategories))
+        //     array_push($medicineCategories, $category);
 
         $remainingQty = $row['remaining'];
         $criticalLevel = $row['critical_level'];
@@ -60,3 +68,9 @@ if (count($medicineDataSet) > 0)
         }
     }
 } 
+
+echo json_encode([
+    "medicines"         => $medicineDataSet,
+    "soldOutCount"      => $soldOutItemsCount,
+    "criticalCount"     => $criticalItemsCount
+]);

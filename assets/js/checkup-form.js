@@ -17,8 +17,6 @@ var snackbar = undefined;
 
 var medicinePickerCarousel = undefined;
 
-var medicinePickerCarousel_mdb = undefined;
-
 var selectedMedicinesTable = undefined;
 
 var clonable_medicineSelectorWrapper = undefined;
@@ -91,10 +89,6 @@ function onAwake()
             }
         });
     });  
-  
-    //medicinePickerCarousel = $("#medicinePickerCarousel");
-
-    medicinePickerCarousel_mdb = new mdb.Carousel($("#medicinePickerCarousel"));
 
     selectedMedicinesTable = $(".selected-medicines-table");
 
@@ -248,11 +242,17 @@ function sendDataToServer()
         obj[f] = fields[f].val();  
     }   
 
+    var prescription = prescriptionToOBJ();
+
     $.ajax(
     {
         type: "POST",
         url: "ajax.save-checkup-info.php",
-        data: { jsonData: JSON.stringify(obj) },
+        data: 
+        { 
+            jsonData: JSON.stringify(obj),
+            prescription: JSON.stringify(prescription)
+        },
         dataType: "json",
         success: function (s) 
         {
@@ -418,8 +418,9 @@ function bindSelectMedicine()
             var itemCategory = currentRow.find("td:eq(1)").text();  
             var remaining = currentRow.find("td:eq(6)").text();  
             var measurement = currentRow.find("td:eq(7)").text();  
-
-            enqueueSelectedMedicines(itemId, itemName, itemCategory, remaining, measurement);
+            var units = currentRow.find("td:eq(8)").text();  
+            
+            enqueueSelectedMedicines(itemId, itemName, itemCategory, remaining, measurement, units);
         }
         else 
         {
@@ -556,7 +557,7 @@ function filterMedicine(category)
     }); 
 }
 
-function enqueueSelectedMedicines(itemId, itemName, itemCategory, remaining, measurement)
+function enqueueSelectedMedicines(itemId, itemName, itemCategory, remaining, measurement, units)
 { 
     var table = $(".selected-medicines-table");
     var rows = table.find("tbody tr");
@@ -603,6 +604,7 @@ function enqueueSelectedMedicines(itemId, itemName, itemCategory, remaining, mea
         <td class="d-none">${remaining}</td>
         <td class="d-none">1</td>
         <td class="d-none">${measurement}</td>
+        <td class="d-none">${units}</td>
     </tr>`);
 
     unlockNextButton();
@@ -680,28 +682,60 @@ function createPrescription()
         var itemCell = $(rows[i].cells[0]).text();
         var categoryCell = $(rows[i].cells[1]).text();
         var amountCell = $(rows[i].cells[6]).text();
-        var unitsCell = $(rows[i].cells[7]).text(); 
+        var measuresCell = $(rows[i].cells[7]).text(); 
+        var unitsCell = $(rows[i].cells[8]).text(); 
         
         tbody.append(`<tr class=\"align-middle\">
             <td class=\"d-none\">${idCell}</td>
             <td>${itemCell}</td>
             <td>${categoryCell}</td>
-            <td>${amountCell} ${unitsCell}(s)</td>
+            <td>${amountCell} ${measuresCell}(s)</td>
             <td class=\"d-none\">${amountCell}</td>
+            <td class=\"d-none\">${unitsCell}</td>
         </tr>`);
         
     });
 }
 
+function prescriptionToOBJ()
+{
+    var table = $(document.querySelector(".prescription-table"));
+    var rows = table.find("tbody tr");
+    var objArray = [];
+     
+    if (rows.length < 1)
+        return objArray;
+
+    rows.each(function(i, row)
+    {
+        var itemId = $(rows[i].cells[0]).text();
+        var amount = $(rows[i].cells[4]).text();
+        var units = $(rows[i].cells[5]).text();
+        
+        var obj = 
+        {
+            "itemId": itemId,
+            "amount": amount,
+            "units": units
+        };
+
+        objArray.push(obj);
+    });
+
+    return objArray;
+}
+
 function clearPrescriptions()
 {
     // reset table wrappers to original state
-    var medicinesWrapper = document.querySelector(".medicine-selector-table-wrapper");
+    //var medicinesWrapper = document.querySelector(".medicine-selector-table-wrapper");
     var selectedWrapper = document.querySelector(".selected-medicines-table-wrapper");
     var footer = document.querySelector(".medicine-picker-footer");
     var prescriptionTable = $(".prescription-dataset");
 
-    $(medicinesWrapper).replaceWith(clonable_medicineSelectorWrapper.clone(true, true));
+    //$(medicinesWrapper).replaceWith(clonable_medicineSelectorWrapper.clone(true, true));
+    loadMedicinesList();
+
     $(selectedWrapper).replaceWith(clonable_selectedMedicinesWrapper.clone(true, true));
     $(footer).replaceWith(clonable_medicineSelectorFooter.clone(true, true));
 
@@ -713,6 +747,81 @@ function clearPrescriptions()
     carouselPage1.addClass("active");
     carouselPage2.removeClass("active");
 }
+
+function loadMedicinesList()
+{
+    var tbody = $(".medicine-selector-dataset");
+
+    $.ajax(
+    {
+        url: "ajax/ajax.get-medicines.php",
+        dataType: "json",
+        type: "GET",
+        success: function(res)
+        {
+            // update the medicine selectors table
+            if (res)
+            { 
+                tbody.empty();
+
+                var totalCriticalItems = res.criticalCount;
+                var totalSoldOutItems = res.soldOutCount;
+                var medicinesDataset = res.medicines;
+
+                // update counter indicators
+                $(".lbl-critical-counter").text(totalCriticalItems);
+                $(".lbl-soldout-counter").text(totalSoldOutItems);
+
+                // recreate the medicines picker table
+                medicinesDataset.forEach(data => 
+                {
+                    // header idx 5
+                    var itemId = data.item_id;
+                    var itemName = data.item_name;
+                    var category = data.category;
+
+                    // header idx 7
+                    var measurement = data.measurement;
+
+                    // header idx 6
+                    var remaining = data.remaining;
+                    var criticalLevel = data.critical_level;
+                    var unitMeasure = data.unit_measure;
+
+                    var badge_stock = `<span class="badge badge-success">Available</span>`;
+                    var btn_disableOnSoldOut = (remaining == 0) ? "disabled" : "";
+
+                    if (remaining <= criticalLevel)
+                        badge_stock = `<span class="badge badge-warning">Low on stock</span>`;
+
+                    if (remaining == 0)
+                        badge_stock = `<span class="badge badge-danger">Sold out</span>`;
+
+                    tbody.append(`<tr class=\"align-middle\"> 
+                        <td>${itemName}</td> 
+                        <td>${category}</td>
+                        <td>${badge_stock}</td>
+                        <td>
+                            <button class=\"btn btn-primary btn-select-medicine bg-teal text-white py-1 px-0 text-center\" style=\"max-width: 92px; width: 92px;\" ${btn_disableOnSoldOut}>
+                                Select
+                            </button>
+                        </td>
+                        <td class=\"d-none\">false</td>
+                        <td class=\"d-none\">${itemId}</td>
+                        <td class=\"d-none\">${remaining}</td>
+                        <td class=\"d-none\">${measurement}</td>
+                        <td class=\"d-none\">${unitMeasure}</td>
+                        </tr>`);
+                });  
+            }
+        },
+        error: function(jqXHR, exception)
+        {
+            dialog.danger("Failed to retrieve the list of medicines. Please reload the page or contact the administrator.");
+        }
+    });
+}
+
 
 // only execute this entire script after the page has fully loaded
 $(document).ready(() => onAwake());

@@ -6,11 +6,6 @@ require_once($cwd . "database/dbhelper.php");
 require_once($cwd . "includes/system.php");
 require_once($cwd . "includes/utils.php");
   
-// wraps basic sql functions like SELECT, INSERT etc..
-$db = new DbHelper($pdo);
-
-$table = TableNames::$checkup;
-
 $keyword = $_POST['input-keyword'] ?? "";
 $findBy = $_POST['find-patient-option'] ?? "";
 $monthOptions = $_POST['month-options'] ?? "";
@@ -59,6 +54,13 @@ function generateCondition()
 
 generateCondition();
 
+$checkupTable = TableNames::$checkup;
+$illnessTable = TableNames::$illness;
+$patientTypesTable = TableNames::$patient_types;
+
+// wraps basic sql functions like SELECT, INSERT etc..
+$db = new DbHelper($pdo);
+
 $sql = "SELECT 
 c.checkup_date,
 c.checkup_time,
@@ -66,9 +68,9 @@ c.form_number,
 CONCAT(c.patient_fname, ' ', c.patient_mname, ' ', c.patient_lname) AS patient_name,
 t.description AS patient_type,
 i.name AS 'illness'
-FROM  $table c
-LEFT JOIN illness i ON i.id = c.illness_id
-LEFT JOIN patient_types t ON t.id = c.patient_type 
+FROM  $checkupTable c
+LEFT JOIN $illnessTable i ON i.id = c.illness_id
+LEFT JOIN $patientTypesTable t ON t.id = c.patient_type 
 $condition 
 ORDER BY c.form_number DESC";
 
