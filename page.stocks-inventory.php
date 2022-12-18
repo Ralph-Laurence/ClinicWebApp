@@ -42,8 +42,8 @@ require_once($rootCwd . "includes/inc.get-checkup-records.php");
                                 <h6 class="fas fa-folder-open font-accent"></h6>
                                 <h6 class="ms-2 fw-bold">View</h6>
                                 <h6 class="breadcrumb-arrow fas fa-play mx-3"></h6>
-                                <h6 class="fas fa-notes-medical font-red"></h6>
-                                <h6 class="ms-2 fw-bold">Patient Records</h6>
+                                <h6 class="fas fa-warehouse font-teal"></h6>
+                                <h6 class="ms-2 fw-bold">Stocks Inventory</h6>
                             </div>
 
                             <!--SEARCH BARS-->

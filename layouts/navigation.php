@@ -61,7 +61,7 @@ function echoOnclick($url)
             <div id="collapseTwo" class="accordion-collapse collapse show">
                 <div class="accordion-body">
 
-                    <div class="row side-nav-link-item px-3 py-2">
+                    <div class="row side-nav-link-item px-3 py-2" <?php echoOnclick('page.stocks-inventory.php'); ?>>
                         <div class="col-2">
                             <i class="fas fa-warehouse me-2 font-teal"></i>
                         </div>
