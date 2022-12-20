@@ -48,6 +48,8 @@
     font-size: 12px;
 }
 
+/* -----------STYLES FOR SNACKBAR (BOTTOM POPUP)----------- */
+
 .snackbar 
 {
     display: none;
@@ -60,6 +62,8 @@
     background-color: #20B22D;
     color: white;
 } 
+
+/* -----------STYLES FOR DROPDOWN BOX----------- */
 
 .dropdown-menu .dropdown-item-custom-dark
 { 
@@ -86,6 +90,15 @@
     color: white !important; 
 }
 
+.btn-split-details { width: 65px; }
+.btn-split-arrow 
+{ 
+    width: 30px; 
+    background-color: #21437B;
+}
+
+/* -----------STYLES FOR WORKSPACE ELEMENTS----------- */
+
 .illness-selector-table-wrapper,
 .selected-medicines-table-wrapper,
 .medicine-selector-table-wrapper
@@ -99,14 +112,5 @@
 {
     min-width: 200px; 
     width: 200px;
-}
+} 
 
-.btn-split-details { width: 65px; }
-.btn-split-arrow 
-{ 
-    width: 30px; 
-    background-color: #21437B;
-}
-
-.z-10 { z-index: 10; } 
-.z-100 { z-index: 100; } 

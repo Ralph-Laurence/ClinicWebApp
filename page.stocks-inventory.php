@@ -59,7 +59,7 @@ require_once($rootCwd . "includes/inc.get-stocks-inventory.php");
                                             <option value="filter-item-name" <?php if (!empty($findBy) && $findBy == "filter-item-name") echo "selected"; ?>>By Item Name</option>
                                             <option value="filter-item-code" <?php if (!empty($findBy) && $findBy == "filter-item-code") echo "selected"; ?>>By Item Code</option>
                                             <option value="filter-category" <?php if (!empty($findBy) && $findBy == "filter-category") echo "selected"; ?>>By Category</option>
-                                            <option value="filter-newest-item" <?php if (!empty($findBy) && $findBy == "filter-newest-item") echo "selected"; ?>>Newest Items</option>
+                                            <option value="filter-newest-item" <?php if (!empty($findBy) && $findBy == "filter-newest-item") echo "selected"; ?>>Newly Added</option>
                                             <option value="filter-critical-item" <?php if (!empty($findBy) && $findBy == "filter-critical-item") echo "selected"; ?>>Critical Items</option>
                                             <option value="filter-soldout-item" <?php if (!empty($findBy) && $findBy == "filter-soldout-item") echo "selected"; ?>>Sold Out Items</option>
                                         </select>
@@ -82,7 +82,18 @@ require_once($rootCwd . "includes/inc.get-stocks-inventory.php");
                                             <span>Find</span>
                                         </button>
                                     </form>
-                                    <button <?php echoOnclick('page.stocks-inventory.php'); ?> class="btn btn-primary <?php if (empty($condition)) echo 'display-none'; ?>">
+                                    <button <?php echoOnclick('page.stocks-inventory.php'); ?> class="btn btn-primary 
+                                    <?php 
+                                        $display = "";
+
+                                        if (empty($condition)) 
+                                            $display = 'display-none'; 
+                                        
+                                        if ($findBy == "filter-newest-item")
+                                            $display = "";
+
+                                        echo $display;
+                                    ?>">
                                         <i class="fas fa-undo me-2"></i>
                                         <span>Clear</span>
                                     </button>
@@ -125,12 +136,22 @@ require_once($rootCwd . "includes/inc.get-stocks-inventory.php");
                             </div>
 
                             <!--DIVIDER-->
-                            <div class="divider-separator border border-1 border-bottom my-3"></div>
+                            <div class="divider-separator border border-1 border-bottom mt-3 mb-2"></div>
 
-                            <div class="total-items-counter d-flex align-items-center">
+                            <div class="total-items-counter d-flex align-items-center mb-2">
                                 <span class="fs-6 me-2">Total Items Found: </span>
-                                <span class="badge badge-primary">
+                                <span class="badge badge-primary me-4">
                                 <?php echo (!empty($medicineRecordsCount)) ? $medicineRecordsCount : "0"; ?>
+                                </span>
+
+                                <span class="fs-6 mx-2">Critical Items: </span>
+                                <span class="badge badge-warning me-4">
+                                <?php echo $criticalItemsCount; ?>
+                                </span>
+
+                                <span class="fs-6 me-2">Soldout Items: </span>
+                                <span class="badge badge-danger">
+                                <?php echo $soldOutItemsCount; ?>
                                 </span>
                             </div>
                             
@@ -224,6 +245,7 @@ require_once($rootCwd . "includes/inc.get-stocks-inventory.php");
 
     <?php
     include("components/alert-dialog/alert-dialog.php");
+    include("components/confirm-dialog/confirm-dialog.php");
     include("components/snackbar/snackbar.php");
     ?>
 
@@ -239,6 +261,7 @@ require_once($rootCwd . "includes/inc.get-stocks-inventory.php");
     <script src="assets/js/base-ui.js"></script>
 
     <script src="components/alert-dialog/alert-dialog.js"></script>
+    <script src="components/confirm-dialog/confirm-dialog.js"></script>
     <script src="components/snackbar/snackbar.js"></script>
 
 </body>

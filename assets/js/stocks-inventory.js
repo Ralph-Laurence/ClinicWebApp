@@ -4,6 +4,7 @@ var inputKeyword = undefined;
 var findButton = undefined;
 
 var dialog = undefined;
+var confirm = undefined;
 var snackbar = undefined;
 
 $(document).ready(() => onAwake());
@@ -11,6 +12,7 @@ $(document).ready(() => onAwake());
 function onAwake()
 {
     dialog = new AlertDialog();
+    confirm = new ConfirmDialog();
     snackbar = new SnackBar();
     
     findButton = $(".btn-find");
@@ -30,17 +32,10 @@ function onAwake()
         }
     });
 
-    $("#category-options") 
-    .selectmenu
-    ({
-        change: function (event, ui) 
-        {
-            // alert($(this).val());
-            // filter items record by selected category
-            //filterIllnessDataSet($(this).val());
-        }
-    });
+    $("#category-options").selectmenu();
  
+
+    // bind event handlers
     onBind();
 }
 
@@ -62,7 +57,7 @@ function checkAllRows(checkAll = true)
 
     rows.each(function(i, row)
     {
-        var checkboxColumn = $(rows[i]).find("#row-check-box"); //$(rows[i].cells[0])
+        var checkboxColumn = $(rows[i]).find("#row-check-box");
 
         if (checkAll)
             $(checkboxColumn).prop('checked', true);
@@ -74,6 +69,14 @@ function checkAllRows(checkAll = true)
 function findItemsOption(selected)
 {
     var disableInputKeyword = false;
+
+    var blackList =
+    [
+        "filter-category",
+        "filter-critical-item",
+        "filter-soldout-item",
+        "filter-newest-item"
+    ];
 
     // category filter
     if (selected == "filter-category")
@@ -87,7 +90,7 @@ function findItemsOption(selected)
     }
 
     // other filter without the need of keywords
-    if (selected == "filter-critical-item" || selected == "filter-soldout-item" || selected == "filter-newest-item")
+    if (blackList.includes(selected))
         disableInputKeyword = true;
 
     if (disableInputKeyword)
@@ -100,7 +103,15 @@ function searchRecord()
 {
     var filter = $("#find-item-option").val();
 
-    if (filter != "filter-category" && inputKeyword.val() == "") 
+    var whiteList =
+    [
+        "filter-category",
+        "filter-critical-item",
+        "filter-soldout-item",
+        "filter-newest-item"
+    ];
+
+    if (!whiteList.includes(filter) && inputKeyword.val() == "") 
     {
         dialog.warn("Please enter a search term.");
         return;

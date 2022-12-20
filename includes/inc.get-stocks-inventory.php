@@ -12,6 +12,7 @@ $categoryOptions = $_POST['category-options'] ?? "";
 
 $medicineDataSet = null;
 $condition = "";
+$orderby = "ORDER BY i.item_name ASC";
 
 function generateCondition()
 {
@@ -19,6 +20,7 @@ function generateCondition()
     global $keyword;
     global $categoryOptions;
     global $condition;
+    global $orderby; 
 
     if (!empty($findBy))
     {
@@ -28,20 +30,33 @@ function generateCondition()
             $condition = "WHERE i.item_category = $categoryOptions";
             return;
         }
-
-        // filter by search term
-        if (!empty($keyword))
+ 
+        switch ($findBy) 
         {
-            switch($findBy)
-            {
-                case "filter-item-name":
+            case "filter-item-name":
+
+                if (!empty($keyword))
                     $condition = "WHERE i.item_name LIKE '%$keyword%'";
-                    break;
-                case "filter-item-code":
+                break;
+
+            case "filter-item-code":
+
+                if (!empty($keyword))
                     $condition = "WHERE i.item_code LIKE '%$keyword%'";
-                    break;
-            }
-        }
+                break;
+
+            case "filter-newest-item":
+                $orderby = "ORDER BY i.date_added DESC";
+                break;
+
+            case "filter-soldout-item":
+                $condition = "WHERE i.remaining = 0"; 
+                break;
+
+            case "filter-critical-item":
+                $condition = "WHERE (i.remaining > 0 AND i.remaining <= i.critical_level)"; 
+                break;
+        }   
     }
 }
 
@@ -73,7 +88,7 @@ LEFT JOIN $category_icons n ON n.id = c.fas_icon_id
 LEFT JOIN $units_table u ON u.id = i.unit_measure
 LEFT JOIN $suppliers_table s ON s.id = i.supplier_id
 $condition
-ORDER BY i.item_name ASC";
+$orderby";
 
 // get medicines dataset
 $sth = $pdo->prepare($sql); 
@@ -125,7 +140,3 @@ if ($categoriesRecordsCount > 0)
             $medicineCategories[$category_name] = $category_id;
     } 
 }
-
-
- 
-
