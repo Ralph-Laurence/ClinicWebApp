@@ -19,8 +19,7 @@ $sql = "SELECT
 i.id AS item_id,
 i.item_name,
 c.name AS category,
-u.measurement,
-i.total_stock,
+u.measurement, 
 i.remaining,
 i.critical_level,
 i.unit_measure

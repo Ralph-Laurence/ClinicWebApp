@@ -73,6 +73,18 @@
     color: var(--base-color) !important; 
     font-weight: bold;
 }
+.dropdown-menu .dropdown-item-custom-light
+{ 
+    color: var(--bluegray-500) !important; 
+    background-color: white !important;
+    cursor: pointer;
+}
+
+.dropdown-menu .dropdown-item-custom-light:hover  
+{
+    background-color: var(--base-color) !important;
+    color: white !important; 
+}
 
 .illness-selector-table-wrapper,
 .selected-medicines-table-wrapper,
@@ -89,7 +101,12 @@
     width: 200px;
 }
 
-
+.btn-split-details { width: 65px; }
+.btn-split-arrow 
+{ 
+    width: 30px; 
+    background-color: #21437B;
+}
 
 .z-10 { z-index: 10; } 
 .z-100 { z-index: 100; } 

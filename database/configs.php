@@ -29,6 +29,7 @@ catch (\Throwable $th)
 
 class TableNames
 {
+    public static $category_icons = "category_icons";
     public static $categories = "categories";
     public static $checkup = "checkup";
     public static $illness = "illness";

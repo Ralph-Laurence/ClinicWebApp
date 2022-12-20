@@ -20,11 +20,10 @@ function generateCondition()
     global $monthOptions;
     global $condition;
 
-    // check if there is a month filter applied ...
-    // Only this year's Month will be selected
-
     if (!empty($findBy)) 
     { 
+        // check if there is a month filter applied ...
+        // Only this year's Month will be selected
         if ($findBy == "filter-month" && !empty($monthOptions)) 
         {
             $formNumber = date("Y") . "-" . $monthOptions . "-";
