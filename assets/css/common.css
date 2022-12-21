@@ -5,6 +5,21 @@
     z-index: 10;
 }
 
+.title-banner
+{
+    max-height: 58px;
+    height: 58px;
+}
+  
+.title-banner-text {
+    font-family: var(--tertiary-font) !important;
+}
+
+.banner-text-divider
+{
+    height: 10px;
+}
+
 /* -----------STYLES FOR NAVIGATION VIEW----------- */
 .side-nav
 {
@@ -90,6 +105,24 @@
     color: white !important; 
 }
 
+.dropdown-menu-custom-light
+{
+    background-color: white !important;
+    width: 240px;
+}
+
+.dropdown-menu-custom-light-small
+{
+    background-color: white !important;
+    width: 128px;
+}
+
+.dropdown-item-icon
+{
+    min-width: 32px;
+    width: 32px;
+}
+
 .btn-split-details { width: 65px; }
 .btn-split-arrow 
 { 
@@ -114,3 +147,20 @@
     width: 200px;
 } 
 
+.stock-label-critical
+{
+    background-color: var(--amber-300);
+    color: var(--font-base);
+    display: block;
+    text-align: center;
+    border-radius: 5px;
+}
+
+.stock-label-soldout
+{
+    background-color: var(--red-500);
+    color: white;
+    display: block;
+    text-align: center;
+    border-radius: 5px;
+}

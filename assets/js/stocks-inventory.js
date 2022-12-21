@@ -7,6 +7,13 @@ var dialog = undefined;
 var confirm = undefined;
 var snackbar = undefined;
 
+var confirm_BtnOK = undefined;
+var confirm_BtnCancel = undefined;
+
+var liOption_DeleteCheckedRows = undefined;
+
+var itemDetailsModal = undefined;
+
 $(document).ready(() => onAwake());
 
 function onAwake()
@@ -14,13 +21,18 @@ function onAwake()
     dialog = new AlertDialog();
     confirm = new ConfirmDialog();
     snackbar = new SnackBar();
+
+    itemDetailsModal = new mdb.Modal($("#stockDetailsModal"));
     
     findButton = $(".btn-find");
+    confirm_BtnOK = $(".confirm-btn-ok");
+    confirm_BtnCancel = $(".confirm-btn-cancel");
 
     columnCheckbox = $("#column-check-all");
     inputKeyword = $("#input-keyword");
 
-
+    liOption_DeleteCheckedRows = $(".dropdown-option-delete-all-selected");
+ 
     $("#find-item-option") 
     .selectmenu
     ({
@@ -48,6 +60,11 @@ function onBind()
     });
 
     findButton.click(() => searchRecord());
+
+    liOption_DeleteCheckedRows.click(() => deleteAllRows());
+
+    // show selected item's details in a modal window
+    bindShowItemInfo();
 }
 
 function checkAllRows(checkAll = true)
@@ -124,4 +141,93 @@ function searchRecord()
     }
 
     $(".filter-form").trigger("submit");
+}
+
+function deleteAllRows()
+{
+    var table = $(".stocks-table");
+    var rows = table.find("tbody tr");
+
+    // we count all checked rows .. if no row has been checked, exit
+    var checkedRowsCount = 0;
+
+    // find all checked rows
+    rows.each(function(i, row)
+    {
+        var checkboxRow = $(rows[i]).find("#row-check-box");
+        var isRowChecked = checkboxRow.prop("checked");
+ 
+        if (isRowChecked)
+            checkedRowsCount++;
+        // if (checkAll)
+        //     $(checkboxColumn).prop('checked', true);
+        // else
+        //     $(checkboxColumn).prop('checked', false);
+    });
+
+    if (checkedRowsCount == 0)
+    {
+        dialog.warn("Please select a record to delete by ticking each checkbox.");
+        return;
+    }
+
+    confirm.show("Do you really want to delete all selected records?\n\nThis action cannot be undone. Please proceed with caution.");
+        
+    confirm.actionOnOK = function()
+    {
+        
+    };  
+}
+
+
+function bindShowItemInfo()
+{
+    $(document).on("click", ".stocks-table .btn-item-details", function()
+    { 
+        // reference to the selected row
+        var currentRow = $(this).closest("tr");
+
+        // row's icon cell
+        var itemIcon = currentRow.find("td:eq(1)").html(); 
+        var itemName = currentRow.find("td:eq(2)").text(); 
+        var itemCode = currentRow.find("td:eq(3)").text(); 
+        var category = currentRow.find("td:eq(4)").text(); 
+        var stock = currentRow.find("td:eq(5)").text(); 
+        var reserved = currentRow.find("td:eq(6)").text(); 
+        var supplier = currentRow.find("td:eq(8)").text(); 
+        var dateAdded = currentRow.find("td:eq(9)").text(); 
+        var unitMeasure = currentRow.find("td:eq(11)").text(); 
+        var stockStatus = currentRow.find("td:eq(12)").text();
+
+        var createdOn = moment(dateAdded).format("dddd, MMM. DD, YYYY");
+
+        // set modal title
+        $(".lbl-item-name").text(itemName);
+        $(".lbl-category").text(category);
+        $(".lbl-category-icon").empty().html(itemIcon);
+        $(".section-item-information .lbl-item-code").text(itemCode);
+        $(".section-item-information .lbl-unit-measure").text(unitMeasure);
+        $(".section-item-information .lbl-supplier").text(supplier);
+        $(".section-item-information .lbl-total-stock").text(stock);
+        $(".section-item-information .lbl-reserve").text(reserved);
+        $(".section-item-information .lbl-date-added").text(createdOn);
+        
+        if (stockStatus == "critical")
+        {
+            $(".item-status-warning").empty().
+            html(`<div class="alert alert-warning text-center"><i class="fas fa-exclamation-triangle me-2"></i>This item is Low on Stock!</div>`);
+        }
+        else if (stockStatus == "soldout")
+        {
+            $(".item-status-warning").empty()
+            .html(`<div class="alert alert-danger text-center"><i class="fas fa-exclamation-triangle me-2"></i>This item is Out of Stock!</div>`);
+        }
+        else 
+        {
+            $(".item-status-warning").empty()
+            .html(`<div class="alert alert-success text-center"><i class="fas fa-info-circle me-2"></i>This item is available</div>`);
+        }
+
+        itemDetailsModal.show();
+    });
 }

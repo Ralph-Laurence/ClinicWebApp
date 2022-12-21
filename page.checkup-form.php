@@ -396,7 +396,7 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
                                     <div class="d-flex align-items-center flex-row gap-2 px-3">
                                         <div class="badge badge-secondary">Low on stock: </div>
                                         <div class="badge badge-warning me-4 lbl-critical-counter"><?php echo $criticalItemsCount; ?></div>
-                                        <div class="badge badge-secondary">Sold Out: </div>
+                                        <div class="badge badge-secondary">Out of stock: </div>
                                         <div class="badge badge-danger lbl-soldout-counter"><?php echo $soldOutItemsCount; ?></div>
                                     </div>
                                 </div>
@@ -435,7 +435,7 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
                                                         $stock = "<span class=\"badge badge-warning\">Low on stock</span>";
 
                                                     if ($remaining == 0)
-                                                        $stock = "<span class=\"badge badge-danger\">Sold out</span>";
+                                                        $stock = "<span class=\"badge badge-danger\">Out of stock</span>";
 
                                                     echo "
                                                 <tr class=\"align-middle\"> 
@@ -455,7 +455,7 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
                                                 </tr>";
                                                 }
                                             }
-?>
+                                        ?>
                                         </tbody>
                                     </table>
                                 </div>

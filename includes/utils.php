@@ -27,4 +27,17 @@ class Helpers
 
         return $checkupFormNumber;
     }
+
+    // defuse key will be used for enc/decryption.
+    // the defuse crypto key is stored in the database.
+    // this is a bad idea however .. but for the purpose
+    // of simplicity we will store it on the database anyway
+    public static function getDefuseKey($pdo)
+    {
+        $table = TableNames::$configs_table;
+        $sql = "SELECT configs_value FROM $table WHERE configs_key = 'defuse_key'";
+        $defuseKey = $pdo->query($sql)->fetch(PDO::FETCH_COLUMN);
+
+        return trim($defuseKey);
+    }
 }

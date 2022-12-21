@@ -2,8 +2,11 @@
     <div class="modal-dialog pt-3">
         <div class="modal-content mt-5">
             <div class="modal-header confirmDialogModalHeader bg-base text-white py-0 ps-4 pe-0">
-                <h6 class="modal-title alertDialogTitle" id="confirmDialogModalLabel">Confirmation</h6>
-                <button type="button" class="btn shadow-0 fs-5 text-white" data-mdb-dismiss="modal">
+                <h6 class="modal-title confirmDialogTitle" id="confirmDialogModalLabel">
+                    <i class="fas fa-question me-2"></i>
+                    <span class="confirmDialogTitleSpan">Attention</span>
+                </h6>
+                <button type="button" class="btn shadow-0 fs-5 text-white confirmModalClose" data-mdb-dismiss="modal">
                     <i class="fas fa-times-circle"></i>
                 </button>
             </div>
@@ -12,9 +15,9 @@
                 Message
             </div>
 
-            <div class="modal-footer py-2">
-                <button type="button" class="btn btn-secondary text-dark fw-bold" data-mdb-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-secondary text-dark fw-bold" data-mdb-dismiss="modal">OK</button>
+            <div class="modal-footer confirmDialogModalFooter py-2">
+                <button type="button" class="btn btn-secondary text-dark fw-bold confirm-btn-cancel" data-mdb-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-secondary text-dark fw-bold confirm-btn-ok" data-mdb-dismiss="modal">OK</button>
             </div>
         </div>
     </div>

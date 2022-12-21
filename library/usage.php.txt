@@ -1,0 +1,16 @@
+<?php
+
+require_once("database/configs.php");
+require_once("includes/utils.php");
+require_once("library/defuse-crypto.phar");
+
+use Defuse\Crypto\Crypto;
+use Defuse\Crypto\Key;
+
+$defuseKey_Ascii = Helpers::getDefuseKey($pdo);
+$defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
+$rawString = "123";
+
+$cipher = Crypto::encrypt($rawString, $defuseKey);
+$decipher = Crypto::decrypt($cipher, $defuseKey);
+echo "Enc: " . $cipher . "<br>Dec: " . $decipher;
