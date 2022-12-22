@@ -3,12 +3,12 @@
 
 @session_start();
 
-require_once("rootcwd.php");
+require_once("rootcwd.inc.php");
 
-require_once($rootCwd . "database/configs.php");
-require_once($rootCwd . "database/dbhelper.php");
-require_once($rootCwd . "includes/system.php");
-require_once($rootCwd . "includes/utils.php");
+require_once($cwd . "database/configs.php");
+require_once($cwd . "database/dbhelper.php");
+require_once($cwd . "includes/system.php");
+require_once($cwd . "includes/utils.php");
 
 $request = new Requests();
 

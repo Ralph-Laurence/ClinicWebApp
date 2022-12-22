@@ -79,6 +79,23 @@
 } 
 
 /* -----------STYLES FOR DROPDOWN BOX----------- */
+.select-box-wrapper
+{
+    min-height: 36px !important;
+    height: 36px !important;
+}
+
+.dropdown-menu-scrollable
+{
+    max-height: 200px; 
+    height: 200px;
+    overflow-y: auto;
+}
+
+.dropdown-menu-scrollable li
+{
+    cursor: pointer;
+}
 
 .dropdown-menu .dropdown-item-custom-dark
 { 

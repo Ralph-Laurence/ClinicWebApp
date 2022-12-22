@@ -7,6 +7,8 @@ require_once($rootCwd . "includes/system.php");
 require_once($rootCwd . "includes/utils.php");
 require_once($rootCwd . "layout-header.php");
 require_once($rootCwd . "includes/inc.get-checkup-records.php");
+
+require_once($rootCwd . "includes/urls.php");
 ?>
 
 <body>
@@ -15,7 +17,7 @@ require_once($rootCwd . "includes/inc.get-checkup-records.php");
     <div class="container-fluid h-100 bg-document p-0">
 
         <!-- TITLE BANNER -->
-        <?php include("layouts/banner.php") ?>
+        <?php include_once("layouts/banner.php") ?>
         <!-- TITLE BANNER -->
 
         <!-- MAIN CONTENT -->
@@ -24,13 +26,13 @@ require_once($rootCwd . "includes/inc.get-checkup-records.php");
             <section class="d-flex flex-grow-1 mt-2 overflow-hidden">
 
                 <!-- NAVIGATION -->
-                <?php include("layouts/navigation.php") ?>
+                <?php require_once("layouts/navigation.php") ?>
 
                 <!--WORKAREA-->
                 <section class="workarea w-100 pb-4">
 
                     <!--WELCOME BANNER-->
-                    <?php include("layouts/welcome-banner.php"); ?>
+                    <?php include_once("layouts/welcome-banner.php"); ?>
 
                     <!--THE WORKSHEET WRAPPER-->
                     <div class="worksheet-wrapper p-4 w-100 h-100 overflow-hidden position-relative">
@@ -80,7 +82,7 @@ require_once($rootCwd . "includes/inc.get-checkup-records.php");
                                         <span>Find</span>
                                     </button>
                                 </form>
-                                <button <?php echoOnclick('page.patient-records.php'); ?> class="btn btn-primary <?php if (empty($condition)) echo 'display-none'; ?>">
+                                <button <?php echoOnclick(Navigation::$URL_PATIENT_RECORDS); ?> class="btn btn-primary <?php if (empty($condition)) echo 'display-none'; ?>">
                                     <i class="fas fa-undo me-2"></i>
                                     <span>Clear</span>
                                 </button>
@@ -152,7 +154,7 @@ require_once($rootCwd . "includes/inc.get-checkup-records.php");
     <!-- END CONTAINER -->
 
     <?php 
-        include("components/alert-dialog/alert-dialog.php");
+        require_once("components/alert-dialog/alert-dialog.php");
     ?>
 
     <!--SCRIPTS-->

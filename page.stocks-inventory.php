@@ -8,6 +8,8 @@ require_once($rootCwd . "includes/utils.php");
 require_once($rootCwd . "layout-header.php");
 require_once($rootCwd . "includes/inc.get-stocks-inventory.php");
 
+require_once($rootCwd . "includes/urls.php");
+
 require_once($rootCwd . "library/defuse-crypto.phar");
 
 use Defuse\Crypto\Crypto;
@@ -24,7 +26,7 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
     <div class="container-fluid h-100 bg-document p-0">
 
         <!-- TITLE BANNER -->
-        <?php include("layouts/banner.php") ?>
+        <?php include_once("layouts/banner.php") ?>
         <!-- TITLE BANNER -->
 
         <!-- MAIN CONTENT -->
@@ -33,13 +35,13 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
             <section class="d-flex flex-grow-1 mt-2 overflow-hidden">
 
                 <!-- NAVIGATION -->
-                <?php include("layouts/navigation.php") ?>
+                <?php require_once("layouts/navigation.php") ?>
 
                 <!--WORKAREA-->
                 <section class="workarea w-100 pb-4">
 
                     <!--WELCOME BANNER-->
-                    <?php include("layouts/welcome-banner.php"); ?>
+                    <?php include_once("layouts/welcome-banner.php"); ?>
 
                     <!--THE WORKSHEET WRAPPER-->
                     <div class="worksheet-wrapper p-4 w-100 h-100 overflow-hidden position-relative">
@@ -88,7 +90,7 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
                                             <span>Find</span>
                                         </button>
                                     </form>
-                                    <button <?php echoOnclick('page.stocks-inventory.php'); ?> class="btn btn-primary 
+                                    <button <?php echoOnclick(Navigation::$URL_STOCKS_INVENTORY); ?> class="btn btn-primary 
                                     <?php
                                     $display = "";
 
@@ -111,7 +113,7 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
                                         </button>
                                         <ul class="dropdown-menu dropdown-menu-custom-light" aria-labelledby="options-dropdown-button ul-li-pointer">
 
-                                            <li onclick="" class="d-flex align-items-center gap-3 px-3 py-1 dropdown-item-custom-light">
+                                            <li <?php echoOnclick(Navigation::$URL_ADD_NEW_ITEM); ?> class="d-flex align-items-center gap-3 px-3 py-1 dropdown-item-custom-light">
                                                 <div class="dropdown-item-icon text-center">
                                                     <i class="fas fa-plus fs-6 text-success"></i>
                                                 </div>
@@ -140,7 +142,7 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
                                             </li>
 
                                         </ul>
-                                        <input type="hidden" name="input-patient-type" class="input-patient-type" value="" required>
+                                        <input type="text" name="input-patient-type" class="input-patient-type d-none" value="" required>
                                     </div>
                                 </div>
                             </div>
@@ -291,106 +293,15 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
 
     </div>
     <!-- END CONTAINER -->
-
-    <!-- STOCK / ITEM INFORMATION DIALOG -->
-    <div class="modal fade stockDetailsModal" id="stockDetailsModal" tabindex="-1" aria-labelledby="stockDetailsModalLabel" aria-hidden="true" data-mdb-backdrop="static">
-        <div class="modal-dialog pt-3">
-            <div class="modal-content mt-4">
-                <div class="modal-header bg-base text-white py-0 ps-4 pe-0">
-                    <h6 class="modal-title" id="stockDetailsModalLabel">Item Information</h6>
-                    <button type="button" class="btn shadow-0 fs-5 text-white" data-mdb-dismiss="modal">
-                        <i class="fas fa-times-circle"></i>
-                    </button>
-                </div>
-
-                <div class="modal-body px-4">
-                    <div class="d-flex flex-wrap mb-2">
-                        <h5 class="font-base fw-bold lbl-item-name">Item Name</h5>
-                    </div>
-                    <div class="mb-3 d-flex align-items-center gap-2">
-                        <span class="fs-5 bg-teal px-2 rounded-6 text-white lbl-category-icon">
-                            <i class="fas fa-prescription-bottle"></i>
-                        </span>
-                        <span class="fw-bold fs-6 lbl-category">Category</span>
-                    </div>
-                    <div class="mb-2 section-item-information">
-
-                        <!--ITEM CODE-->
-                        <div class="row">
-                            <div class="col-1">
-                                <i class="fas fa-tag text-info"></i>
-                            </div>
-                            <div class="col-3">Item Code:</div>
-                            <div class="col">
-                                <span class="font-base lbl-item-code"></span>
-                            </div>
-                        </div> 
-                        <!--UNIT MEASURES--> 
-                        <div class="row">
-                            <div class="col-1">
-                                <i class="fas fa-ruler-combined text-info"></i>
-                            </div>
-                            <div class="col-3">Measures:</div>
-                            <div class="col">
-                                <span class="font-base lbl-unit-measure"></span>
-                            </div>
-                        </div> 
-                        <!--SUPPLIERS--> 
-                        <div class="row">
-                            <div class="col-1">
-                                <i class="fas fa-parachute-box text-info"></i>
-                            </div>
-                            <div class="col-3">Supplier:</div>
-                            <div class="col">
-                                <span class="font-base lbl-supplier"></span>
-                            </div>
-                        </div> 
-                        <!--TOTAL STOCK--> 
-                        <div class="row">
-                            <div class="col-1">
-                                <i class="fas fa-boxes text-info"></i>
-                            </div>
-                            <div class="col-3">Total Stock:</div>
-                            <div class="col">
-                                <span class="font-base lbl-total-stock"></span>
-                            </div>
-                        </div> 
-                        <!--RESERVE STOCK--> 
-                        <div class="row mb-3">
-                            <div class="col-1">
-                                <i class="fas fa-th-large text-info"></i>
-                            </div>
-                            <div class="col-3">Reserve:</div>
-                            <div class="col">
-                                <span class="font-base lbl-reserve"></span>
-                            </div>
-                        </div> 
-                        <!--DATE ADDED--> 
-                        <div class="row">
-                            <div class="col-1">
-                                <i class="fas fa-calendar-plus font-hilight"></i>
-                            </div>
-                            <div class="col-3">Created on:</div>
-                            <div class="col">
-                                <span class="font-base lbl-date-added"></span>
-                            </div>
-                        </div> 
-                    </div>
-                    <div class="item-status-warning"></div>
-                </div> 
-                <div class="modal-footer  py-2">
-                    <button class="btn btn-primary bg-base" type="button" data-mdb-dismiss="modal">
-                        OK
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
+ 
     <?php
-    include("components/alert-dialog/alert-dialog.php");
-    include("components/confirm-dialog/confirm-dialog.php");
-    include("components/snackbar/snackbar.php");
+
+    // modal window for showing the item details
+    require_once("layouts/item-info-dialog.php");
+
+    require_once("components/alert-dialog/alert-dialog.php");
+    require_once("components/confirm-dialog/confirm-dialog.php");
+    require_once("components/snackbar/snackbar.php");
     ?>
 
     <!--SCRIPTS-->

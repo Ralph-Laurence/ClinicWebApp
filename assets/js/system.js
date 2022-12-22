@@ -14,6 +14,18 @@ class Input
                 this.value = newValue;
         });
     }
+
+    static whiteList(inputClass, expression)
+    {
+        $("." + inputClass).on("input", function(e)
+        {
+            var newValue = this.value.replace(expression, "");
+
+            if (this.value != newValue)
+                this.value = newValue;
+        });
+    }
+
     static forceRemarks(inputClass)
     {
         $("." + inputClass).on("input", function(e)
@@ -105,5 +117,14 @@ class System
                 return false;
             }
         });
+    }
+    /**
+     * Check if a value is null or empty string
+     * @param {any} value - the value to check 
+     * @returns bool
+     */
+    static isNullOrEmpty(value)
+    {
+        return (value == undefined || value == null || value == "");
     }
 }

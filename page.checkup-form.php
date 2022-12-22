@@ -26,7 +26,7 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
     <div class="container-fluid h-100 bg-document p-0">
 
         <!-- TITLE BANNER -->
-        <?php include("layouts/banner.php") ?>
+        <?php include_once("layouts/banner.php") ?>
         <!-- TITLE BANNER -->
 
         <!-- MAIN CONTENT -->
@@ -35,13 +35,13 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
             <section class="d-flex flex-grow-1 mt-2 overflow-hidden">
 
                 <!-- NAVIGATION -->
-                <?php include("layouts/navigation.php") ?>
+                <?php require_once("layouts/navigation.php") ?>
 
                 <!--WORKAREA-->
                 <section class="workarea w-100 pb-5">
 
                     <!--WELCOME BANNER-->
-                    <?php include("layouts/welcome-banner.php"); ?>
+                    <?php include_once("layouts/welcome-banner.php"); ?>
 
                     <!--THE CHECKUP FORM-->
                     <div class="checkup-form-wrapper p-4 w-100 h-100 overflow-hidden position-relative">
@@ -141,7 +141,7 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
                                                 <li onclick="setPatientType(2)"><span class="dropdown-item dropdown-item-custom-dark">Faculty</span></li>
                                                 <li onclick="setPatientType(3)"><span class="dropdown-item dropdown-item-custom-dark">Staff</span></li>
                                             </ul>
-                                            <input type="hidden" name="input-patient-type" class="input-patient-type" value="" required>
+                                            <input type="text" name="input-patient-type" class="input-patient-type d-none" value="" required>
                                         </div>
                                         <!-- ADDRESS -->
                                         <div class="form-outline mb-3">
@@ -176,7 +176,7 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
                                                 <li onclick="setGender('Male')"><span class="dropdown-item dropdown-item-custom-dark">Male</span></li>
                                                 <li onclick="setGender('Female')"><span class="dropdown-item dropdown-item-custom-dark">Female</span></li>
                                             </ul>
-                                            <input type="hidden" name="input-gender" class="input-gender" value="" required>
+                                            <input type="text" name="input-gender" class="input-gender d-none" value="" required>
                                         </div>
                                         <!-- AGE AND WEIGHT -->
                                         <div class="d-flex align-items-center mb-2">
@@ -219,7 +219,7 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
                                                     <input type="text" name="input-illness" class="form-control input-illness bg-white" readonly data-mdb-toggle="modal" data-mdb-target="#illnessSelectorModal" />
                                                     <label class="form-label" for="input-illness">Illness / Disease</label>
                                                 </div>
-                                                <input type="hidden" name="input-illness-id" class="input-illness-id">
+                                                <input type="text" name="input-illness-id" class="input-illness-id d-none">
                                             </div>
                                             <div class="col-4 text-end">
                                                 <button type="button" class="btn btn-secondary btn-clear-illness fw-bold">Clear</button>
@@ -288,8 +288,8 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
 
     <!--SNACKBAR AND MODAL-->
     <?php
-    include("components/alert-dialog/alert-dialog.php");
-    include("components/snackbar/snackbar.php");
+    require_once("components/alert-dialog/alert-dialog.php");
+    require_once("components/snackbar/snackbar.php");
     ?>
 
     <!-- ILLNESS SELECTOR -->

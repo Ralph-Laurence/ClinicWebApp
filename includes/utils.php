@@ -40,4 +40,10 @@ class Helpers
 
         return trim($defuseKey);
     }
+
+    // Check if a string contains a substring
+    public static function strContains($input, $substring)
+    {
+        return (strpos($input, $substring) !== false);
+    }
 }

@@ -1,7 +1,8 @@
 <?php 
 require_once("rootcwd.php");
+require_once($cwd . "includes/urls.php");
 
-$cwd = $rootUrl; //constant("ROOT_URL");
+$cwd = $rootUrl;
 
 function echoOnclick($url)
 {
@@ -33,7 +34,7 @@ function echoOnclick($url)
 
                 <div class="accordion-body">
 
-                    <div class="row side-nav-link-item px-3 py-2" <?php echoOnclick('page.checkup-form.php'); ?> >
+                    <div class="row side-nav-link-item px-3 py-2" <?php echoOnclick(Navigation::$URL_CHECKUP_FORM); ?> >
                         <div class="col-2">
                             <i class="fas fa-heartbeat me-2 font-red"></i>
                         </div>
@@ -61,7 +62,7 @@ function echoOnclick($url)
             <div id="collapseTwo" class="accordion-collapse collapse show">
                 <div class="accordion-body">
 
-                    <div class="row side-nav-link-item px-3 py-2" <?php echoOnclick('page.stocks-inventory.php'); ?>>
+                    <div class="row side-nav-link-item px-3 py-2" <?php echoOnclick(Navigation::$URL_STOCKS_INVENTORY); ?>>
                         <div class="col-2">
                             <i class="fas fa-warehouse me-2 font-teal"></i>
                         </div>
@@ -75,7 +76,7 @@ function echoOnclick($url)
                         <div class="col fw-bold">Suppliers</div>
                     </div>
 
-                    <div class="row side-nav-link-item px-3 py-2" <?php echoOnclick('page.patient-records.php'); ?>>
+                    <div class="row side-nav-link-item px-3 py-2" <?php echoOnclick(Navigation::$URL_PATIENT_RECORDS); ?>>
                         <div class="col-2">
                             <i class="fas fa-notes-medical me-2 font-red"></i>
                         </div>
@@ -147,7 +148,7 @@ function echoOnclick($url)
 
                     <div class="row side-nav-link-item px-3 py-2">
                         <div class="col-2">
-                            <i class="fas fa-sign-out-alt me-2 font-accent"></i>
+                            <i class="fas fa-power-off me-2 font-accent"></i>
                         </div>
                         <div class="col fw-bold">Logout</div>
                     </div>

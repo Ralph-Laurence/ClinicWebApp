@@ -248,7 +248,7 @@ function sendDataToServer()
     $.ajax(
     {
         type: "POST",
-        url: "ajax.save-checkup-info.php",
+        url: "ajax/ajax.save-checkup-info.php",
         data: 
         { 
             jsonData: JSON.stringify(obj),
@@ -365,7 +365,7 @@ function requestNewFormNumber()
     $.ajax(
     {
         type: "POST",
-        url: "ajax.generate-form-number.php",
+        url: "ajax/ajax.generate-form-number.php",
         success: function (i) 
         {
             if (i) {
@@ -482,7 +482,6 @@ function bindPlusMinusOnSelectMedicine()
 function bindCarouselSlid()
 {
     // fire events after carousel has finished sliding
-    //medicinePickerCarousel.on("slid.mdb.carousel", () => 
     $(document).on("slid.mdb.carousel", "#medicinePickerCarousel", () => 
     {
         var nextBtn = $(document.querySelector(".btn-carsl-next"));
@@ -492,7 +491,6 @@ function bindCarouselSlid()
         // track each carousel page's visibility by checking if class 'active' is present
         // if page 2 is active, enable the back button and hide the next button. 
         // then show the OK button
-        //if (carousel_page2.hasClass("active"))
         if (carouselPage2.hasClass("active"))
         {
             nextBtn.hide();
@@ -501,7 +499,6 @@ function bindCarouselSlid()
         }
         // if page 1 is active, enable the next button and hide the back button. 
         // also hide the OK button.
-        //if (carousel_page1.hasClass("active"))
         if (carouselPage1.hasClass("active"))
         {
             backBtn.hide();
@@ -657,11 +654,8 @@ function trackAmountInput(totalRemaining, amount, element)
 function resetForm()
 {  
     checkupForm.reset();
-    genderDropButton.text("Select Gender");
-    fields.input_gender.val('');
-
+    genderDropButton.text("Select Gender"); 
     patientDropButton.text("Patient Type");
-    fields.input_patientType.val(''); 
 
     clearPrescriptions();
 

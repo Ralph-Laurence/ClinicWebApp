@@ -103,6 +103,11 @@ html, body
     color: var(--base-color) !important;
 } 
 
+.border-control-2
+{
+    border: 2px solid var(--control-border) !important;
+}
+
 div.ui-selectmenu-open 
 {
     position: absolute;
