@@ -25,12 +25,12 @@ function echoOnclick($url)
     <div class="accordion px-2">
         <div class="accordion-item border-start-0 border-end-0">
             <h2 class="accordion-header">
-                <button class="accordion-button" type="button" data-mdb-toggle="collapse" data-mdb-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                <button class="accordion-button" type="button" data-mdb-toggle="collapse" data-mdb-target="#collapseTransaction" aria-expanded="true" aria-controls="collapseTransaction">
                     <i class="fas fa-laptop me-2 font-teal"></i>
                     <span>Transaction</span>
                 </button>
             </h2>
-            <div id="collapseOne" class="accordion-collapse collapse show">
+            <div id="collapseTransaction" class="accordion-collapse collapse show">
 
                 <div class="accordion-body">
 
@@ -43,7 +43,7 @@ function echoOnclick($url)
 
                     <div class="row side-nav-link-item px-3 py-2">
                         <div class="col-2">
-                            <i class="fas fa-upload me-2 font-hilight"></i>
+                            <i class="fas fa-cube me-2 font-hilight"></i>
                         </div>
                         <div class="col fw-bold">Stock in / out</div>
                     </div>
@@ -54,12 +54,12 @@ function echoOnclick($url)
 
         <div class="accordion-item border-start-0 border-end-0">
             <h2 class="accordion-header">
-                <button class="accordion-button collapsed" type="button" data-mdb-toggle="collapse" data-mdb-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+                <button class="accordion-button" type="button" data-mdb-toggle="collapse" data-mdb-target="#collapseView" aria-expanded="true" aria-controls="collapseView">
                     <i class="fas fa-folder-open me-2 font-accent"></i>
                     View
                 </button>
             </h2>
-            <div id="collapseTwo" class="accordion-collapse collapse show">
+            <div id="collapseView" class="accordion-collapse collapse show">
                 <div class="accordion-body">
 
                     <div class="row side-nav-link-item px-3 py-2" <?php echoOnclick(Navigation::$URL_STOCKS_INVENTORY); ?>>
@@ -131,7 +131,7 @@ function echoOnclick($url)
 
         <div class="accordion-item border-start-0 border-end-0">
             <h2 class="accordion-header" id="headingProfile">
-                <button class="accordion-button collapsed" type="button" data-mdb-toggle="collapse" data-mdb-target="#collapseProfile" aria-expanded="true" aria-controls="collapseProfile">
+                <button class="accordion-button" type="button" data-mdb-toggle="collapse" data-mdb-target="#collapseProfile" aria-expanded="true" aria-controls="collapseProfile">
                     <i class="fas fa-user-alt me-2 text-primary"></i>
                     Profile
                 </button>

@@ -234,7 +234,10 @@ function cancelForm()
         btnCancelAll.click();
     };
 
-    confirm.show("Your changes won't be saved if you cancel.\n\nDo you wish to abort the operation?");
+    var message = "Your changes won't be saved if you cancel.\n\nDo you wish to abort the operation?";
+    var title = "Attention";
+
+    confirm.show(message, title, "Yes", "No");
 }
 
 function resetForm()

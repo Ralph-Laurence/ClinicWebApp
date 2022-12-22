@@ -56,7 +56,7 @@ class ConfirmDialog
     //---- SHOW CONFIRMATION DIALOG -----
     //-----------------------------------
     //
-    show(message, title = "Attention")
+    show(message, title = "Attention", okButtonText = "OK", cancelButtonText = "Cancel")
     {
         // skip if modal parent is undefined or null
         if (this.confirmModalParentClassName == undefined || this.confirmModalParentClassName == null)
@@ -73,6 +73,10 @@ class ConfirmDialog
 
         // set the message
         $("." + this.confirmModalParentClassName + " .confirmDialogModalBody").text(message);
+  
+        // set control button texts
+        this.confirm_BtnOK.text(okButtonText);
+        this.confirm_BtnCancel.text(cancelButtonText);
  
         this.mdbConfirmModalObj.show();
     } 

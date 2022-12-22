@@ -126,13 +126,13 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
                                             </li>
                                             <li onclick="" class="d-flex align-items-center gap-3 px-3 py-1 dropdown-item-custom-light">
                                                 <div class="dropdown-item-icon text-center">
-                                                    <i class="fas fa-download font-accent"></i>
+                                                    <i class="fas fa-quote-right font-accent"></i>
                                                 </div>
                                                 <div class="fs-6">Export to CSV</div>
                                             </li>
                                             <li onclick="" class="d-flex align-items-center gap-3 px-3 py-1 dropdown-item-custom-light">
                                                 <div class="dropdown-item-icon text-center">
-                                                    <i class="fas fa-file-pdf font-hilight"></i>
+                                                    <i class="fas fa-download font-hilight"></i>
                                                 </div>
                                                 <div class="fs-6">Save as PDF</div>
                                             </li>
