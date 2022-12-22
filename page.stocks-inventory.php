@@ -76,9 +76,14 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
                                         <select name="category-options" id="category-options" <?php if (empty($categoryOptions)) echo "disabled"; ?>>
                                             <option value="" disabled selected>Select Category</option>
                                             <?php
-                                            if ($categoriesRecordsCount > 0) {
-                                                foreach ($medicineCategories as $k => $v) {
-                                                    $isSelectedFlag = !empty($categoryOptions) ? "selected" : "";
+                                            if ($categoriesRecordsCount > 0) 
+                                            {
+                                                foreach ($medicineCategories as $k => $v) 
+                                                {
+                                                    $isSelectedFlag = "";
+
+                                                    if (!empty($categoryOptions) && $categoryOptions == $v)
+                                                        $isSelectedFlag = "selected";
 
                                                     echo "<option $isSelectedFlag value=\"$v\">$k</option>";
                                                 }

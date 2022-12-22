@@ -121,7 +121,8 @@ if ($medicineRecordsCount > 0)
 // get all medicine categories
 $sql = "SELECT i.item_category, c.name
 FROM $items_table i 
-LEFT JOIN $category_table c ON i.item_category = c.id";
+LEFT JOIN $category_table c ON i.item_category = c.id
+ORDER BY c.name";
 $sth = $pdo->prepare($sql);
 $sth->execute();
 
