@@ -81,4 +81,18 @@ class DbHelper
 
         return $result ?? [];
     } 
+
+    // Check if a column's value exists in the database.
+    // We do this by counting the occurrences of a specific value.
+    // $pdo         -> The connection object
+    // $table       -> The name of the table we will retrieve the records from
+    // $needle      -> The value we want to find
+    // $haystack    -> The field (column) where we will find the value
+    public function exists($pdo, $table, $needle = "", $haystack ="")
+    {
+        $sql = "SELECT COUNT(*) FROM $table WHERE $haystack = '$needle'";
+        $count = $pdo->query($sql)->fetchColumn();
+
+        return !empty($count);
+    }
 }

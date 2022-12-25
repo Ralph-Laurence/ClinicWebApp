@@ -1,6 +1,7 @@
 <?php
-require_once("rootcwd.inc.php");
 
+require_once("rootcwd.inc.php");
+ 
 require_once($cwd . "database/configs.php");
 require_once($cwd . "includes/system.php");
 require_once($cwd . "includes/utils.php");

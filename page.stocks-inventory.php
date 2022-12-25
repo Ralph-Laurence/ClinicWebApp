@@ -1,14 +1,22 @@
 <?php
+@session_start();
 
 require_once("rootcwd.php");
+
+require_once($rootCwd . "includes/urls.php");
+
+// we must be logged in to view this page
+if (!isset($_SESSION['isLoggedIn']) || $_SESSION['isLoggedIn'] !== true)
+{
+    header("Location: " . Navigation::$URL_LOGIN);
+    exit;
+}
 
 require_once($rootCwd . "database/configs.php");
 require_once($rootCwd . "includes/system.php");
 require_once($rootCwd . "includes/utils.php");
 require_once($rootCwd . "layout-header.php");
 require_once($rootCwd . "includes/inc.get-stocks-inventory.php");
-
-require_once($rootCwd . "includes/urls.php");
 
 require_once($rootCwd . "library/defuse-crypto.phar");
 
@@ -245,7 +253,7 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
                                                         </div>
                                                     </td>
                                                     <td>
-                                                        <i class=\"fas $icon fs-5\"></i>
+                                                        <img src=\"assets/images/inventory/$icon.png\" width=\"26\" height=\"26\">
                                                     </td>
                                                     <td class=\"fw-bold\">$itemName</td>
                                                     <td>$itemCode</td>

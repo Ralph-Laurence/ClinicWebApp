@@ -1,0 +1,6 @@
+use SemiorbitGuid\Guid;
+
+echo Guid::NewGuid();
+
+// OUTPUT:
+// {6BE33503-D448-0264-11AC-38822224B694}

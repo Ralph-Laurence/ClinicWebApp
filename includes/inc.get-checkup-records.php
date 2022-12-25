@@ -5,6 +5,16 @@ require_once($cwd . "database/configs.php");
 require_once($cwd . "database/dbhelper.php");
 require_once($cwd . "includes/system.php");
 require_once($cwd . "includes/utils.php");
+
+// Make sure that this file is only accessible by 
+// the parent script that will include this file.  
+
+// if (!defined("def_incCheckupRecord")) 
+// {
+//     http_response_code(404);
+//     include($cwd . "errors/404.php");
+//     die();
+// }
   
 $keyword = $_POST['input-keyword'] ?? "";
 $findBy = $_POST['find-patient-option'] ?? "";

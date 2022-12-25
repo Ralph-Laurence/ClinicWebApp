@@ -77,6 +77,8 @@ class TableNames
     public static $unit_measures    = "unit_measures";
     public static $patient_types    = "patient_types";
     public static $configs_table    = "configurations";
+    public static $users            = "users";
+    public static $permissions      = "user_permissions";
 }
 //
 // This class describes all access levels.
@@ -105,7 +107,7 @@ class AccessFlags
     // 
     // Patient Record   user2       x               ACCESS DENIED       -- This user cannot access the page.
     //
-    // Stock In / Out   user3       crud            FULL ACCESS         -- This user has the FULL access to all
+    // ReStock          user3       crud            FULL ACCESS         -- This user has the FULL access to all
     //                                                                     functions and features. (God Mode)
     //---------------------------------------------------------------------------------------------------------
 
@@ -117,3 +119,48 @@ class AccessFlags
     public static $DELETE   = "d";
     public static $DENIED   = "x";
 }
+//
+// This class describes the different user levels 
+// with their role id.
+// There will be basically 3 types of users.
+// 
+// 3 = Super Admin  -> God Mode, The owner
+// 2 = Admin        -> Higher Privilege than staff
+// 1 = Staff        -> Moderate Access
+// 0 - Inactive     -> User is registered but not allowed 
+//                     to access the system
+class UserRoles
+{
+    public static $SUPER_ADMIN = 3;
+    public static $ADMIN = 2;
+    public static $STAFF = 1;
+    public static $INACTIVE = 0;
+
+    // convert role number to its descriptive name
+    public static function ToDescName($role) : string
+    {
+        $role = intval($role) ?? 0;
+        $desc = "";
+
+        switch($role)
+        {
+            case 3:
+                $desc = "Super Admin";
+                break;        
+            case 2:
+                $desc = "Admin";
+                break;        
+            case 1:
+                $desc = "Staff";
+                break;        
+            default:
+                $desc = "Guest";
+                break;
+        }
+
+        return $desc;
+    }
+}
+
+// Just a description of the app's version which can be changed later on.
+$app_version = "1.0.0";

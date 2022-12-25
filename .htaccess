@@ -1,0 +1,11 @@
+ErrorDocument 400 http://%{HTTP_HOST}/projects/clinic/errors/400.php 
+ErrorDocument 403 http://%{HTTP_HOST}/projects/clinic/errors/403.php 
+ErrorDocument 404 http://%{HTTP_HOST}/projects/clinic/errors/404.php 
+ErrorDocument 408 http://%{HTTP_HOST}/projects/clinic/errors/408.php 
+ErrorDocument 500 http://%{HTTP_HOST}/projects/clinic/errors/500.php 
+
+RewriteEngine on
+# Determine if the request does not match an existing directory
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [R=404,L]
+

@@ -14,9 +14,7 @@
                         <h5 class="font-base fw-bold lbl-item-name">Item Name</h5>
                     </div>
                     <div class="mb-3 d-flex align-items-center gap-2">
-                        <span class="fs-5 bg-teal px-2 rounded-6 text-white lbl-category-icon">
-                            <i class="fas fa-prescription-bottle"></i>
-                        </span>
+                        <span class="fs-5 bg-document px-2 rounded-6 text-white lbl-category-icon"></span>
                         <span class="fw-bold fs-6 lbl-category">Category</span>
                     </div>
                     <div class="mb-2 section-item-information">

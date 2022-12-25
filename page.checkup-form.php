@@ -3,6 +3,15 @@
 
 require_once("rootcwd.php");
 
+require_once($rootCwd . "includes/urls.php");
+
+// we must be logged in to view this page
+if (!isset($_SESSION['isLoggedIn']) || $_SESSION['isLoggedIn'] !== true)
+{
+    header("Location: " . Navigation::$URL_LOGIN);
+    exit;
+}
+
 require_once($rootCwd . "database/configs.php");
 require_once($rootCwd . "includes/system.php");
 require_once($rootCwd . "includes/utils.php");
@@ -10,9 +19,7 @@ require_once($rootCwd . "layout-header.php");
 
 require_once($rootCwd . "includes/inc.get-medicines.php");
 require_once($rootCwd . "includes/inc.get-illness.php");
-
-// global reference to PDO object
-
+ 
 // Find the the last created checkup ID on checkups table
 // Generate a unique form number with a combination of 
 // Date today, and add +1 onto the last id, then pad with 
