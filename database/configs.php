@@ -90,33 +90,34 @@ class AccessFlags
     //---------------------------------------------------------------------------------------------------------
     //  ACCESS FLAGS    TITLE       DESCRIPTION
     //  
-    //  c               CREATE      -- The user can CREATE and save a record into database
-    //  r               READ        -- The user can VIEW the page / database records
-    //  u               UPDATE      -- The user can EDIT the database records
-    //  d               DELETE      -- The user can DELETE from database records
-    //  x               DENIED      -- The user CANNOT access the page or any functionality
+    //  w               WRITE       -- This user can CREATE and save a record into database
+    //  v               VIEW        -- This user can only view the page but cannot execute actions
+    //  m               MODIFY      -- This user can EDIT and DELETE a record from database
+    //  f               FULL        -- This user has FULL permission to CREATE, EDIT and DELETE
+    //  x               DENIED      -- This user CANNOT access the page or any functionality
     //  
     //---------------------------------------------------------------------------------------------------------
     // :::::::::::::::::::::::::::::::::: SAMPLE USAGE OF ACCESS LEVELS :::::::::::::::::::::::::::::::::::::::
     //---------------------------------------------------------------------------------------------------------
     // MODULE           USER        ACCESS FLAG     ACTION              DESCRIPTION 
     // 
-    // Checkup Form     user1       cr              CREATE | READ       -- This user can only access and create 
-    //                                                                     checkup data but he does not have a
-    //                                                                     permission to update or delete.
+    // Checkup Form     user1       w               CREATE RECORD       -- This user can only view and create
+    //                                                                     records from checkup form
     // 
-    // Patient Record   user2       x               ACCESS DENIED       -- This user cannot access the page.
+    // Patient Record   user2       x               ACCESS DENIED       -- This user cannot access the features
+    //                                                                     and functions of patient record page.
     //
-    // ReStock          user3       crud            FULL ACCESS         -- This user has the FULL access to all
-    //                                                                     functions and features. (God Mode)
+    // ReStock          user3       f               FULL ACCESS         -- This user has the FULL access to all
+    //                                                                     functions and features (God Mode)
+    //                                                                     of the restock page.
     //---------------------------------------------------------------------------------------------------------
 
     // For maintainability, brevity and integrity, we will store those flags in a static variable.
 
-    public static $CREATE   = "c";
-    public static $READ     = "r";
-    public static $UPDATE   = "u";
-    public static $DELETE   = "d";
+    public static $WRITE    = "w";
+    public static $VIEW     = "v";
+    public static $MODIFY   = "m";
+    public static $FULL     = "f";
     public static $DENIED   = "x";
 }
 //

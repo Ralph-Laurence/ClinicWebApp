@@ -18,3 +18,6 @@ $rootUrl = (!empty($_SERVER['HTTPS']) ? 'https' : 'http') . "://" . $dir;
 // This is what we exactly need for getting the 
 // Current Working Directory of our HOST. 
 $rootCwd = str_replace("\\", "/", dirname(__FILE__)) . "/";
+
+// super global defines
+define('ROOT_URL', $rootUrl);

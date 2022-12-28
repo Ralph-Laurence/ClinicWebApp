@@ -44,7 +44,12 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
             <section class="d-flex flex-grow-1 mt-2 overflow-hidden">
 
                 <!-- NAVIGATION -->
-                <?php require_once("layouts/navigation.php") ?>
+                <?php 
+                // mark the active side nav link
+                setActiveLink(Navigation::$NavIndex_Restock);
+
+                require_once("layouts/navigation.php");
+                ?>
 
                 <!--WORKAREA-->
                 <section class="workarea w-100 pb-4">

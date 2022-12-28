@@ -81,7 +81,8 @@ i.remaining,
 i.critical_level,
 u.measurement,
 s.supplier_name,
-i.date_added
+i.date_added,
+i.remarks
 FROM $items_table i
 LEFT JOIN $category_table c ON c.id = i.item_category
 LEFT JOIN $category_icons n ON n.id = c.fas_icon_id

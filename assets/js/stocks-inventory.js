@@ -198,10 +198,10 @@ function bindShowItemInfo()
         var dateAdded = currentRow.find("td:eq(9)").text(); 
         var unitMeasure = currentRow.find("td:eq(11)").text(); 
         var stockStatus = currentRow.find("td:eq(12)").text();
-
+        var remarks = currentRow.find("td:eq(13)").text();
+ 
         var createdOn = moment(dateAdded).format("dddd, MMM. DD, YYYY");
-
-        // set modal title
+ 
         $(".lbl-item-name").text(itemName);
         $(".lbl-category").text(category);
         $(".lbl-category-icon").empty().html(itemIcon);
@@ -211,6 +211,7 @@ function bindShowItemInfo()
         $(".section-item-information .lbl-total-stock").text(stock);
         $(".section-item-information .lbl-reserve").text(reserved);
         $(".section-item-information .lbl-date-added").text(createdOn);
+        $(".section-item-information .item-description").val(remarks);
         
         if (stockStatus == "critical")
         {

@@ -4,7 +4,7 @@ require_once("rootcwd.inc.php");
 require_once($cwd . "includes/urls.php");
 require_once($cwd . "env.php");
 
-http_response_code(404);
+http_response_code(403);
 ?>
 
 <!DOCTYPE html>
@@ -26,14 +26,14 @@ http_response_code(404);
 <body>
 
     <div class="container w-100 h-100 d-flex flex-column align-items-center justify-content-center">
-        <img src="../assets/images/errors/404.png" alt="icon">
+        <img src="../assets/images/errors/403.png" alt="icon">
         <h5 class="mt-4"> 
-            <span class="fw-bold font-base">404</span>
+            <span class="fw-bold font-base">403</span>
             <span class="mx-3 border border-end border-secondary"></span>
-            <span class="text-uppercase text-muted">NOT FOUND</span>
+            <span class="text-uppercase text-muted">ACCESS DENIED</span>
         </h5>
-        <span class="text-muted my-3">
-            The page you are looking for has<br>been moved or cannot be found.
+        <span class="text-muted text-center my-3">
+            You don't have enough permission<br>to access this page.
         </span>
         <a role="button" href="<?= ENV_SITE_ROOT . Navigation::$URL_HOME ?>">
             <i class="fas fa-chevron-circle-left"></i>

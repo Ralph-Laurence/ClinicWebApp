@@ -3,6 +3,6 @@
     data-mdb-toggle="tooltip" title="Click to show Navigation">
         <i class="fas fa-bars"></i>
     </button>
-    <span class="welcome-text me-auto">Welcome, user!</span>
+    <span class="welcome-text me-auto">Welcome, have a nice day!</span>
     <span class="banner-date-text"><?php echo Dates::dateToday("l, F d, Y, h:i A"); ?></span>
 </div>

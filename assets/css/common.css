@@ -28,6 +28,7 @@
     max-width: 280px;
     background-color: #EEEEEE;
     overflow-y: auto;
+    padding-bottom: 160px;
 } 
  
 .side-nav .side-nav-title,
@@ -38,12 +39,22 @@
 .side-nav-link-item
 {
     cursor: pointer;
+    border-radius: 4px;
 }
 
 .side-nav-link-item:hover
 {
+    background-color: #E1E1E1 !important;
+}
+
+.side-nav-link-item:active
+{
+    background-color: #E3EBF7 !important;
+}
+
+.side-nav-link-item.active
+{
     background-color: var(--amber-300) !important;
-    border-radius: 4px;
 }
 
 .btn-hide-sidenav 

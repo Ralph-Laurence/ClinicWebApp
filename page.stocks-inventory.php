@@ -43,7 +43,12 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
             <section class="d-flex flex-grow-1 mt-2 overflow-hidden">
 
                 <!-- NAVIGATION -->
-                <?php require_once("layouts/navigation.php") ?>
+                <?php 
+                // mark the active side nav link
+                setActiveLink(Navigation::$NavIndex_Stocks);
+
+                require_once("layouts/navigation.php");
+                ?>
 
                 <!--WORKAREA-->
                 <section class="workarea w-100 pb-4">
@@ -140,9 +145,9 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
                                             </li>
                                             <li onclick="" class="d-flex align-items-center gap-3 px-3 py-1 dropdown-item-custom-light">
                                                 <div class="dropdown-item-icon text-center">
-                                                    <i class="fas fa-download font-hilight"></i>
+                                                    <i class="fas fa-chart-pie font-hilight"></i>
                                                 </div>
-                                                <div class="fs-6">Save as PDF</div>
+                                                <div class="fs-6">Create Report</div>
                                             </li>
                                             <li>
                                                 <hr class="dropdown-divider" />
@@ -205,6 +210,7 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
                                             <th class="d-none" scope="col">ItemGuid</th>
                                             <th class="d-none" scope="col">Units</th>
                                             <th class="d-none" scope="col">Status</th>
+                                            <th class="d-none" scope="col">Description</th>
                                         </tr>
                                     </thead>
                                     <tbody class="stocks-dataset bg-white">
@@ -224,7 +230,8 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
                                                 $measurement = $row['measurement'];
                                                 $supplier = $row['supplier_name'];
                                                 $dateAdded = $row['date_added'];
-                                                // = date("M d, Y h:i A");
+                                                $remarks = $row['remarks'];
+
                                                 $itemId = $row['id'];
                                                 $itemGuid = Crypto::encrypt(strval($itemId), $defuseKey);
 
@@ -287,6 +294,7 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
                                                     <td class=\"d-none\">$itemGuid</td>
                                                     <td class=\"d-none\">$measurement</td>
                                                     <td class=\"d-none\">$stockStatus</td>
+                                                    <td class=\"d-none\">$remarks</td>
                                                 </tr>";
                                             }
                                         }

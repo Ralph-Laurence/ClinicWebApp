@@ -6,8 +6,7 @@ require_once("rootcwd.php");
 require_once($rootCwd . "includes/urls.php");
 
 // we must be logged in to view this page
-if (!isset($_SESSION['isLoggedIn']) || $_SESSION['isLoggedIn'] !== true)
-{
+if (!isset($_SESSION['isLoggedIn']) || $_SESSION['isLoggedIn'] !== true) {
     header("Location: " . Navigation::$URL_LOGIN);
     exit;
 }
@@ -17,7 +16,6 @@ require_once($rootCwd . "includes/system.php");
 require_once($rootCwd . "includes/utils.php");
 require_once($rootCwd . "layout-header.php");
 require_once($rootCwd . "includes/inc.get-checkup-records.php");
-
 ?>
 
 <body>
@@ -35,7 +33,12 @@ require_once($rootCwd . "includes/inc.get-checkup-records.php");
             <section class="d-flex flex-grow-1 mt-2 overflow-hidden">
 
                 <!-- NAVIGATION -->
-                <?php require_once("layouts/navigation.php") ?>
+                <?php  
+                    // mark the active side nav link
+                    setActiveLink(Navigation::$NavIndex_Patients);
+
+                    require_once("layouts/navigation.php");
+                ?>
 
                 <!--WORKAREA-->
                 <section class="workarea w-100 pb-4">
@@ -59,48 +62,80 @@ require_once($rootCwd . "includes/inc.get-checkup-records.php");
 
                             <!--SEARCH BARS-->
                             <div class="searchbar-wrapper d-flex flex-row gap-2">
-                                <form action="" method="POST" class="d-flex flex-row gap-2 filter-form">
-                                    <div class="form-outline">
-                                        <input type="text" id="input-keyword" name="input-keyword" class="form-control"
-                                        value="<?php if (!empty($keyword)) echo $keyword; ?>" 
-                                        <?php if (!empty($monthOptions)) echo "disabled"; ?>/>
-                                        <label class="form-label" for="form12">Find Records</label>
-                                    </div>
-                                    <select name="find-patient-option" id="find-patient-option">
-                                        <option value="filter-fname" <?php if (!empty($findBy) && $findBy == "filter-fname") echo "selected"; ?> >By Firstname</option>
-                                        <option value="filter-lname" <?php if (!empty($findBy) && $findBy == "filter-lname") echo "selected"; ?> >By Lastname</option>
-                                        <option value="filter-month" <?php if (!empty($findBy) && $findBy == "filter-month") echo "selected"; ?> >By Month</option>
-                                        <option value="filter-rec-num" <?php if (!empty($findBy) && $findBy == "filter-rec-num") echo "selected"; ?> >By Record Number</option>
-                                    </select>
-                                    <select name="month-options" id="month-options" <?php if (empty($monthOptions)) echo "disabled"; ?>>
-                                        <option value="" disabled selected>Select Month</option>
-                                        <?php 
-                                            
-                                        for($i = 1; $i <= 12; $i++)
-                                        {
-                                            $monthName = date("F", mktime(0, 0, 0, $i, 10));
-                                            $monthIndex = str_pad($i, 2, '0', STR_PAD_LEFT);
-                                            $selected = $monthIndex == $monthOptions ? "selected" : "";
-                                            echo "<option $selected value='$monthIndex'>$monthName</option>";
-                                        }
-                                            
-                                        ?>
-                                    </select>
-                                    <button type="button" class="btn btn-primary bg-base btn-find">
-                                        <i class="fas fa-search me-2"></i>
-                                        <span>Find</span>
+                                <div class="left-half me-auto d-flex flex-row gap-2 flex-wrap">
+                                    <form action="" method="POST" class="d-flex flex-row gap-2 filter-form">
+                                        <div class="form-outline">
+                                            <input type="text" id="input-keyword" name="input-keyword" class="form-control" value="<?php if (!empty($keyword)) echo $keyword; ?>" <?php if (!empty($monthOptions)) echo "disabled"; ?> />
+                                            <label class="form-label" for="form12">Find Records</label>
+                                        </div>
+                                        <select name="find-patient-option" id="find-patient-option">
+                                            <option value="filter-fname" <?php if (!empty($findBy) && $findBy == "filter-fname") echo "selected"; ?>>By Firstname</option>
+                                            <option value="filter-lname" <?php if (!empty($findBy) && $findBy == "filter-lname") echo "selected"; ?>>By Lastname</option>
+                                            <option value="filter-month" <?php if (!empty($findBy) && $findBy == "filter-month") echo "selected"; ?>>By Month</option>
+                                            <option value="filter-rec-num" <?php if (!empty($findBy) && $findBy == "filter-rec-num") echo "selected"; ?>>By Record Number</option>
+                                        </select>
+                                        <select name="month-options" id="month-options" <?php if (empty($monthOptions)) echo "disabled"; ?>>
+                                            <option value="" disabled selected>Select Month</option>
+                                            <?php
+
+                                            for ($i = 1; $i <= 12; $i++) {
+                                                $monthName = date("F", mktime(0, 0, 0, $i, 10));
+                                                $monthIndex = str_pad($i, 2, '0', STR_PAD_LEFT);
+                                                $selected = $monthIndex == $monthOptions ? "selected" : "";
+                                                echo "<option $selected value='$monthIndex'>$monthName</option>";
+                                            }
+
+                                            ?>
+                                        </select>
+                                        <button type="button" class="btn btn-primary bg-base btn-find">
+                                            <i class="fas fa-search me-2"></i>
+                                            <span>Find</span>
+                                        </button>
+                                    </form>
+                                    <button <?php echoOnclick(Navigation::$URL_PATIENT_RECORDS); ?> class="btn btn-primary <?php if (empty($condition)) echo 'display-none'; ?>">
+                                        <i class="fas fa-undo me-2"></i>
+                                        <span>Clear</span>
                                     </button>
-                                </form>
-                                <button <?php echoOnclick(Navigation::$URL_PATIENT_RECORDS); ?> class="btn btn-primary <?php if (empty($condition)) echo 'display-none'; ?>">
-                                    <i class="fas fa-undo me-2"></i>
-                                    <span>Clear</span>
-                                </button>
+                                </div>
+                                <div class="right-half">
+                                    <div class="dropdown">
+                                        <button class="btn btn-secondary bg-base text-white dropdown-toggle w-100" type="button" id="options-dropdown-button" data-mdb-toggle="dropdown" aria-expanded="false">
+                                            Options
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-custom-light" aria-labelledby="options-dropdown-button ul-li-pointer">
+
+                                            <li onclick="" class="d-flex align-items-center gap-3 px-3 py-1 dropdown-item-custom-light">
+                                                <div class="dropdown-item-icon text-center">
+                                                    <i class="fas fa-quote-right font-accent"></i>
+                                                </div>
+                                                <div class="fs-6">Export to CSV</div>
+                                            </li>
+                                            <li onclick="" class="d-flex align-items-center gap-3 px-3 py-1 dropdown-item-custom-light">
+                                                <div class="dropdown-item-icon text-center">
+                                                    <i class="fas fa-chart-pie font-hilight"></i>
+                                                </div>
+                                                <div class="fs-6">Create Report</div>
+                                            </li>
+                                            <li>
+                                                <hr class="dropdown-divider" />
+                                            </li>
+                                            <li class="d-flex align-items-center gap-3 px-3 py-1 dropdown-item-custom-light dropdown-option-delete-all-selected">
+                                                <span class="dropdown-item-icon text-center">
+                                                    <i class="fas fa-trash-alt font-red"></i>
+                                                </span>
+                                                <span class="fs-6">Delete All Selected</span>
+                                            </li>
+
+                                        </ul>
+                                        <input type="text" name="input-patient-type" class="input-patient-type d-none" value="" required>
+                                    </div>
+                                </div>
                             </div>
 
                             <!--DIVIDER-->
                             <div class="divider-separator border border-1 border-bottom my-3"></div>
 
-                            <h6>Total Records Found: <?php if(!empty($checkupDataSet)) echo count($checkupDataSet) ?></h6>
+                            <h6>Total Records Found: <?php if (!empty($checkupDataSet)) echo count($checkupDataSet) ?></h6>
 
                             <!-- WORKSHEET TABLE-->
                             <div class="w-100 flex-grow-1 border border-1 border-secondary mb-2 worksheet-table-wrapper" style="overflow-y: auto;">
@@ -133,13 +168,23 @@ require_once($rootCwd . "includes/inc.get-checkup-records.php");
                                                     <td>$illness</td>
                                                     <td>$checkupDate</td>
                                                     <td>
-                                                        <div class=\"d-flex flex-row gap-2\">
-                                                            <button type=\"button\" class=\"btn btn-primary bg-base px-3\">
-                                                                <i class=\"fas fa-clone text-white\"></i>
-                                                            </button>
-                                                            <button type=\"button\" class=\"btn btn-warning bg-amber px-3\">
-                                                                <i class=\"fas fa-pen text-dark\"></i>
-                                                            </button>
+                                                        <div class=\"btn-group\">
+                                                            <button type=\"button\" class=\"btn btn-primary btn-record-details px-2 text-center\">Details</button>
+                                                            <button type=\"button\" class=\"btn btn-primary btn-split-arrow px-0 text-center dropdown-toggle dropdown-toggle-split\" data-mdb-toggle=\"dropdown\" aria-expanded=\"false\"></button>
+                                                            <ul class=\"dropdown-menu dropdown-menu-custom-light-small\">
+                                                                <li onclick=\"\" class=\"d-flex align-items-center gap-3 px-3 py-1 dropdown-item-custom-light\">
+                                                                    <div class=\"dropdown-item-icon text-center\">
+                                                                        <i class=\"fas fa-edit fs-6 font-amber\"></i>
+                                                                    </div>
+                                                                    <div class=\"fs-6\">Edit</div>
+                                                                </li> 
+                                                                <li onclick=\"\" class=\"d-flex align-items-center gap-3 px-3 py-1 dropdown-item-custom-light\">
+                                                                    <div class=\"dropdown-item-icon text-center\">
+                                                                        <i class=\"fas fa-trash fs-6 font-red\"></i>
+                                                                    </div>
+                                                                    <div class=\"fs-6\">Delete</div>
+                                                                </li> 
+                                                            </ul>
                                                         </div>
                                                     </td>
                                                 </tr>";
@@ -162,8 +207,8 @@ require_once($rootCwd . "includes/inc.get-checkup-records.php");
     </div>
     <!-- END CONTAINER -->
 
-    <?php 
-        require_once("components/alert-dialog/alert-dialog.php");
+    <?php
+    require_once("components/alert-dialog/alert-dialog.php");
     ?>
 
     <!--SCRIPTS-->

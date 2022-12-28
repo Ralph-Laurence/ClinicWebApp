@@ -60,13 +60,25 @@
                             </div>
                         </div>
                         <!--RESERVE STOCK-->
-                        <div class="row mb-3">
+                        <div class="row">
                             <div class="col-1">
                                 <i class="fas fa-th-large text-info"></i>
                             </div>
                             <div class="col-3">Reserve:</div>
                             <div class="col">
                                 <span class="font-base lbl-reserve"></span>
+                            </div>
+                        </div>
+                        <!--STOCK DESCRIPTION-->
+                        <div class="row mb-3">
+                            <div class="col-1">
+                                <i class="fas fa-info-circle text-info"></i>
+                            </div>
+                            <div class="col-3">Description:</div>
+                            <div class="col">
+                                <div class="form-outline">
+                                    <input type="text" class="form-control bg-white item-description" value="N/A" readonly>
+                                </div>
                             </div>
                         </div>
                         <!--DATE ADDED-->

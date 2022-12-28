@@ -4,6 +4,7 @@ require_once($cwd . "includes/urls.php");
 
 $cwd = $rootUrl;
 
+// add onclick redirects to links
 function echoOnclick($url)
 {
     global $cwd;
@@ -34,14 +35,14 @@ function echoOnclick($url)
 
                 <div class="accordion-body">
 
-                    <div class="row side-nav-link-item px-3 py-2" <?php echoOnclick(Navigation::$URL_CHECKUP_FORM); ?> >
+                    <div class="row side-nav-link-item px-3 py-2 <?= highlightLink(Navigation::$NavIndex_Checkup) ?>" <?php echoOnclick(Navigation::$URL_CHECKUP_FORM); ?> >
                         <div class="col-2">
                             <i class="fas fa-heartbeat me-2 font-red"></i>
                         </div>
                         <div class="col fw-bold">Checkup</div>
                     </div> 
 
-                    <div class="row side-nav-link-item px-3 py-2" <?php echoOnclick(Navigation::$URL_RESTOCK); ?>>
+                    <div class="row side-nav-link-item px-3 py-2 <?= highlightLink(Navigation::$NavIndex_Restock) ?>" <?php echoOnclick(Navigation::$URL_RESTOCK); ?>>
                         <div class="col-2">
                             <i class="fas fa-cube me-2 font-hilight"></i>
                         </div>
@@ -62,28 +63,28 @@ function echoOnclick($url)
             <div id="collapseView" class="accordion-collapse collapse show">
                 <div class="accordion-body">
 
-                    <div class="row side-nav-link-item px-3 py-2" <?php echoOnclick(Navigation::$URL_STOCKS_INVENTORY); ?>>
+                    <div class="row side-nav-link-item px-3 py-2 <?= highlightLink(Navigation::$NavIndex_Stocks) ?>" <?php echoOnclick(Navigation::$URL_STOCKS_INVENTORY); ?>>
                         <div class="col-2">
                             <i class="fas fa-warehouse me-2 font-teal"></i>
                         </div>
                         <div class="col fw-bold">Stocks Inventory</div>
                     </div>
 
-                    <div class="row side-nav-link-item px-3 py-2">
+                    <div class="row side-nav-link-item px-3 py-2 <?= highlightLink(Navigation::$NavIndex_Suppliers) ?>">
                         <div class="col-2">
                             <i class="fas fa-ticket-alt me-2 font-accent"></i>
                         </div>
                         <div class="col fw-bold">Suppliers</div>
                     </div>
 
-                    <div class="row side-nav-link-item px-3 py-2" <?php echoOnclick(Navigation::$URL_PATIENT_RECORDS); ?>>
+                    <div class="row side-nav-link-item px-3 py-2 <?= highlightLink(Navigation::$NavIndex_Patients) ?>" <?php echoOnclick(Navigation::$URL_PATIENT_RECORDS); ?>>
                         <div class="col-2">
                             <i class="fas fa-notes-medical me-2 font-red"></i>
                         </div>
                         <div class="col fw-bold">Patient Records</div>
                     </div>
 
-                    <div class="row side-nav-link-item px-3 py-2">
+                    <div class="row side-nav-link-item px-3 py-2 <?= highlightLink(Navigation::$NavIndex_Notifications) ?>">
                         <div class="col-2">
                             <i class="fas fa-bell me-2 font-hilight"></i>
                         </div>

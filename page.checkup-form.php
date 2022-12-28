@@ -42,7 +42,12 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
             <section class="d-flex flex-grow-1 mt-2 overflow-hidden">
 
                 <!-- NAVIGATION -->
-                <?php require_once("layouts/navigation.php") ?>
+                <?php 
+                // mark the active side nav link
+                setActiveLink(Navigation::$NavIndex_Checkup);
+
+                require_once("layouts/navigation.php");
+                ?>
 
                 <!--WORKAREA-->
                 <section class="workarea w-100 pb-5">
