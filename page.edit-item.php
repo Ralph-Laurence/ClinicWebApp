@@ -348,16 +348,12 @@ if (empty($itemData)) {
                                                 </div>
                                             </div>
                                         </form>
-                                        <div class="form-control-buttons d-flex align-items-center">
-                                            <div class="left-content me-auto">
-                                                <button type="button" class="btn btn-primary btn-edit display-none">Edit</button>
-                                            </div>
-                                            <div class="right-content d-flex flex-row gap-2 align-items-center">
-                                                <button type="button" class="btn btn-secondary fw-bold btn-cancel">Cancel</button>
-                                                <button class="d-none btn-cancel-all" <?php echoOnclick(Navigation::$URL_STOCKS_INVENTORY); ?>></button>
-                                                <button type="button" class="btn btn-primary btn-save">Save</button>
-                                                <button type="button" class="btn btn-primary bg-base btn-done display-none" <?php echoOnclick(Navigation::$URL_STOCKS_INVENTORY); ?>>Done</button>
-                                            </div>
+                                        <div class="form-control-buttons d-flex flex-row gap-2 align-items-center justify-content-end">
+                                            <button type="button" class="btn btn-secondary fw-bold btn-cancel">Cancel</button>
+                                            <button class="d-none btn-cancel-all" <?php echoOnclick(Navigation::$URL_STOCKS_INVENTORY); ?>></button>
+                                            <button type="button" class="btn btn-primary btn-save">Save</button>
+                                            <button type="button" class="btn btn-primary btn-edit display-none">Edit</button>
+                                            <button type="button" class="btn btn-primary bg-base btn-done display-none" <?php echoOnclick(Navigation::$URL_STOCKS_INVENTORY); ?>>Done</button>
                                         </div>
                                     </div>
                                 </div>

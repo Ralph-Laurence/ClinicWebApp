@@ -22,6 +22,7 @@ var confirm = undefined;
 var snackbar = undefined;
 
 var saveButton = undefined;
+var editButton = undefined;
 var cancelButton = undefined;
 var btnCancelAll = undefined;
 
@@ -54,6 +55,7 @@ function onAwake()
 
     cancelButton = $(".btn-cancel");
     saveButton = $(".btn-save");
+    editButton = $(".btn-edit");
     btnCancelAll = $(".btn-cancel-all");
 
     var expOnlySpecificChars = /[^A-Za-z0-9.\s\-\(\)\/]/gi;
@@ -106,6 +108,13 @@ function onBind()
         }
     });
 
+    // show the save and cancel buttons back 
+    // when the Edit button was clicked
+    editButton.click(() => 
+    {
+        $(".btn-done, .btn-edit").hide();
+        $(".btn-save, .btn-cancel").show();
+    });
 }
 
 function setCategoryValue(value, displayText)
@@ -193,8 +202,8 @@ function updateItem()
             switch(responseCode)
             {
                 case "0x000":
-                    
-                    resetForm();
+                    snackbar.show("Item has been successfully updated");
+                    onUpdateSuccess();
                     break;
                 case "0x400":
                     dialog.danger("There were bad inputs supplied and as part of security measures, the server refused it. Please check your entries.");
@@ -235,11 +244,8 @@ function cancelForm()
     confirm.show(message, title, "Yes", "No");
 }
 
-function resetForm()
-{
-    $("#main-form").trigger("reset");
-
-    dropdownCategory.text("Item Category");
-    dropdownSupplier.text("Select Supplier");
-    dropdownUnits.text("Unit Measurement");
+function onUpdateSuccess()
+{  
+    $(".btn-done, .btn-edit").show();
+    $(".btn-save, .btn-cancel").hide();
 }
