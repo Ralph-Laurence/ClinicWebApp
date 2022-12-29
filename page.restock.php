@@ -17,8 +17,6 @@ require_once($rootCwd . "includes/system.php");
 require_once($rootCwd . "includes/utils.php");
 require_once($rootCwd . "layout-header.php");
 
-require_once($rootCwd . "includes/inc.add-item.php");
-
 require_once($rootCwd . "library/defuse-crypto.phar");
 
 use Defuse\Crypto\Crypto;
@@ -58,7 +56,7 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
                     <?php include_once("layouts/welcome-banner.php"); ?>
 
                     <!--THE WORKSHEET WRAPPER-->
-                    <div class="worksheet-wrapper p-4 w-100 h-100 overflow-hidden position-relative">
+                    <div class="worksheet-wrapper p-2 w-100 h-100 overflow-hidden position-relative">
 
                         <div class="worksheet d-flex flex-column bg-white shadow-2-strong w-100 h-100 p-4 scrollable" style="overflow-y: auto;">
 

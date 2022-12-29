@@ -39,3 +39,5 @@ function pathUrl($dir = __DIR__)
 // Define super global variable which we
 // can use later throughout the system
 define('ENV_SITE_ROOT', pathUrl());
+
+//echo !empty($_SERVER['HTTPS']) ? 'https' : 'http' . "://" . $_SERVER["SERVER_NAME"] . $_SERVER['PHP_SELF'];

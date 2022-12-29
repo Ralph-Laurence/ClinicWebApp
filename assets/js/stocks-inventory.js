@@ -14,6 +14,8 @@ var liOption_DeleteCheckedRows = undefined;
 
 var itemDetailsModal = undefined;
 
+var dataTable = undefined;
+
 $(document).ready(() => onAwake());
 
 function onAwake()
@@ -21,6 +23,11 @@ function onAwake()
     dialog = new AlertDialog();
     confirm = new ConfirmDialog();
     snackbar = new SnackBar();
+
+    dataTable = $('.stocks-table').DataTable({
+        searching: false,
+        ordering:  false
+    });
 
     itemDetailsModal = new mdb.Modal($("#stockDetailsModal"));
     
@@ -45,8 +52,7 @@ function onAwake()
     });
 
     $("#category-options").selectmenu();
- 
-
+   
     // bind event handlers
     onBind();
 }
@@ -232,3 +238,30 @@ function bindShowItemInfo()
         itemDetailsModal.show();
     });
 }
+//
+// Launch the page for editing the item
+//
+function editItem(itemKey)
+{
+    var inputItemKey = $("#input-item-key").val(itemKey);
+
+    if (inputItemKey == undefined || inputItemKey == "")
+        return;
+
+    $(".frm-edit-item").trigger("submit");
+}
+// 
+// Highlight the recently updated row
+//
+function highlightUpdatedRow()
+{
+    var rows = $('.stocks-table tr');
+ 
+    if (rows.length > 0)
+    { 
+        // Highlight the row
+        //
+        var tbody = $('.stocks-table').find("tbody tr");
+        $(tbody[0]).css("background-color", "#D6F0E0");  
+    }
+} 

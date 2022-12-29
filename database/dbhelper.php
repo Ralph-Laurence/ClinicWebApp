@@ -49,6 +49,73 @@ class DbHelper
         $sth->execute();
     }
 
+    public function update($pdo, $table, $data = array(), $condition = array())
+    {
+        // Stop execution if there is no connection object
+        if ($pdo == null)
+            die("Server Error");
+
+        // get all the column names from the keyvalue pair ($data) array
+        $columnNamesClean = array_keys($data);
+
+        // build the column parameter string array
+        // with syntax as: 
+        // col=?
+        $columnNamesParam = array();
+
+        foreach($columnNamesClean as $col)
+        {
+            $paramStr = $col."=?";
+
+            array_push($columnNamesParam, $paramStr);
+        }
+
+        // then join the column parameter as single string
+        $colParamStrings = implode(",", $columnNamesParam);
+
+        // get the condition column names from keyvalue pair array
+        $conditionColumns = array_keys($condition);
+
+        // build the condition parameter string array
+        // with syntax as:
+        // col=?
+        $condNamesParam = array();
+
+        foreach($conditionColumns as $col)
+        {
+            $paramStr = $col."=?";
+            
+            array_push($condNamesParam, $paramStr);
+        }
+
+        // then join the condition parameter as single string 
+        $condParamStrings = implode(",", $condNamesParam);
+
+        // build the final query
+        $sql = "UPDATE $table SET $colParamStrings WHERE $condParamStrings";
+
+        // execute the query then bind their values per parameters
+        $sth = $pdo->prepare($sql);
+
+        // value binding index (the question mark position)
+        $paramIndex = 1;
+
+        foreach(array_values($data) as $v)
+        {
+            $sth->bindValue($paramIndex, $v);
+            $paramIndex++;
+        }
+
+        // condition value binding
+        foreach(array_values($condition) as $v)
+        {
+            $sth->bindValue($paramIndex, $v);
+            $paramIndex++;
+        }
+
+        $sth->execute(); 
+    }
+
     // Select all records from the given database table. The returning data
     // will be of type Key-Value Pair or what we call the ASSOCIATIVE ARRAY.
     // $pdo         -> The connection object

@@ -11,11 +11,14 @@ require_once($cwd . "library/defuse-crypto.phar");
 use Defuse\Crypto\Crypto;
 use Defuse\Crypto\Key;
 
+// for encryption/decryption
 $defuseKey_Ascii = Helpers::getDefuseKey($pdo);
 $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
    
 $request = new Requests();
 
+// make sure that this script file will only execute when accessed
+// with POST amd AJAX request.
 if ($_SERVER['REQUEST_METHOD'] != 'POST' || !$request->isAjax())
 {
     http_response_code(404);
@@ -37,6 +40,9 @@ $db = new DbHelper($pdo);
 
 $itemsTable = TableNames::$items;
 
+// form data payload from AJAX is required.
+// if not supplied, immediately stop the 
+// execution
 if (!isset($_POST['formData']))
 {
     echo $returnCodes["badInput"];
@@ -44,8 +50,10 @@ if (!isset($_POST['formData']))
     exit;
 }
 
+// the form data is an JSON encoded data
 $formData = $_POST['formData'];
 
+// we must decode it into an associative array
 $payload = json_decode($formData, true);
 
 if (empty($payload))
@@ -55,9 +63,10 @@ if (empty($payload))
     exit;
 }
   
+// get the values from decoded json
+$itemKey = $payload['itemKey'];
 $itemName = $payload['itemName'];
 $itemCode = $payload['itemCode'];
-$totalStock = $payload['totalStock'];
 $reserveStock = $payload['reserveStock'];
 $remarks = $payload['remarks'] ?? "";
 
@@ -80,12 +89,14 @@ try
     // decrypt the values to human readable / database compatible values
     $dec_category = Crypto::decrypt($category, $defuseKey);
     $dec_units = Crypto::decrypt($units, $defuseKey);
-    $dec_supplier = Crypto::decrypt($supplier, $defuseKey);    
-
+    $dec_supplier = Crypto::decrypt($supplier, $defuseKey);  
+    
+    $itemId = Crypto::decrypt($itemKey, $defuseKey);  
+    
     // if supplier is 'none', convert it to 0
     if ($dec_supplier == 'none')
         $dec_supplier = 0;
-  
+
     $data = 
     [
         "item_name"         => $itemName,
@@ -93,18 +104,19 @@ try
         "item_category"     => $dec_category,
         "unit_measure"      => $dec_units,
         "supplier_id"       => $dec_supplier,
-        "remaining"         => $totalStock,
         "critical_level"    => $reserveStock,
         "remarks"           => $remarks
     ];
 
-    $db->insert($pdo, TableNames::$items, $data);
-
+    $condition = ["id" => $itemId];
+     
+    $db->update($pdo, $itemsTable, $data, $condition);
+    
     echo $returnCodes["success"];
     exit;
 } 
 catch (Exception $th) 
-{
+{ 
     if (Helpers::strContains($th->getMessage(), "for key 'item_name'"))
     {
         echo $returnCodes["uniqueItem"];
@@ -117,7 +129,7 @@ catch (Exception $th)
     {
         echo $returnCodes["serverError"];
     }
-
+    
     http_response_code(500);
     exit;
 }

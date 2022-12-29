@@ -28,8 +28,7 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
 
 ?>
 
-<body>
-
+<body> 
     <!-- BEGIN CONTAINER -->
     <div class="container-fluid h-100 bg-document p-0">
 
@@ -57,9 +56,9 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
                     <?php include_once("layouts/welcome-banner.php"); ?>
 
                     <!--THE WORKSHEET WRAPPER-->
-                    <div class="worksheet-wrapper p-4 w-100 h-100 overflow-hidden position-relative">
+                    <div class="worksheet-wrapper p-2 pb-4 w-100 h-100 overflow-hidden position-relative">
 
-                        <div class="worksheet d-flex flex-column bg-white shadow-2-strong w-100 h-100 p-4 scrollable" style="overflow-y: auto;">
+                        <div class="worksheet d-flex flex-column bg-white shadow-2-strong w-100 h-100 px-4 pt-3 pb-2 scrollable" style="overflow-y: auto;">
 
                             <!-- BREADCRUMB-->
                             <div class="breadcrumb w-100 d-flex flex-row align-items-center justify-content-start">
@@ -115,13 +114,13 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
                                     if (empty($condition))
                                         $display = 'display-none';
 
-                                    if ($findBy == "filter-newest-item")
+                                    if ($findBy == "filter-newest-item" || $findBy == "lastupdated")
                                         $display = "";
 
                                     echo $display;
                                     ?>">
                                         <i class="fas fa-undo me-2"></i>
-                                        <span>Clear</span>
+                                        <span>Reset</span>
                                     </button>
                                 </div>
                                 <div class="right-half">
@@ -154,7 +153,7 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
                                             </li>
                                             <li class="d-flex align-items-center gap-3 px-3 py-1 dropdown-item-custom-light dropdown-option-delete-all-selected">
                                                 <span class="dropdown-item-icon text-center">
-                                                    <i class="fas fa-trash-alt font-red"></i>
+                                                    <i class="fas fa-trash font-red"></i>
                                                 </span>
                                                 <span class="fs-6">Delete All Selected</span>
                                             </li>
@@ -207,7 +206,7 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
                                             <th class="fw-bold" scope="col">Action</th>
                                             <th class="d-none" scope="col">Supplier</th>
                                             <th class="d-none" scope="col">Date Added</th>
-                                            <th class="d-none" scope="col">ItemGuid</th>
+                                            <th class="d-none" scope="col">ScrollAnchor</th>
                                             <th class="d-none" scope="col">Units</th>
                                             <th class="d-none" scope="col">Status</th>
                                             <th class="d-none" scope="col">Description</th>
@@ -233,7 +232,7 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
                                                 $remarks = $row['remarks'];
 
                                                 $itemId = $row['id'];
-                                                $itemGuid = Crypto::encrypt(strval($itemId), $defuseKey);
+                                                $itemID_Hashed = Crypto::encrypt(strval($itemId), $defuseKey);
 
                                                 $stockLabelColor = "";
                                                 $stockStatus = "";
@@ -274,9 +273,9 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
                                                             <button type=\"button\" class=\"btn btn-primary btn-item-details px-2 text-center\">Details</button>
                                                             <button type=\"button\" class=\"btn btn-primary btn-split-arrow px-0 text-center dropdown-toggle dropdown-toggle-split\" data-mdb-toggle=\"dropdown\" aria-expanded=\"false\"></button>
                                                             <ul class=\"dropdown-menu dropdown-menu-custom-light-small\">
-                                                                <li onclick=\"\" class=\"d-flex align-items-center gap-3 px-3 py-1 dropdown-item-custom-light\">
+                                                                <li onclick=\"editItem('$itemID_Hashed')\" class=\"d-flex align-items-center gap-3 px-3 py-1 dropdown-item-custom-light\">
                                                                     <div class=\"dropdown-item-icon text-center\">
-                                                                        <i class=\"fas fa-edit fs-6 font-amber\"></i>
+                                                                        <i class=\"fas fa-pen fs-6 text-warning\"></i>
                                                                     </div>
                                                                     <div class=\"fs-6\">Edit</div>
                                                                 </li> 
@@ -291,7 +290,7 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
                                                     </td>
                                                     <td class=\"d-none\">$supplier</td>
                                                     <td class=\"d-none\">$dateAdded</td>
-                                                    <td class=\"d-none\">$itemGuid</td>
+                                                    <td class=\"d-none\"></td>
                                                     <td class=\"d-none\">$measurement</td>
                                                     <td class=\"d-none\">$stockStatus</td>
                                                     <td class=\"d-none\">$remarks</td>
@@ -312,6 +311,11 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
         </main>
         <!-- MAIN CONTENT -->
 
+        <?php // Hidden form; This will handle an item's EDIT action ?>
+        <form action="<?= Navigation::$URL_EDIT_ITEM ?>" method="POST" class="frm-edit-item d-none">
+            <input type="text" name="input-item-key" id="input-item-key">
+        </form>
+        
     </div>
     <!-- END CONTAINER -->
  
@@ -328,6 +332,7 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
     <!--SCRIPTS-->
     <script src="assets/lib/jquery/jquery-3.6.1.min.js"></script>
     <script src="assets/lib/jquery-ui-1.13.2.custom/jquery-ui.min.js"></script>
+    <script src="assets/lib/datatables/datatables.min.js"></script> 
     <script src="assets/lib/mdb5/js/mdb.min.js"></script>
     <script src="assets/lib/momentjs/moment-with-locales.js"></script>
     <script src="assets/lib/jquery.nicescroll/jquery.nicescroll.min.js"></script>
@@ -339,7 +344,7 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
     <script src="components/alert-dialog/alert-dialog.js"></script>
     <script src="components/confirm-dialog/confirm-dialog.js"></script>
     <script src="components/snackbar/snackbar.js"></script>
-
+    
 </body>
 
 </html>

@@ -56,7 +56,7 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
                     <?php include_once("layouts/welcome-banner.php"); ?>
 
                     <!--THE CHECKUP FORM-->
-                    <div class="checkup-form-wrapper p-4 w-100 h-100 overflow-hidden position-relative">
+                    <div class="checkup-form-wrapper p-2 w-100 h-100 overflow-hidden position-relative">
 
                         <div class="checkup-form bg-white shadow-2-strong w-100 h-100 p-4 scrollable" style="overflow-y: auto;">
 

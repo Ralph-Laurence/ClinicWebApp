@@ -19,15 +19,15 @@ $unitsDataSet = null;
 try 
 {
     // retrieve all categories
-    $sql = "SELECT id, name FROM $categoriesTable"; 
+    $sql = "SELECT id, name FROM $categoriesTable ORDER BY name ASC"; 
     $categoriesDataSet = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 
     // retrieve all suppliers
-    $sql = "SELECT id, supplier_name FROM $suppliersTable"; 
+    $sql = "SELECT id, supplier_name FROM $suppliersTable ORDER BY supplier_name ASC"; 
     $suppliersDataSet = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 
     // retrieve all unit measures
-    $sql = "SELECT id, measurement FROM $unitsTable"; 
+    $sql = "SELECT id, measurement FROM $unitsTable ORDER BY measurement ASC"; 
     $unitsDataSet = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 } 
 catch (\Throwable $th) 

@@ -3,22 +3,12 @@
 
 require_once("rootcwd.php");
 
-require_once($rootCwd . "includes/urls.php");
-
-// we must be logged in to view this page
-if (!isset($_SESSION['isLoggedIn']) || $_SESSION['isLoggedIn'] !== true)
-{
-    header("Location: " . Navigation::$URL_LOGIN);
-    exit;
-}
-
-// REGISTER THE FILES FOR INCLUDE
-//define('def_incAddItem', TRUE);
-
 require_once($rootCwd . "database/configs.php");
 require_once($rootCwd . "includes/system.php");
 require_once($rootCwd . "includes/utils.php");
+require_once($rootCwd . "includes/urls.php");
 require_once($rootCwd . "layout-header.php");
+require_once($rootCwd . "env.php");
 
 require_once($rootCwd . "includes/inc.add-edit-item.php");
 
@@ -26,10 +16,58 @@ require_once($rootCwd . "library/defuse-crypto.phar");
 
 use Defuse\Crypto\Crypto;
 use Defuse\Crypto\Key;
+//
+// IF THIS PAGE IS ACCESSED WITHOUT POST REQUEST,
+// GO BACK TO THE PARENT PAGE
+//
+if ($_SERVER['REQUEST_METHOD'] != 'POST') {
+    header("Location: " . ENV_SITE_ROOT . Navigation::$URL_STOCKS_INVENTORY);
+    http_response_code(301);
+    exit;
+}
+//
+//
+//
+$itemKey = $_POST['input-item-key'] ?? "";
+
+//
+// Stop the execution if the item guid is not supplied
+//
+if (empty($itemKey)) {
+    http_response_code(400);
+    die();
+}
+
+// we must be logged in to view this page
+if (!isset($_SESSION['isLoggedIn']) || $_SESSION['isLoggedIn'] !== true) {
+    header("Location: " . Navigation::$URL_LOGIN);
+    exit;
+}
+
+// REGISTER THE FILES FOR INCLUDE
+//define('def_incAddItem', TRUE);
 
 $defuseKey_Ascii = Helpers::getDefuseKey($pdo);
 $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
 
+// decrypt the item key
+$itemKey_Dec = Crypto::decrypt($itemKey, $defuseKey);
+
+// find the item with matching GUID
+$itemsTable = TableNames::$items;
+
+$sql = "SELECT * FROM $itemsTable WHERE id = ? ";
+$sth = $pdo->prepare($sql);
+$sth->bindValue(1, $itemKey_Dec);
+$sth->execute();
+
+$itemData = $sth->fetch(PDO::FETCH_ASSOC);
+
+// stop the execution if the item is not found
+if (empty($itemData)) {
+    http_response_code(500);
+    die();
+}
 ?>
 
 <body>
@@ -47,13 +85,13 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
             <section class="d-flex flex-grow-1 mt-2 overflow-hidden">
 
                 <!-- NAVIGATION -->
-                <?php 
+                <?php
                 // mark the active side nav link
                 setActiveLink(Navigation::$NavIndex_Stocks);
 
-                require_once("layouts/navigation.php"); 
+                require_once("layouts/navigation.php");
                 ?>
-                
+
 
                 <!--WORKAREA-->
                 <section class="workarea w-100 pb-4">
@@ -74,8 +112,8 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
                                 <h6 class="fas fa-warehouse font-teal"></h6>
                                 <h6 class="ms-2 fw-bold">Stocks Inventory</h6>
                                 <h6 class="breadcrumb-arrow fas fa-play mx-3"></h6>
-                                <h6 class="fas fa-plus text-success"></h6>
-                                <h6 class="ms-2 fw-bold">Add New Item</h6>
+                                <h6 class="fas fa-pen text-warning"></h6>
+                                <h6 class="ms-2 fw-bold">Edit Item</h6>
                             </div>
 
                             <!--MID SIZED BOX-->
@@ -102,12 +140,16 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
                                     <!-- FORM -->
                                     <div class="form-wrapper">
                                         <form action="" method="POST" class="mb-4" id="main-form">
+
+                                            <!-- ITEM KEY, HIDDEN FORM --> 
+                                            <input type="text" name="input-item-key" class="display-none input-item-key" value="<?= $itemKey ?>">
+
                                             <!-- ROW SECTION: ITEM PROPTS -->
                                             <div class="row mb-3">
                                                 <h6 class="font-base">Item Properties</h6>
                                                 <div class="col">
                                                     <div class="form-outline">
-                                                        <input type="text" class="form-control input-item-name" maxlength="64"/>
+                                                        <input type="text" class="form-control input-item-name" value="<?= $itemData['item_name'] ?>" maxlength="64" />
                                                         <label class="form-label" for="form12">Item Name</label>
                                                     </div>
 
@@ -115,7 +157,7 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
                                                 <div class="col">
                                                     <div class="select-box-wrapper">
                                                         <div class="form-outline">
-                                                            <input type="text" class="form-control input-item-code"  maxlength="64"/>
+                                                            <input type="text" class="form-control input-item-code" value="<?= $itemData['item_code'] ?>" maxlength="64" />
                                                             <label class="form-label" for="form12">Item Code</label>
                                                         </div>
 
@@ -124,15 +166,28 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
                                                 <div class="col">
                                                     <div class="dropdown">
                                                         <button class="btn btn-primary bg-base dropdown-toggle w-100" type="button" id="dropdownCategories" data-mdb-toggle="dropdown" aria-expanded="false">
-                                                            Item Category
+
+                                                            <?php
+
+                                                            $currentItem_Category = $itemData['item_category'];
+
+                                                            if (count($categoriesDataSet) > 0) {
+                                                                foreach ($categoriesDataSet as $row) {
+                                                                    $id = $row["id"];
+                                                                    $name = $row["name"];
+
+                                                                    if ($id == $currentItem_Category) {
+                                                                        echo $name;
+                                                                    }
+                                                                }
+                                                            }
+                                                            ?>
                                                         </button>
                                                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                                             <div class="dropdown-menu-scrollable">
                                                                 <?php
-                                                                if (count($categoriesDataSet) > 0) 
-                                                                {
-                                                                    foreach ($categoriesDataSet as $row) 
-                                                                    {
+                                                                if (count($categoriesDataSet) > 0) {
+                                                                    foreach ($categoriesDataSet as $row) {
                                                                         $id = $row["id"];
                                                                         $name = $row["name"];
 
@@ -144,10 +199,14 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
                                                                         </li>";
                                                                     }
                                                                 }
+
+                                                                // encrypte the original value retrieved from db
+                                                                // before binding it onto hidden field
+                                                                $itemData_Hashed = Crypto::encrypt(strval($itemData['item_category']), $defuseKey);
                                                                 ?>
                                                             </div>
                                                         </ul>
-                                                        <input type="text" class="input-category d-none">
+                                                        <input type="text" class="input-category d-none" value="<?= $itemData_Hashed ?>">
                                                     </div>
                                                 </div>
                                             </div>
@@ -156,13 +215,14 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
                                                 <h6 class="font-base">Stock Details</h6>
                                                 <div class="col">
                                                     <div class="form-outline">
-                                                        <input type="text" class="form-control input-total-stock" />
+                                                        <input type="text" class="form-control input-total-stock" value="<?= $itemData['remaining'] ?>" readonly />
                                                         <label class="form-label" for="input-total-stock">Total Stock</label>
                                                     </div>
+                                                    <small>The stock amount can be changed at the " <i class="fas fa-cube font-hilight"></i> <span class="fw-bold">Restock</span> " page.</small>
                                                 </div>
                                                 <div class="col">
                                                     <div class="form-outline">
-                                                        <input type="text" class="form-control input-reserve-stock" />
+                                                        <input type="text" class="form-control input-reserve-stock" value="<?= $itemData['critical_level'] ?>" />
                                                         <label class="form-label" for="input-reserve-stock">Reserved Stock</label>
                                                     </div>
 
@@ -170,11 +230,28 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
                                                 <div class="col">
                                                     <div class="dropdown">
                                                         <button class="btn btn-primary bg-base dropdown-toggle w-100" type="button" id="dropdownUnits" data-mdb-toggle="dropdown" aria-expanded="false">
-                                                            Unit Measurement
+                                                            <?php
+
+                                                            $currentItem_Units = $itemData['unit_measure'];
+
+                                                            if (count($unitsDataSet) > 0) 
+                                                            {
+                                                                foreach ($unitsDataSet as $row) 
+                                                                {
+                                                                    $id = $row["id"];
+                                                                    $name = $row["measurement"];
+
+                                                                    if ($id == $currentItem_Units) {
+                                                                        echo $name;
+                                                                    }
+                                                                }
+                                                            }
+                                                            ?>
                                                         </button>
                                                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                                             <div class="dropdown-menu-scrollable">
                                                                 <?php
+
                                                                 if (count($unitsDataSet) > 0) 
                                                                 {
                                                                     foreach ($unitsDataSet as $row) 
@@ -190,10 +267,14 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
                                                                         </li>";
                                                                     }
                                                                 }
+
+                                                                // encrypt the original value retrieved from db
+                                                                // before binding it onto hidden field
+                                                                $unitMeasure_Hashed = Crypto::encrypt(strval($itemData['unit_measure']), $defuseKey);
                                                                 ?>
                                                             </div>
                                                         </ul>
-                                                        <input type="text" class="input-units d-none">
+                                                        <input type="text" class="input-units d-none" value="<?= $unitMeasure_Hashed ?>">
                                                     </div>
                                                 </div>
                                             </div>
@@ -203,11 +284,29 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
                                                 <div class="col-4">
                                                     <div class="dropdown">
                                                         <button class="btn btn-outline-dark fw-bold border-control-2 dropdown-toggle w-100 text-truncate" type="button" id="dropdownSupplier" data-mdb-toggle="dropdown" aria-expanded="false">
-                                                            Select Supplier
+                                                            <?php
+                                                            $currentItem_Supplier = $itemData['supplier_id'];
+                                                            $hasSupplier = false;
+
+                                                            if (count($suppliersDataSet) > 0) {
+                                                                foreach ($suppliersDataSet as $row) {
+                                                                    $id = $row["id"];
+                                                                    $name = $row["supplier_name"];
+
+                                                                    if ($id == $currentItem_Supplier) {
+                                                                        $hasSupplier = true;
+                                                                        echo $name;
+                                                                    }
+                                                                }
+                                                            }
+                                                            if (!$hasSupplier) {
+                                                                echo "None";
+                                                            }
+                                                            ?>
                                                         </button>
                                                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                                             <div class="dropdown-menu-scrollable">
-                                                                
+
                                                                 <?php
                                                                 $noneEnc = Crypto::encrypt("none", $defuseKey);
                                                                 $noneOnClick = "setSupplierValue('$noneEnc', 'None')";
@@ -216,10 +315,8 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
                                                                     <span class=\"dropdown-item dropdown-item-custom-light\">None</span>
                                                                 </li>";
 
-                                                                if (count($suppliersDataSet) > 0) 
-                                                                {
-                                                                    foreach ($suppliersDataSet as $row) 
-                                                                    {
+                                                                if (count($suppliersDataSet) > 0) {
+                                                                    foreach ($suppliersDataSet as $row) {
                                                                         $id = $row["id"];
                                                                         $name = $row["supplier_name"];
 
@@ -231,26 +328,36 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
                                                                         </li>";
                                                                     }
                                                                 }
+
+                                                                // encrypt the original value retrieved from db
+                                                                // before binding it onto hidden field
+                                                                $supplierId_Hashed = Crypto::encrypt(strval($itemData['supplier_id']), $defuseKey);
                                                                 ?>
                                                             </div>
                                                         </ul>
-                                                        <input type="text" class="input-supplier d-none">
+                                                        <input type="text" class="input-supplier d-none" value="<?= $supplierId_Hashed  ?>">
                                                     </div>
 
 
                                                 </div>
                                                 <div class="col">
                                                     <div class="form-outline">
-                                                        <input type="text" class="form-control input-remarks"  maxlength="100"/>
+                                                        <input type="text" class="form-control input-remarks" value="<?= $itemData['remarks'] ?>" maxlength="100" />
                                                         <label class="form-label" for="input-remarks">Item Description (Optional)</label>
                                                     </div>
                                                 </div>
                                             </div>
                                         </form>
-                                        <div class="form-control-buttons text-end">
-                                            <button type="button" class="btn btn-secondary fw-bold btn-cancel">Cancel</button>
-                                            <button class="d-none btn-cancel-all" <?php echoOnclick(Navigation::$URL_STOCKS_INVENTORY); ?>></button>
-                                            <button type="button" class="btn btn-primary btn-save">Save</button>
+                                        <div class="form-control-buttons d-flex align-items-center">
+                                            <div class="left-content me-auto">
+                                                <button type="button" class="btn btn-primary btn-edit display-none">Edit</button>
+                                            </div>
+                                            <div class="right-content d-flex flex-row gap-2 align-items-center">
+                                                <button type="button" class="btn btn-secondary fw-bold btn-cancel">Cancel</button>
+                                                <button class="d-none btn-cancel-all" <?php echoOnclick(Navigation::$URL_STOCKS_INVENTORY); ?>></button>
+                                                <button type="button" class="btn btn-primary btn-save">Save</button>
+                                                <button type="button" class="btn btn-primary bg-base btn-done display-none" <?php echoOnclick(Navigation::$URL_STOCKS_INVENTORY); ?>>Done</button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -280,13 +387,13 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
     ?>
 
     <!--SCRIPTS-->
-    <script src="assets/lib/jquery/jquery-3.6.1.min.js"></script> 
+    <script src="assets/lib/jquery/jquery-3.6.1.min.js"></script>
     <script src="assets/lib/mdb5/js/mdb.min.js"></script>
     <script src="assets/lib/momentjs/moment-with-locales.js"></script>
     <script src="assets/lib/jquery.nicescroll/jquery.nicescroll.min.js"></script>
 
     <script src="assets/js/nicescroll.js"></script>
-    <script src="assets/js/add-items.js"></script>
+    <script src="assets/js/edit-items.js"></script>
     <script src="assets/js/base-ui.js"></script>
     <script src="assets/js/system.js"></script>
 
