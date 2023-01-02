@@ -16,6 +16,9 @@ var itemDetailsModal = undefined;
 
 var dataTable = undefined;
 
+var sessionVar_ItemName = undefined;
+var sessionVar_ItemPage = undefined;
+
 $(document).ready(() => onAwake());
 
 function onAwake()
@@ -23,12 +26,7 @@ function onAwake()
     dialog = new AlertDialog();
     confirm = new ConfirmDialog();
     snackbar = new SnackBar();
-
-    dataTable = $('.stocks-table').DataTable({
-        searching: false,
-        ordering:  false
-    });
-
+ 
     itemDetailsModal = new mdb.Modal($("#stockDetailsModal"));
     
     findButton = $(".btn-find");
@@ -53,6 +51,21 @@ function onAwake()
 
     $("#category-options").selectmenu();
    
+    // for highlighting the recently updated item
+    sessionVar_ItemName = $(".session-var-item-name").val();
+    sessionVar_ItemPage = $(".session-var-item-page").val();
+
+    // render the table and bind event 
+    // after databinding has completed
+    dataTable = $('.stocks-table') .DataTable(
+    {
+        searching: false,
+        ordering:  false
+    });
+
+    if (sessionVar_ItemName != undefined || sessionVar_ItemName != '')
+        highlightUpdatedRow(sessionVar_ItemName, sessionVar_ItemPage);
+
     // bind event handlers
     onBind();
 }
@@ -185,6 +198,16 @@ function deleteAllRows()
     };  
 }
 
+function deleteItem(itemKey)
+{
+    var inputItemKey = $(".frm-delete-item #input-item-key").val(itemKey);
+
+    if (inputItemKey == undefined || inputItemKey == "")
+        return;
+
+    $(".frm-delete-item").trigger("submit");
+}
+
 
 function bindShowItemInfo()
 {
@@ -243,7 +266,9 @@ function bindShowItemInfo()
 //
 function editItem(itemKey)
 {
-    var inputItemKey = $("#input-item-key").val(itemKey);
+    var inputItemKey = $(".frm-edit-item #item-key").val(itemKey);
+    
+    $(".frm-edit-item #item-page").val(getPaginationPage());
 
     if (inputItemKey == undefined || inputItemKey == "")
         return;
@@ -253,15 +278,56 @@ function editItem(itemKey)
 // 
 // Highlight the recently updated row
 //
-function highlightUpdatedRow()
-{
-    var rows = $('.stocks-table tr');
+function highlightUpdatedRow(updatedName, itemPage)
+{   
+    // make sure that the datatable has rows in it.
+    // otherwise, stop the execution
+    var rows = $(".stocks-table > tbody > tr");
+    
+    if (rows.length < 1 || (updatedName == undefined || updatedName == ""))
+        return;
+  
+    // scroll to the paginated page's index where the item is displayed
+    scrollPage(itemPage);
+
+    dataTable.rows({ page: 'current' }).every(function(rowIdx, tableLoop, rowLoop)
+    {
+        var cell = this.data();
+
+        // match the updated name and the cell name ...
+        if (cell[2] == updatedName)
+        {
+            // reference to every row in iteration
+            var currentRow = $(".stocks-table > tbody > tr")[rowLoop];
+
+            // highlight the row and move it onto the top
+            $(currentRow)
+                .css("background-color", "#D6F0E0")
+                .insertBefore($(".stocks-table > tbody tr:first"));
+            
+            // break
+            return false;
+        }
+    });  
  
-    if (rows.length > 0)
-    { 
-        // Highlight the row
-        //
-        var tbody = $('.stocks-table').find("tbody tr");
-        $(tbody[0]).css("background-color", "#D6F0E0");  
-    }
+    snackbar.show("Item has been successfully updated.");
+}  
+
+function getPaginationPage()
+{
+    // reference every information of
+    // the paginated page
+    var info = dataTable.page.info();
+    return info.page;
+}
+
+function scrollPage(pageIndex)
+{
+    var index = parseInt(pageIndex);
+
+    if (index < 0)
+        return;
+
+    // change page location
+    dataTable.page(index).draw(false);
 } 

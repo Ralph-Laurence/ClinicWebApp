@@ -39,7 +39,7 @@ function onAwake()
     noteActionIcon = $(".note-warning .note-action-icon");
     noteGuidelines = $(".note-guidelines");
 
-    inputItemKey = $(".input-item-key");
+    inputItemKey = $(".item-key");
     inputItemName = $(".input-item-name");
     inputItemCode = $(".input-item-code");
     inputReserve = $(".input-reserve-stock");
@@ -103,8 +103,10 @@ function onBind()
     {
         var valid = validateForm();
 
-        if (valid) {
-            updateItem();
+        if (valid) 
+        {
+            $("#main-form").trigger("submit");
+            //updateItem();
         }
     });
 
@@ -114,6 +116,8 @@ function onBind()
     {
         $(".btn-done, .btn-edit").hide();
         $(".btn-save, .btn-cancel").show();
+
+        disableInputs(false);
     });
 }
 
@@ -190,7 +194,7 @@ function updateItem()
         supplier: inputSupplier.val(),
         remarks: inputRemarks.val()
     };
-
+  
     $.ajax({
         url: "ajax/ajax.edit-item.php",
         type: "POST",
@@ -248,4 +252,12 @@ function onUpdateSuccess()
 {  
     $(".btn-done, .btn-edit").show();
     $(".btn-save, .btn-cancel").hide();
+
+    disableInputs();
+} 
+
+function disableInputs(disable = true)
+{
+    $(".input-item-name, .input-item-code, .input-reserve-stock, .input-remarks, #dropdownCategories, #dropdownUnits, #dropdownSupplier").prop("disabled", disable);
 }
+

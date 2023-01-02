@@ -1,5 +1,9 @@
 <?php 
 
+require_once("rootcwd.inc.php");
+ 
+require_once($cwd . "env.php");
+
 class Helpers
 {
     /**
@@ -46,4 +50,30 @@ class Helpers
     {
         return (strpos($input, $substring) !== false);
     }
+}
+
+function throw_response_code($code, $redirect = "")
+{
+    $responseCodes = 
+    [
+        200 => "OK",
+        301 => "Moved Permanently",
+        400 => "Bad Request",
+        403 => "Forbidden",
+        404 => "Not Found",
+        500 => "Internal Server Error"
+    ];
+
+    $responseDesc = $responseCodes[$code];
+    header("HTTP/1.1 $code $responseDesc");
+    
+    if (!empty($redirect))
+    {
+        header("Location: " . $redirect);
+        exit();
+    }
+    
+    header("Location: " . ENV_SITE_ROOT . "errors/" . $code . ".php");
+    
+    exit();
 }

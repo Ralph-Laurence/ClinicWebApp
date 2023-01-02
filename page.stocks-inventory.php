@@ -1,5 +1,5 @@
 <?php
-@session_start();
+session_start();
 
 require_once("rootcwd.php");
 
@@ -279,7 +279,7 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
                                                                     </div>
                                                                     <div class=\"fs-6\">Edit</div>
                                                                 </li> 
-                                                                <li onclick=\"\" class=\"d-flex align-items-center gap-3 px-3 py-1 dropdown-item-custom-light\">
+                                                                <li onclick=\"deleteItem('$itemID_Hashed')\" class=\"d-flex align-items-center gap-3 px-3 py-1 dropdown-item-custom-light\">
                                                                     <div class=\"dropdown-item-icon text-center\">
                                                                         <i class=\"fas fa-trash fs-6 font-red\"></i>
                                                                     </div>
@@ -294,7 +294,7 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
                                                     <td class=\"d-none\">$measurement</td>
                                                     <td class=\"d-none\">$stockStatus</td>
                                                     <td class=\"d-none\">$remarks</td>
-                                                </tr>";
+                                                </tr>"; 
                                             }
                                         }
                                         ?>
@@ -312,14 +312,43 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
         <!-- MAIN CONTENT -->
 
         <?php // Hidden form; This will handle an item's EDIT action ?>
-        <form action="<?= Navigation::$URL_EDIT_ITEM ?>" method="POST" class="frm-edit-item d-none">
-            <input type="text" name="input-item-key" id="input-item-key">
+        <form action="<?= Navigation::$URL_EDIT_ITEM ?>" method="GET" class="frm-edit-item d-none">
+            <input type="text" name="item-key" id="item-key">
+            <input type="text" name="item-page" id="item-page">
+        </form>
+
+        <?php 
+            $lastUpdated_ItemName = "";
+            $lastUpdated_ItemPage = -1;
+            
+            if (isset($_SESSION['edit_item_success'], $_SESSION['edit_updated_item_name'], $_SESSION['edit_item_page'])) 
+            {
+                if ($_SESSION['edit_item_success'] === true)
+                {
+                    $lastUpdated_ItemName = $_SESSION['edit_updated_item_name'];
+                    $lastUpdated_ItemPage = $_SESSION['edit_item_page'];
+                }
+            } 
+
+            // Hidden field, to hold the last updated item name and page index
+        ?>
+        <input type="text" class="d-none session-var-item-name" 
+        value="<?= $lastUpdated_ItemName ?>">
+
+        <input type="text" class="d-none session-var-item-page" 
+        value="<?= $lastUpdated_ItemPage ?>">
+
+        <?php // Hidden form; This will handle an item's DELETE action ?>
+        <form action="<?= Navigation::$URL_DELETE_ITEM ?>" method="POST" class="frm-delete-item d-none">
+            <input type="text" name="item-key" id="item-key">
         </form>
         
     </div>
     <!-- END CONTAINER -->
  
     <?php
+
+    unset($_SESSION['edit_item_success'], $_SESSION['edit_updated_item_name']);
 
     // modal window for showing the item details
     require_once("layouts/item-info-dialog.php");
@@ -347,4 +376,4 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
     
 </body>
 
-</html>
+</html> 

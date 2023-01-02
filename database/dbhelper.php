@@ -89,7 +89,7 @@ class DbHelper
         }
 
         // then join the condition parameter as single string 
-        $condParamStrings = implode(",", $condNamesParam);
+        $condParamStrings = implode(" AND ", $condNamesParam);
 
         // build the final query
         $sql = "UPDATE $table SET $colParamStrings WHERE $condParamStrings";
@@ -114,6 +114,28 @@ class DbHelper
         }
 
         $sth->execute(); 
+    }
+
+    public function delete($pdo, $table, $condition = array())
+    { 
+        // Stop execution if there is no connection object
+        if ($pdo == null)
+            die("Server Error");
+
+        $condColNames = array_keys($condition);
+        $condColumnParams = array();
+
+        foreach ($condColNames as $col)
+        {
+            $paramStr = $col."=?";
+            array_push($condColumnParams, $paramStr);
+        }
+
+        $condParamString = implode(" AND ", $condColumnParams);
+
+        $sql = "DELETE FROM $table WHERE $condParamString";
+
+        echo $sql;
     }
 
     // Select all records from the given database table. The returning data

@@ -1,5 +1,5 @@
 <?php
-@session_start();
+session_start();
 
 require_once("rootcwd.php");
 
@@ -11,6 +11,7 @@ require_once($rootCwd . "layout-header.php");
 require_once($rootCwd . "env.php");
 
 require_once($rootCwd . "includes/inc.add-edit-item.php");
+require_once($rootCwd . "action.edit-item.php");
 
 require_once($rootCwd . "library/defuse-crypto.phar");
 
@@ -20,21 +21,22 @@ use Defuse\Crypto\Key;
 // IF THIS PAGE IS ACCESSED WITHOUT POST REQUEST,
 // GO BACK TO THE PARENT PAGE
 //
-if ($_SERVER['REQUEST_METHOD'] != 'POST') {
-    header("Location: " . ENV_SITE_ROOT . Navigation::$URL_STOCKS_INVENTORY);
-    http_response_code(301);
-    exit;
-}
+// if ($_SERVER['REQUEST_METHOD'] != 'POST') 
+// {
+//     throw_response_code(301, ENV_SITE_ROOT . Navigation::$URL_STOCKS_INVENTORY); 
+//     exit;
+// }
 //
 //
 //
-$itemKey = $_POST['input-item-key'] ?? "";
+$itemKey = $_GET['item-key'] ?? "";
+$itemPage = $_GET['item-page'] ?? "";
 
 //
 // Stop the execution if the item guid is not supplied
 //
 if (empty($itemKey)) {
-    http_response_code(400);
+    throw_response_code(400);
     die();
 }
 
@@ -141,27 +143,49 @@ if (empty($itemData)) {
                                     <div class="form-wrapper">
                                         <form action="" method="POST" class="mb-4" id="main-form">
 
-                                            <!-- ITEM KEY, HIDDEN FORM --> 
-                                            <input type="text" name="input-item-key" class="display-none input-item-key" value="<?= $itemKey ?>">
+                                            <!-- ITEM KEY, ITEM ROW INDEX HIDDEN FORM -->
+                                            <input type="text" name="item-key" class="display-none item-key" value="<?= $itemKey ?>">
+                                            <input type="text" name="item-page" class="display-none item-page" value="<?= $itemPage ?>">
 
                                             <!-- ROW SECTION: ITEM PROPTS -->
                                             <div class="row mb-3">
                                                 <h6 class="font-base">Item Properties</h6>
                                                 <div class="col">
                                                     <div class="form-outline">
-                                                        <input type="text" class="form-control input-item-name" value="<?= $itemData['item_name'] ?>" maxlength="64" />
+                                                        <?php 
+                                                            $val_itemName = $itemData['item_name'];
+                                                             
+                                                            if (isset($_SESSION['lastInput_ItemName']))
+                                                                $val_itemName = $_SESSION['lastInput_ItemName'];
+                                                        ?>
+                                                        <input type="text" class="form-control input-item-name" name="input-item-name" value="<?= $val_itemName ?>" maxlength="64" />
                                                         <label class="form-label" for="form12">Item Name</label>
                                                     </div>
+                                                    <?php
+                                                    if (!empty($status) && $status == "0x501") {
+                                                        echo "<small class=\"text-danger\">An item with this name already exists! Please use a different name.</small>";
+                                                    }
+                                                    unset($_SESSION['lastInput_ItemName']);
+                                                    ?>
 
                                                 </div>
                                                 <div class="col">
-                                                    <div class="select-box-wrapper">
-                                                        <div class="form-outline">
-                                                            <input type="text" class="form-control input-item-code" value="<?= $itemData['item_code'] ?>" maxlength="64" />
-                                                            <label class="form-label" for="form12">Item Code</label>
-                                                        </div>
-
+                                                    <div class="form-outline">
+                                                        <?php 
+                                                            $val_itemCode = $itemData['item_code'];
+                                                             
+                                                            if (isset($_SESSION['lastInput_ItemCode']))
+                                                                $val_itemCode = $_SESSION['lastInput_ItemCode'];
+                                                        ?>
+                                                        <input type="text" class="form-control input-item-code" name="input-item-code" value="<?= $val_itemCode ?>" maxlength="64" />
+                                                        <label class="form-label" for="form12">Item Code</label>
                                                     </div>
+                                                    <?php
+                                                    if (!empty($status) && $status == "0x502") {
+                                                        echo "<small class=\"text-danger\">An item with this code already exists! Please use a unique code.</small>";
+                                                    }
+                                                    unset($_SESSION['lastInput_ItemCode']);
+                                                    ?>
                                                 </div>
                                                 <div class="col">
                                                     <div class="dropdown">
@@ -206,7 +230,7 @@ if (empty($itemData)) {
                                                                 ?>
                                                             </div>
                                                         </ul>
-                                                        <input type="text" class="input-category d-none" value="<?= $itemData_Hashed ?>">
+                                                        <input type="text" class="input-category d-none" name="input-category" value="<?= $itemData_Hashed ?>">
                                                     </div>
                                                 </div>
                                             </div>
@@ -215,14 +239,14 @@ if (empty($itemData)) {
                                                 <h6 class="font-base">Stock Details</h6>
                                                 <div class="col">
                                                     <div class="form-outline">
-                                                        <input type="text" class="form-control input-total-stock" value="<?= $itemData['remaining'] ?>" readonly />
+                                                        <input type="text" class="form-control input-total-stock" name="input-total-stock" value="<?= $itemData['remaining'] ?>" readonly />
                                                         <label class="form-label" for="input-total-stock">Total Stock</label>
                                                     </div>
                                                     <small>The stock amount can be changed at the " <i class="fas fa-cube font-hilight"></i> <span class="fw-bold">Restock</span> " page.</small>
                                                 </div>
                                                 <div class="col">
                                                     <div class="form-outline">
-                                                        <input type="text" class="form-control input-reserve-stock" value="<?= $itemData['critical_level'] ?>" />
+                                                        <input type="text" class="form-control input-reserve-stock" name="input-reserve-stock" value="<?= $itemData['critical_level'] ?>" />
                                                         <label class="form-label" for="input-reserve-stock">Reserved Stock</label>
                                                     </div>
 
@@ -234,10 +258,8 @@ if (empty($itemData)) {
 
                                                             $currentItem_Units = $itemData['unit_measure'];
 
-                                                            if (count($unitsDataSet) > 0) 
-                                                            {
-                                                                foreach ($unitsDataSet as $row) 
-                                                                {
+                                                            if (count($unitsDataSet) > 0) {
+                                                                foreach ($unitsDataSet as $row) {
                                                                     $id = $row["id"];
                                                                     $name = $row["measurement"];
 
@@ -252,10 +274,8 @@ if (empty($itemData)) {
                                                             <div class="dropdown-menu-scrollable">
                                                                 <?php
 
-                                                                if (count($unitsDataSet) > 0) 
-                                                                {
-                                                                    foreach ($unitsDataSet as $row) 
-                                                                    {
+                                                                if (count($unitsDataSet) > 0) {
+                                                                    foreach ($unitsDataSet as $row) {
                                                                         $id = $row["id"];
                                                                         $name = $row["measurement"];
 
@@ -274,7 +294,7 @@ if (empty($itemData)) {
                                                                 ?>
                                                             </div>
                                                         </ul>
-                                                        <input type="text" class="input-units d-none" value="<?= $unitMeasure_Hashed ?>">
+                                                        <input type="text" class="input-units d-none" name="input-units" value="<?= $unitMeasure_Hashed ?>">
                                                     </div>
                                                 </div>
                                             </div>
@@ -335,14 +355,14 @@ if (empty($itemData)) {
                                                                 ?>
                                                             </div>
                                                         </ul>
-                                                        <input type="text" class="input-supplier d-none" value="<?= $supplierId_Hashed  ?>">
+                                                        <input type="text" class="input-supplier d-none" name="input-supplier" value="<?= $supplierId_Hashed  ?>">
                                                     </div>
 
 
                                                 </div>
                                                 <div class="col">
                                                     <div class="form-outline">
-                                                        <input type="text" class="form-control input-remarks" value="<?= $itemData['remarks'] ?>" maxlength="100" />
+                                                        <input type="text" class="form-control input-remarks" name="input-remarks" value="<?= $itemData['remarks'] ?>" maxlength="100" />
                                                         <label class="form-label" for="input-remarks">Item Description (Optional)</label>
                                                     </div>
                                                 </div>
