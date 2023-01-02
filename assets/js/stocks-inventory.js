@@ -292,16 +292,22 @@ function highlightUpdatedRow(updatedName, itemPage)
 
     dataTable.rows({ page: 'current' }).every(function(rowIdx, tableLoop, rowLoop)
     {
-        var cell = this.data();
+        var cells = this.data();
 
         // match the updated name and the cell name ...
-        if (cell[2] == updatedName)
+        if (cells[2] == updatedName)
         {
             // reference to every row in iteration
             var currentRow = $(".stocks-table > tbody > tr")[rowLoop];
 
+            // create a copy of the row
+            var clone = $(currentRow).clone(true, true);
+
+            // remove the old row
+            $(currentRow).remove();
+
             // highlight the row and move it onto the top
-            $(currentRow)
+            clone
                 .css("background-color", "#D6F0E0")
                 .insertBefore($(".stocks-table > tbody tr:first"));
             
