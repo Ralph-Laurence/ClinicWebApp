@@ -6,8 +6,7 @@ require_once("rootcwd.php");
 require_once($rootCwd . "includes/urls.php");
 
 // we must be logged in to view this page
-if (!isset($_SESSION['isLoggedIn']) || $_SESSION['isLoggedIn'] !== true)
-{
+if (!isset($_SESSION['isLoggedIn']) || $_SESSION['isLoggedIn'] !== true) {
     header("Location: " . Navigation::$URL_LOGIN);
     exit;
 }
@@ -28,7 +27,7 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
 
 ?>
 
-<body> 
+<body>
     <!-- BEGIN CONTAINER -->
     <div class="container-fluid h-100 bg-document p-0">
 
@@ -42,7 +41,7 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
             <section class="d-flex flex-grow-1 mt-2 overflow-hidden">
 
                 <!-- NAVIGATION -->
-                <?php 
+                <?php
                 // mark the active side nav link
                 setActiveLink(Navigation::$NavIndex_Stocks);
 
@@ -88,10 +87,8 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
                                         <select name="category-options" id="category-options" <?php if (empty($categoryOptions)) echo "disabled"; ?>>
                                             <option value="" disabled selected>Select Category</option>
                                             <?php
-                                            if ($categoriesRecordsCount > 0) 
-                                            {
-                                                foreach ($medicineCategories as $k => $v) 
-                                                {
+                                            if ($categoriesRecordsCount > 0) {
+                                                foreach ($medicineCategories as $k => $v) {
                                                     $isSelectedFlag = "";
 
                                                     if (!empty($categoryOptions) && $categoryOptions == $v)
@@ -168,20 +165,31 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
                             <div class="divider-separator border border-1 border-bottom mt-3 mb-2"></div>
 
                             <div class="total-items-counter d-flex align-items-center mb-2">
-                                <span class="fs-6 me-2">Total Items Found: </span>
-                                <span class="badge badge-primary me-4">
-                                    <?php echo (!empty($medicineRecordsCount)) ? $medicineRecordsCount : "0"; ?>
-                                </span>
+                                <!-- ITEM STATUS COUNTER -->
+                                <div class="d-flex me-auto d-flex align-items-center">
+                                    <span class="fs-6 me-2">Total Items Found: </span>
+                                    <span class="badge badge-primary me-4">
+                                        <?php echo (!empty($medicineRecordsCount)) ? $medicineRecordsCount : "0"; ?>
+                                    </span>
 
-                                <span class="fs-6 mx-2">Critical Items: </span>
-                                <span class="badge badge-warning me-4">
-                                    <?php echo $criticalItemsCount; ?>
-                                </span>
+                                    <span class="fs-6 mx-2">Critical Items: </span>
+                                    <span class="badge badge-warning me-4">
+                                        <?php echo $criticalItemsCount; ?>
+                                    </span>
 
-                                <span class="fs-6 me-2">Out of Stock: </span>
-                                <span class="badge badge-danger">
-                                    <?php echo $soldOutItemsCount; ?>
-                                </span>
+                                    <span class="fs-6 me-2">Out of Stock: </span>
+                                    <span class="badge badge-danger">
+                                        <?php echo $soldOutItemsCount; ?>
+                                    </span>
+                                </div>
+                                <!-- PAGINATOR -->
+                                <div class="entries-paginator-container d-flex align-items-center">
+                                    <span class="me-1">Show</span>
+                                    <select id="virtual-entries-paginator">
+                                         
+                                    </select>
+                                    <span class="ms-1">entries</span>
+                                </div>
                             </div>
 
 
@@ -206,18 +214,16 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
                                             <th class="fw-bold" scope="col">Action</th>
                                             <th class="d-none" scope="col">Supplier</th>
                                             <th class="d-none" scope="col">Date Added</th>
-                                            <th class="d-none" scope="col">ScrollAnchor</th>
+                                            <th class="d-none" scope="col">ItemKey</th>
                                             <th class="d-none" scope="col">Units</th>
                                             <th class="d-none" scope="col">Status</th>
-                                            <th class="d-none" scope="col">Description</th>
+                                            <th class="d-none" scope="col">Remarks</th>
                                         </tr>
                                     </thead>
                                     <tbody class="stocks-dataset bg-white">
                                         <?php
-                                        if (!empty($medicineDataSet)) 
-                                        {
-                                            foreach ($medicineDataSet as $row) 
-                                            {
+                                        if (!empty($medicineDataSet)) {
+                                            foreach ($medicineDataSet as $row) {
                                                 $icon = $row['fas_icon'];
                                                 $itemName = $row['item_name'];
                                                 $category = $row['category'];
@@ -238,15 +244,13 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
                                                 $stockStatus = "";
 
                                                 // make text appear yellow for critical items
-                                                if ($remaining > 0 && $remaining <= $criticalLevel)
-                                                {
+                                                if ($remaining > 0 && $remaining <= $criticalLevel) {
                                                     $stockLabelColor = "stock-label-critical";
                                                     $stockStatus = "critical";
                                                 }
 
                                                 // make text appear red for sold out items
-                                                if ($remaining == 0)
-                                                {
+                                                if ($remaining == 0) {
                                                     $stockLabelColor = "stock-label-soldout";
                                                     $stockStatus = "soldout";
                                                 }
@@ -290,11 +294,11 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
                                                     </td>
                                                     <td class=\"d-none\">$supplier</td>
                                                     <td class=\"d-none\">$dateAdded</td>
-                                                    <td class=\"d-none\"></td>
+                                                    <td class=\"d-none\">$itemID_Hashed</td>
                                                     <td class=\"d-none\">$measurement</td>
                                                     <td class=\"d-none\">$stockStatus</td>
                                                     <td class=\"d-none\">$remarks</td>
-                                                </tr>"; 
+                                                </tr>";
                                             }
                                         }
                                         ?>
@@ -311,62 +315,85 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
         </main>
         <!-- MAIN CONTENT -->
 
-        <?php // Hidden form; This will handle an item's EDIT action ?>
+        <?php // Hidden form; This will handle an item's EDIT action 
+        ?>
         <form action="<?= Navigation::$URL_EDIT_ITEM ?>" method="GET" class="frm-edit-item d-none">
             <input type="text" name="item-key" id="item-key">
             <input type="text" name="item-page" id="item-page">
         </form>
 
-        <?php 
-            $lastUpdated_ItemName = "";
-            $lastUpdated_ItemPage = -1;
-            
-            if (isset($_SESSION['edit_item_success'], $_SESSION['edit_updated_item_name'], $_SESSION['edit_item_page'])) 
-            {
-                if ($_SESSION['edit_item_success'] === true)
-                {
-                    $lastUpdated_ItemName = $_SESSION['edit_updated_item_name'];
-                    $lastUpdated_ItemPage = $_SESSION['edit_item_page'];
-                }
-            } 
+        <?php
+        //
+        // SESSION: EDIT ITEM
+        //
+        $lastUpdated_ItemName = "";
+        $lastUpdated_ItemPage = -1;
 
-            $deleteItem_Status = "";
-
-            if (isset($_SESSION['delete-item-success'], $_SESSION['delete-item-status']))
-            {
-                if ($_SESSION['delete-item-success'] === true)
-                    $deleteItem_Status = $_SESSION['delete-item-status'];
+        if (isset($_SESSION['edit_item_success'], $_SESSION['edit_updated_item_name'], $_SESSION['edit_item_page'])) {
+            if ($_SESSION['edit_item_success'] === true) {
+                $lastUpdated_ItemName = $_SESSION['edit_updated_item_name'];
+                $lastUpdated_ItemPage = $_SESSION['edit_item_page'];
             }
+        }
+        //
+        // SESSION: DELETE SINGLE ITEM
+        //
+        $deleteItem_Status = "";
+
+        if (isset($_SESSION['delete-item-success'], $_SESSION['delete-item-status'])) {
+            if ($_SESSION['delete-item-success'] === true)
+                $deleteItem_Status = $_SESSION['delete-item-status'];
+        }
+        //
+        // SESSION: DELETE MULTIPLE ITEM
+        //
+        $deleteItems_Status = "";
+
+        if (isset($_SESSION['delete-items-success'], $_SESSION['delete-items-status'])) {
+            if ($_SESSION['delete-items-success'] === true)
+                $deleteItems_Status = $_SESSION['delete-items-status'];
+        }
         ?>
-        
-        <?php // Hidden fields, to hold the last updated item name and page index ?>
+
+        <?php // Hidden fields, to hold the last updated item name and page index 
+        ?>
         <form class="frm-session-vars">
-            <input type="text" class="d-none session-var-item-name" 
-            value="<?= $lastUpdated_ItemName ?>">
+            <input type="text" class="d-none session-var-item-name" value="<?= $lastUpdated_ItemName ?>">
 
-            <input type="text" class="d-none session-var-item-page" 
-            value="<?= $lastUpdated_ItemPage ?>">
+            <input type="text" class="d-none session-var-item-page" value="<?= $lastUpdated_ItemPage ?>">
 
-            <input type="text" class="d-none session-var-delete-item-status"
-            value="<?= $deleteItem_Status ?>">
+            <input type="text" class="d-none session-var-delete-item-status" value="<?= $deleteItem_Status ?>">
+
+            <input type="text" class="d-none session-var-delete-items-status" value="<?= $deleteItems_Status ?>">
         </form>
 
-        <?php // Hidden form; This will handle an item's DELETE action ?>
+        <?php // Hidden form; This will handle an item's DELETE action 
+        ?>
         <form action="<?= Navigation::$ACTION_DELETE_ITEM ?>" method="POST" class="frm-delete-item d-none">
             <input type="text" name="item-key" id="item-key">
         </form>
-        
+
+        <?php
+        // Store multiple item keys here as AJAX string.  
+        // We will use this for getting all checked rows in table
+        ?>
+        <form action="<?= Navigation::$ACTION_DELETE_ITEMS ?>" method="POST" class="frm-delete-items d-none">
+            <input type="text" name="item-keys" id="item-keys">
+        </form>
+
     </div>
     <!-- END CONTAINER -->
- 
+
     <?php
 
     unset(
-        $_SESSION['edit_item_success'], 
-        $_SESSION['edit_updated_item_name'], 
+        $_SESSION['edit_item_success'],
+        $_SESSION['edit_updated_item_name'],
         $_SESSION['edit_item_page'],
         $_SESSION['delete-item-success'],
-        $_SESSION['delete-item-status']
+        $_SESSION['delete-item-status'],
+        $_SESSION['delete-items-success'],
+        $_SESSION['delete-items-status']
     );
 
     // modal window for showing the item details
@@ -380,7 +407,7 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
     <!--SCRIPTS-->
     <script src="assets/lib/jquery/jquery-3.6.1.min.js"></script>
     <script src="assets/lib/jquery-ui-1.13.2.custom/jquery-ui.min.js"></script>
-    <script src="assets/lib/datatables/datatables.min.js"></script> 
+    <script src="assets/lib/datatables/datatables.min.js"></script>
     <script src="assets/lib/mdb5/js/mdb.min.js"></script>
     <script src="assets/lib/momentjs/moment-with-locales.js"></script>
     <script src="assets/lib/jquery.nicescroll/jquery.nicescroll.min.js"></script>
@@ -393,7 +420,7 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
     <script src="components/alert-dialog/alert-dialog.js"></script>
     <script src="components/confirm-dialog/confirm-dialog.js"></script>
     <script src="components/snackbar/snackbar.js"></script>
-    
+
 </body>
 
-</html> 
+</html>

@@ -1,4 +1,10 @@
 <?php
+
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Expose-Headers: Content-Length, X-JSON");
+header("Access-Control-Allow-Methods: GET, POST");
+header("Access-Control-Allow-Headers: *");
+
 require_once("rootcwd.inc.php");
 
 require_once($cwd . "database/configs.php");

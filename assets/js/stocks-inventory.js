@@ -19,6 +19,7 @@ var dataTable = undefined;
 var sessionVar_ItemName = undefined;
 var sessionVar_ItemPage = undefined;
 var sessionVar_ItemDeleted = undefined;
+var sessionVar_ItemsDeleted = undefined;
 
 $(document).ready(() => onAwake());
 
@@ -45,8 +46,8 @@ function onAwake()
         width: 160,
         change: function (event, ui) 
         {
-            // filter searchterms
-            findItemsOption($(this).val());
+            // filter searchterms 
+            findItemsOption(ui.item.value);
         }
     });
 
@@ -56,24 +57,41 @@ function onAwake()
     sessionVar_ItemName = $(".session-var-item-name").val();
     sessionVar_ItemPage = $(".session-var-item-page").val();
     sessionVar_ItemDeleted = $(".session-var-delete-item-status").val();
+    sessionVar_ItemsDeleted = $(".session-var-delete-items-status").val();
 
     // render the table and bind event 
     // after databinding has completed
-    dataTable = $('.stocks-table') .DataTable(
+    dataTable = $('.stocks-table') 
+    .on( "draw.dt", function()
+    { 
+        // hide the original entries paginator
+        $(".dataTables_length").hide();
+
+        // copy the original entries paginator's options
+        // to the virtual entries paginator
+        var cloned = $(".dataTables_length").clone();
+
+        $("#virtual-entries-paginator")
+        .empty()
+        .append(cloned)
+        .selectmenu({
+            width: 85,
+            change: function(event, ui)
+            {
+                // select the hidden entries paginator
+                // when the virtual paginator was selected
+                $($(".dataTables_length").find("select")).val(ui.item.value).change(); 
+            }
+        });  
+    })
+    .DataTable(
     {
         searching: false,
         ordering:  false
     });
 
-    if (!System.isNullOrEmpty(sessionVar_ItemName))
-    {
-        highlightUpdatedRow(sessionVar_ItemName, sessionVar_ItemPage);
-    }
-    
-    if (!System.isNullOrEmpty(sessionVar_ItemDeleted))
-    { 
-        snackbar.show("An item was successfully removed from the records.");
-    }
+    // show snackbar after a successful edit/delete
+    notify_OnEditDeleteSuccess();
 
     // bind event handlers
     onBind();
@@ -179,19 +197,30 @@ function deleteAllRows()
     // we count all checked rows .. if no row has been checked, exit
     var checkedRowsCount = 0;
 
+    // store the item keys here
+    var formData = {};
+  
     // find all checked rows
     rows.each(function(i, row)
     {
         var checkboxRow = $(rows[i]).find("#row-check-box");
         var isRowChecked = checkboxRow.prop("checked");
- 
+
         if (isRowChecked)
+        {
             checkedRowsCount++;
-        // if (checkAll)
-        //     $(checkboxColumn).prop('checked', true);
-        // else
-        //     $(checkboxColumn).prop('checked', false);
+            
+            // form data index syntax: itemN
+            var itemKey = $(rows[i].cells[10]).text();
+
+            formData[`item${i}`] = itemKey;
+        } 
     });
+
+    // encode form data as JSON
+    var formData_Encoded = JSON.stringify(formData);
+
+    $(".frm-delete-items #item-keys").val(formData_Encoded);
 
     if (checkedRowsCount == 0)
     {
@@ -199,11 +228,11 @@ function deleteAllRows()
         return;
     }
 
-    confirm.show("Do you really want to delete all selected records?\n\nThis action cannot be undone. Please proceed with caution.");
+    confirm.show("Do you really want to delete all selected items?\n\nThis action cannot be undone. Please proceed with caution.");
         
     confirm.actionOnOK = function()
     {
-        
+        $(".frm-delete-items").trigger("submit");
     };  
 }
 
@@ -214,7 +243,7 @@ function deleteItem(itemKey, itemName)
     if (inputItemKey == undefined || inputItemKey == "")
         return; 
 
-    confirm.show(`Do you really want to remove "${itemName}" from the records?\n\nThis action cannot be undone. Please proceed with caution.`, "Delete Item");
+    confirm.show(`Do you really want to remove "${itemName}" from the records?\n\nThis action cannot be undone. Please proceed with caution.`);
         
     confirm.actionOnOK = function()
     {
@@ -298,41 +327,76 @@ function highlightUpdatedRow(updatedName, itemPage)
     // otherwise, stop the execution
     var rows = $(".stocks-table > tbody > tr");
     
-    if (rows.length < 1 || (updatedName == undefined || updatedName == ""))
+    if (rows.length < 1 || System.isNullOrEmpty(updatedName))
         return;
-  
-    // scroll to the paginated page's index where the item is displayed
-    scrollPage(itemPage);
 
-    dataTable.rows({ page: 'current' }).every(function(rowIdx, tableLoop, rowLoop)
-    {
-        var cells = this.data();
+    var isItemFoundInPage = false;
+    var scrollPageIndex = itemPage;
 
-        // match the updated name and the cell name ...
-        if (cells[2] == updatedName)
+    while(!isItemFoundInPage)
+    { 
+        // scroll to the paginated page's index where the item is displayed
+        scrollPage(scrollPageIndex);
+
+        // process the highlighting of rows
+        dataTable.rows({ page: 'current' }).every(function(rowIdx, tableLoop, rowLoop)
         {
-            // reference to every row in iteration
-            var currentRow = $(".stocks-table > tbody > tr")[rowLoop];
+            // reference to the current row
+            var tr = this.data();
 
-            // create a copy of the row
-            var clone = $(currentRow).clone(true, true);
+            // match the updated name and the cell name ...
+            if (tr[2] == updatedName)
+            {
+                // reference to the row in each iteration
+                var currentRow = $(".stocks-table > tbody > tr")[rowLoop];
 
-            // remove the old row
-            $(currentRow).remove();
+                // create a copy of the row
+                var clone = $(currentRow).clone(true, true);
 
-            // highlight the row and move it onto the top
-            clone
-                .css("background-color", "#D6F0E0")
-                .insertBefore($(".stocks-table > tbody tr:first"));
-            
-            // break
-            return false;
-        }
-    });  
+                // remove the old row
+                $(currentRow).remove();
+
+                // highlight the row and move it onto the top
+                clone
+                    .css("background-color", "#D6F0E0")
+                    .insertBefore($(".stocks-table > tbody tr:first"));
+
+                isItemFoundInPage = true;
+
+                // break out of the iterator
+                return false;
+            }
+        });  
+
+        // we need to keep scrolling until we find the updated row
+        scrollPageIndex++;
+    }
  
+    // Notify the user that the process succeeded
     snackbar.show("Item has been successfully updated.");
 }  
 
+function notify_OnEditDeleteSuccess()
+{
+    if (!System.isNullOrEmpty(sessionVar_ItemName))
+    {
+        highlightUpdatedRow(sessionVar_ItemName, sessionVar_ItemPage);
+        return;
+    }
+
+    if (!System.isNullOrEmpty(sessionVar_ItemDeleted))
+    { 
+        snackbar.show("An item was successfully removed from the records.");
+        return;
+    }
+    else if (!System.isNullOrEmpty(sessionVar_ItemsDeleted))
+    { 
+        snackbar.show("Items were successfully removed.");
+        return;
+    }
+}
+
+// get the index of the displayed pagination table page
 function getPaginationPage()
 { 
     var info = dataTable.page.info();

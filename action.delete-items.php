@@ -31,9 +31,10 @@ $db = new DbHelper($pdo);
 
 $itemsTable = TableNames::$items;
 
-$itemKey = $_POST['item-key'] ?? "";
+// The item keys are stored as JSON string
+$itemKeys = $_POST['item-keys'] ?? "";
  
-if (empty($itemKey))
+if (empty($itemKeys))
 {
     throw_response_code(400);
     exit();
@@ -41,14 +42,28 @@ if (empty($itemKey))
 
 try
 {
-    // decrypt the item key (id) into plain text
-    $itemId = Crypto::decrypt($itemKey, $defuseKey);
-    $condition = ["id" => $itemId];
+    // decode the JSON data into assoc array
+    $data = json_decode($itemKeys, true); 
 
-    $db->delete($pdo, $itemsTable, $condition);
+    // item id(s)
+    $itemIds = array();
+
+    // every item key is encrypted .. we should
+    // decode these to plain string values 
+    foreach($data as $k => $v)
+    {
+        $itemId = Crypto::decrypt($v, $defuseKey);
+        array_push($itemIds, $itemId);
+    }
+
+    // decrypt the item key (id) into plain text
+    //
+    //$condition = ["id" => $itemId];
+
+    $db->deleteWhereIn($pdo, $itemsTable, "id", $itemIds);
     
-    $_SESSION['delete-item-success'] = true;
-    $_SESSION['delete-item-status'] = "0x0";
+    $_SESSION['delete-items-success'] = true;
+    $_SESSION['delete-items-status'] = "0x0";
 
     throw_response_code(200, Navigation::$URL_STOCKS_INVENTORY);
     exit();

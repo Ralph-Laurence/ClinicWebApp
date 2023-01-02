@@ -35,6 +35,7 @@ class Navigation
     public static $NavIndex_Settings = 10; 
 
     public static $ACTION_DELETE_ITEM          = "action.delete-item.php";
+    public static $ACTION_DELETE_ITEMS         = "action.delete-items.php";
     public static $ACTION_EDIT_ITEM            = "action.edit-item.php";
 }
 

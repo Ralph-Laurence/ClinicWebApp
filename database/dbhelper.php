@@ -161,6 +161,39 @@ class DbHelper
 
     }
 
+    public function deleteWhereIn($pdo, $table, $column = "", $in = array())
+    { 
+        // Stop execution if there is no connection object
+        if ($pdo == null)
+            die("Server Error");
+
+        if (empty($in))
+            return; 
+
+        // build the placeholder string
+        $placeholders = rtrim(str_repeat("?,", count($in)), ",");
+
+        // build the final query
+        $sql = "DELETE FROM $table WHERE $column IN ($placeholders)"; //  $condParamString
+        
+        // prepare the query
+        $sth = $pdo->prepare($sql);
+
+        // then bind parameter values
+        $iterator = 1;
+
+        foreach($in as $val)
+        {
+            $sth->bindValue($iterator, $val);
+
+            // the iterator is an index for binding values
+            $iterator++;
+        }
+
+        $sth->execute();
+
+    }
+
     // Select all records from the given database table. The returning data
     // will be of type Key-Value Pair or what we call the ASSOCIATIVE ARRAY.
     // $pdo         -> The connection object
