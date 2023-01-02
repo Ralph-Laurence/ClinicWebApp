@@ -11,21 +11,13 @@ require_once($rootCwd . "layout-header.php");
 require_once($rootCwd . "env.php");
 
 require_once($rootCwd . "includes/inc.add-edit-item.php");
-require_once($rootCwd . "action.edit-item.php");
+require_once($rootCwd . Navigation::$ACTION_EDIT_ITEM);
 
 require_once($rootCwd . "library/defuse-crypto.phar");
 
 use Defuse\Crypto\Crypto;
 use Defuse\Crypto\Key;
-//
-// IF THIS PAGE IS ACCESSED WITHOUT POST REQUEST,
-// GO BACK TO THE PARENT PAGE
-//
-// if ($_SERVER['REQUEST_METHOD'] != 'POST') 
-// {
-//     throw_response_code(301, ENV_SITE_ROOT . Navigation::$URL_STOCKS_INVENTORY); 
-//     exit;
-// }
+ 
 //
 //
 //

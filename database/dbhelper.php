@@ -115,27 +115,50 @@ class DbHelper
 
         $sth->execute(); 
     }
-
+    // Delete a record from the database.
+    // $pdo         -> The connection object
+    // $table       -> The name of the table we will store the data into
+    // $condition   -> KEY-VALUE pair array in which the KEY represents the
+    //             column or what we call as fields and the VALUE is the
+    //             value itself which will be used to match a condition
     public function delete($pdo, $table, $condition = array())
     { 
         // Stop execution if there is no connection object
         if ($pdo == null)
             die("Server Error");
 
+        // get all column names from the condition
         $condColNames = array_keys($condition);
         $condColumnParams = array();
 
+        // create column parameter placeholders (question mark)
         foreach ($condColNames as $col)
         {
             $paramStr = $col."=?";
             array_push($condColumnParams, $paramStr);
         }
 
+        // build the parameter placeholder as single string
         $condParamString = implode(" AND ", $condColumnParams);
 
+        // build the final query
         $sql = "DELETE FROM $table WHERE $condParamString";
 
-        echo $sql;
+        // bind parameter values then execute the query
+        $sth = $pdo->prepare($sql);
+        
+        $iterator = 1;
+
+        foreach(array_values($condition) as $val)
+        {
+            $sth->bindValue($iterator, $val);
+
+            // the iterator is an index for binding values
+            $iterator++;
+        }
+
+        $sth->execute();
+
     }
 
     // Select all records from the given database table. The returning data

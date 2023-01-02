@@ -18,6 +18,7 @@ var dataTable = undefined;
 
 var sessionVar_ItemName = undefined;
 var sessionVar_ItemPage = undefined;
+var sessionVar_ItemDeleted = undefined;
 
 $(document).ready(() => onAwake());
 
@@ -54,6 +55,7 @@ function onAwake()
     // for highlighting the recently updated item
     sessionVar_ItemName = $(".session-var-item-name").val();
     sessionVar_ItemPage = $(".session-var-item-page").val();
+    sessionVar_ItemDeleted = $(".session-var-delete-item-status").val();
 
     // render the table and bind event 
     // after databinding has completed
@@ -63,8 +65,15 @@ function onAwake()
         ordering:  false
     });
 
-    if (sessionVar_ItemName != undefined || sessionVar_ItemName != '')
+    if (!System.isNullOrEmpty(sessionVar_ItemName))
+    {
         highlightUpdatedRow(sessionVar_ItemName, sessionVar_ItemPage);
+    }
+    
+    if (!System.isNullOrEmpty(sessionVar_ItemDeleted))
+    { 
+        snackbar.show("An item was successfully removed from the records.");
+    }
 
     // bind event handlers
     onBind();
@@ -198,16 +207,21 @@ function deleteAllRows()
     };  
 }
 
-function deleteItem(itemKey)
+function deleteItem(itemKey, itemName)
 {
-    var inputItemKey = $(".frm-delete-item #input-item-key").val(itemKey);
+    var inputItemKey = $(".frm-delete-item #item-key").val(itemKey);
 
     if (inputItemKey == undefined || inputItemKey == "")
-        return;
+        return; 
 
-    $(".frm-delete-item").trigger("submit");
+    confirm.show(`Do you really want to remove "${itemName}" from the records?\n\nThis action cannot be undone. Please proceed with caution.`, "Delete Item");
+        
+    confirm.actionOnOK = function()
+    {
+        $(".frm-delete-item").trigger("submit");
+    };   
 }
-
+ 
 
 function bindShowItemInfo()
 {
@@ -320,13 +334,12 @@ function highlightUpdatedRow(updatedName, itemPage)
 }  
 
 function getPaginationPage()
-{
-    // reference every information of
-    // the paginated page
+{ 
     var info = dataTable.page.info();
     return info.page;
 }
 
+// change page location given by its page index
 function scrollPage(pageIndex)
 {
     var index = parseInt(pageIndex);
@@ -334,6 +347,5 @@ function scrollPage(pageIndex)
     if (index < 0)
         return;
 
-    // change page location
     dataTable.page(index).draw(false);
 } 

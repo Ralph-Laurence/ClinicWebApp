@@ -11,7 +11,6 @@ class Navigation
     public static $URL_PATIENT_RECORDS          = "page.patient-records.php";
     public static $URL_ADD_NEW_ITEM             = "page.add-new-item.php";
     public static $URL_EDIT_ITEM                = "page.edit-item.php";
-    public static $URL_DELETE_ITEM              = "action.delete-item.php";
     public static $URL_LOGIN                    = "login.php";
     public static $URL_LOGOUT                   = "logout.php";
     public static $URL_HOME                     = "page.home.php";
@@ -34,6 +33,9 @@ class Navigation
     public static $NavIndex_Illness = 8; 
     public static $NavIndex_Categories = 9; 
     public static $NavIndex_Settings = 10; 
+
+    public static $ACTION_DELETE_ITEM          = "action.delete-item.php";
+    public static $ACTION_EDIT_ITEM            = "action.edit-item.php";
 }
 
 // we will use this flag / marker to identify which

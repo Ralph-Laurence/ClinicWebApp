@@ -125,6 +125,6 @@ class System
      */
     static isNullOrEmpty(value)
     {
-        return (value == undefined || value == null || value == "");
+        return (!value && value.length == 0);
     }
 }

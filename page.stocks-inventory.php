@@ -279,7 +279,7 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
                                                                     </div>
                                                                     <div class=\"fs-6\">Edit</div>
                                                                 </li> 
-                                                                <li onclick=\"deleteItem('$itemID_Hashed')\" class=\"d-flex align-items-center gap-3 px-3 py-1 dropdown-item-custom-light\">
+                                                                <li onclick=\"deleteItem('$itemID_Hashed', '$itemName')\" class=\"d-flex align-items-center gap-3 px-3 py-1 dropdown-item-custom-light\">
                                                                     <div class=\"dropdown-item-icon text-center\">
                                                                         <i class=\"fas fa-trash fs-6 font-red\"></i>
                                                                     </div>
@@ -330,16 +330,29 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
                 }
             } 
 
-            // Hidden field, to hold the last updated item name and page index
-        ?>
-        <input type="text" class="d-none session-var-item-name" 
-        value="<?= $lastUpdated_ItemName ?>">
+            $deleteItem_Status = "";
 
-        <input type="text" class="d-none session-var-item-page" 
-        value="<?= $lastUpdated_ItemPage ?>">
+            if (isset($_SESSION['delete-item-success'], $_SESSION['delete-item-status']))
+            {
+                if ($_SESSION['delete-item-success'] === true)
+                    $deleteItem_Status = $_SESSION['delete-item-status'];
+            }
+        ?>
+        
+        <?php // Hidden fields, to hold the last updated item name and page index ?>
+        <form class="frm-session-vars">
+            <input type="text" class="d-none session-var-item-name" 
+            value="<?= $lastUpdated_ItemName ?>">
+
+            <input type="text" class="d-none session-var-item-page" 
+            value="<?= $lastUpdated_ItemPage ?>">
+
+            <input type="text" class="d-none session-var-delete-item-status"
+            value="<?= $deleteItem_Status ?>">
+        </form>
 
         <?php // Hidden form; This will handle an item's DELETE action ?>
-        <form action="<?= Navigation::$URL_DELETE_ITEM ?>" method="POST" class="frm-delete-item d-none">
+        <form action="<?= Navigation::$ACTION_DELETE_ITEM ?>" method="POST" class="frm-delete-item d-none">
             <input type="text" name="item-key" id="item-key">
         </form>
         
@@ -348,7 +361,13 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
  
     <?php
 
-    unset($_SESSION['edit_item_success'], $_SESSION['edit_updated_item_name']);
+    unset(
+        $_SESSION['edit_item_success'], 
+        $_SESSION['edit_updated_item_name'], 
+        $_SESSION['edit_item_page'],
+        $_SESSION['delete-item-success'],
+        $_SESSION['delete-item-status']
+    );
 
     // modal window for showing the item details
     require_once("layouts/item-info-dialog.php");
@@ -367,8 +386,9 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
     <script src="assets/lib/jquery.nicescroll/jquery.nicescroll.min.js"></script>
 
     <script src="assets/js/nicescroll.js"></script>
-    <script src="assets/js/stocks-inventory.js"></script>
     <script src="assets/js/base-ui.js"></script>
+    <script src="assets/js/system.js"></script>
+    <script src="assets/js/stocks-inventory.js"></script>
 
     <script src="components/alert-dialog/alert-dialog.js"></script>
     <script src="components/confirm-dialog/confirm-dialog.js"></script>

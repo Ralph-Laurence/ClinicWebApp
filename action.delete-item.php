@@ -1,4 +1,6 @@
 <?php
+@session_start();
+
 require_once("rootcwd.php");
 
 require_once($rootCwd . "database/configs.php");
@@ -29,10 +31,31 @@ $db = new DbHelper($pdo);
 
 $itemsTable = TableNames::$items;
 
-$itemKey = $_POST['input-item-keyx'] ?? "";
-
-echo "key " . $itemKey;
+$itemKey = $_POST['item-key'] ?? "";
+ 
 if (empty($itemKey))
 {
     throw_response_code(400);
+    exit();
+}
+
+try
+{
+    // decrypt the item key (id) into plain text
+    $itemId = Crypto::decrypt($itemKey, $defuseKey);
+    $condition = ["id" => $itemId];
+
+    $db->delete($pdo, $itemsTable, $condition);
+    
+    $_SESSION['delete-item-success'] = true;
+    $_SESSION['delete-item-status'] = "0x0";
+
+    throw_response_code(200, Navigation::$URL_STOCKS_INVENTORY);
+    exit();
+}
+catch (Exception $ex)   
+{
+    echo $ex->getMessage();
+    throw_response_code(500);
+    exit();
 }
