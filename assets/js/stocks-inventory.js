@@ -51,8 +51,8 @@ function onAwake()
         }
     });
 
-    $("#category-options").selectmenu();
-   
+    $("#category-options").selectmenu(); 
+
     // for highlighting the recently updated item
     sessionVar_ItemName = $(".session-var-item-name").val();
     sessionVar_ItemPage = $(".session-var-item-page").val();
@@ -61,34 +61,15 @@ function onAwake()
 
     // render the table and bind event 
     // after databinding has completed
-    dataTable = $('.stocks-table') 
-    .on( "draw.dt", function()
-    { 
-        // hide the original entries paginator
-        $(".dataTables_length").hide();
-
-        // copy the original entries paginator's options
-        // to the virtual entries paginator
-        var cloned = $(".dataTables_length").clone();
-
-        $("#virtual-entries-paginator")
-        .empty()
-        .append(cloned)
-        .selectmenu({
-            width: 85,
-            change: function(event, ui)
-            {
-                // select the hidden entries paginator
-                // when the virtual paginator was selected
-                $($(".dataTables_length").find("select")).val(ui.item.value).change(); 
-            }
-        });  
-    })
+    dataTable = $('.stocks-table')  
     .DataTable(
     {
         searching: false,
         ordering:  false
     });
+
+    // recreate the entries dropdown filter
+    createVirtualEntriesPaginator();
 
     // show snackbar after a successful edit/delete
     notify_OnEditDeleteSuccess();
@@ -96,7 +77,9 @@ function onAwake()
     // bind event handlers
     onBind();
 }
-
+//
+// Bind events here after document has loaded
+//
 function onBind()
 {
     columnCheckbox.on('change', function()
@@ -112,7 +95,37 @@ function onBind()
     // show selected item's details in a modal window
     bindShowItemInfo();
 }
+//
+// recreate the entries dropdown filter
+//
+function createVirtualEntriesPaginator() 
+{
+    // hide the original entries paginator
+    $(".dataTables_length").hide();
+    $(".entries-paginator-container").empty();
 
+    // copy the original entries paginator's options
+    // to the virtual entries paginator
+    var cloned = $(".dataTables_length").find('select').clone(true, true)
+        .removeAttr("name")
+        .removeAttr("class")
+        .removeAttr("aria-controls")
+        .attr("id", "virtual-entries-paginator")
+        .hide();
+
+    $(cloned[0]).appendTo(".entries-paginator-container");
+
+    $("#virtual-entries-paginator").selectmenu({
+        width: 85,
+        change: function (event, ui) {
+            $($(".dataTables_length").find("select")).val(ui.item.value).change();
+        }
+    });
+}
+//
+// Tick all row checkboxes when the column header's
+// checkbox was checked
+//
 function checkAllRows(checkAll = true)
 {
     var table = $(".stocks-table");
@@ -154,7 +167,13 @@ function findItemsOption(selected)
 
     // other filter without the need of keywords
     if (blackList.includes(selected))
+    {
         disableInputKeyword = true;
+
+        // immediately find the item
+        if (selected != "filter-category")
+            findButton.click();
+    }
 
     if (disableInputKeyword)
         inputKeyword.prop('disabled', true);
@@ -251,7 +270,6 @@ function deleteItem(itemKey, itemName)
     };   
 }
  
-
 function bindShowItemInfo()
 {
     $(document).on("click", ".stocks-table .btn-item-details", function()

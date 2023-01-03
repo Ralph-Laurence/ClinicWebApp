@@ -759,7 +759,8 @@ function loadMedicinesList()
             // update the medicine selectors table
             if (res)
             { 
-                tbody.empty();
+                // tbody.empty();
+                $(".medicine-selector-dataset").empty();
 
                 var totalCriticalItems = res.criticalCount;
                 var totalSoldOutItems = res.soldOutCount;
@@ -771,28 +772,33 @@ function loadMedicinesList()
 
                 // recreate the medicines picker table
                 medicinesDataset.forEach(data => 
-                {
-                    // header idx 5
+                { 
                     var itemId = data.item_id;
                     var itemName = data.item_name;
                     var category = data.category;
-
-                    // header idx 7
+ 
                     var measurement = data.measurement;
-
-                    // header idx 6
-                    var remaining = data.remaining;
-                    var criticalLevel = data.critical_level;
+ 
+                    var remaining = parseInt(data.remaining);
+                    var criticalLevel = parseInt(data.critical_level);
                     var unitMeasure = data.unit_measure;
 
-                    var badge_stock = `<span class="badge badge-success">Available</span>`;
-                    var btn_disableOnSoldOut = (remaining == 0) ? "disabled" : "";
+                    var badge_stock = "";
+                    var btn_disableOnSoldOut = "";
 
-                    if (remaining <= criticalLevel)
+                    if (remaining <= criticalLevel && remaining >= 1)
+                    {
                         badge_stock = `<span class="badge badge-warning">Low on stock</span>`;
-
-                    if (remaining == 0)
+                    }
+                    else if (remaining == 0)
+                    {
                         badge_stock = `<span class="badge badge-danger">Sold out</span>`;
+                        btn_disableOnSoldOut = "disabled";
+                    }
+                    else 
+                    {
+                        badge_stock = `<span class="badge badge-success">Available</span>`;
+                    }
 
                     tbody.append(`<tr class=\"align-middle\"> 
                         <td>${itemName}</td> 

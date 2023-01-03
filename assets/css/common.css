@@ -207,6 +207,44 @@
     height: 145px;
 }
 
+#DataTables_Table_0_paginate
+{
+    margin-left: 10px;
+    margin-bottom: 20px;
+    margin-top: 10px;
+}
+
+#DataTables_Table_0_paginate,
+#DataTables_Table_0_paginate > span
+{
+    cursor: pointer;
+    display: flex !important;
+    gap: 0.5rem;
+}
+
+#DataTables_Table_0_info
+{
+    padding-left: 10px;
+}
+
+.paginate_button
+{
+    border-radius: 5px;
+    padding: 0 8px;
+}
+
+.paginate_button.current
+{  
+    background: var(--base-color);
+    color: white;
+}
+
+.paginate_button:hover
+{  
+    background: var(--amber-300);
+    color: var(--base-color);
+}
+
 .login-container
 {
     background-color: #CCD5F1;
@@ -231,3 +269,4 @@
     max-width: 320px;
     width: 320px;
 } 
+

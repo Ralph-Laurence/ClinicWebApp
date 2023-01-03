@@ -183,12 +183,15 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
                                     </span>
                                 </div>
                                 <!-- PAGINATOR -->
-                                <div class="entries-paginator-container d-flex align-items-center">
-                                    <span class="me-1">Show</span>
-                                    <select id="virtual-entries-paginator">
+                                <div class="d-flex align-items-center">
+                                    <div class="me-1 d-inline">Show</div>
+                                    <!-- <select id="virtual-entries-paginator">
                                          
-                                    </select>
-                                    <span class="ms-1">entries</span>
+                                    </select> -->
+                                    <div class="entries-paginator-container">
+                                        
+                                    </div>
+                                    <div class="ms-1 d-inline">entries</div>
                                 </div>
                             </div>
 

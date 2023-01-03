@@ -58,4 +58,6 @@ if (count($medicineDataSet) > 0)
             $criticalItemsCount++;
         }
     }
+
+    sort($medicineCategories);
 } 
