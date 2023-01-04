@@ -6,6 +6,7 @@ class Navigation
 {
     // Web page urls are prefixed with URL_
     public static $URL_CHECKUP_FORM             = "page.checkup-form.php";
+    public static $URL_CHECKUP_DETAILS          = "page.checkup-details.php";
     public static $URL_STOCKS_INVENTORY         = "page.stocks-inventory.php";
     public static $URL_RESTOCK                  = "page.restock.php";
     public static $URL_PATIENT_RECORDS          = "page.patient-records.php";

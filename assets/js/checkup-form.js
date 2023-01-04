@@ -825,6 +825,5 @@ function loadMedicinesList()
     });
 }
 
-
 // only execute this entire script after the page has fully loaded
 $(document).ready(() => onAwake());

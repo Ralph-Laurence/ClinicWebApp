@@ -16,6 +16,14 @@ require_once($rootCwd . "includes/system.php");
 require_once($rootCwd . "includes/utils.php");
 require_once($rootCwd . "layout-header.php");
 require_once($rootCwd . "includes/inc.get-checkup-records.php");
+
+require_once($rootCwd . "library/defuse-crypto.phar");
+
+use Defuse\Crypto\Crypto;
+use Defuse\Crypto\Key;
+
+$defuseKey_Ascii = Helpers::getDefuseKey($pdo);
+$defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
 ?>
 
 <body>
@@ -47,7 +55,7 @@ require_once($rootCwd . "includes/inc.get-checkup-records.php");
                     <?php include_once("layouts/welcome-banner.php"); ?>
 
                     <!--THE WORKSHEET WRAPPER-->
-                    <div class="worksheet-wrapper p-4 w-100 h-100 overflow-hidden position-relative">
+                    <div class="worksheet-wrapper p-2 w-100 h-100 overflow-hidden position-relative">
 
                         <div class="worksheet d-flex flex-column bg-white shadow-2-strong w-100 h-100 p-4 scrollable" style="overflow-y: auto;">
 
@@ -139,9 +147,15 @@ require_once($rootCwd . "includes/inc.get-checkup-records.php");
 
                             <!-- WORKSHEET TABLE-->
                             <div class="w-100 flex-grow-1 border border-1 border-secondary mb-2 worksheet-table-wrapper" style="overflow-y: auto;">
-                                <table class="table table-sm table-striped table-hover position-relative">
-                                    <thead class="bg-amber text-dark" style="position: sticky; top: 0;">
+                                <table class="table table-sm table-striped table-hover patient-records-table position-relative">
+                                    <thead class="bg-amber text-dark position-sticky top-0 z-10">
                                         <tr>
+                                            <!--CHECKBOX-->
+                                            <th scope="col">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" value="" id="column-check-all" />
+                                                </div>
+                                            </th>
                                             <th class="fw-bold" scope="col">Checkup #</th>
                                             <th class="fw-bold" scope="col">Patient</th>
                                             <th class="fw-bold" scope="col">Classification</th>
@@ -152,29 +166,45 @@ require_once($rootCwd . "includes/inc.get-checkup-records.php");
                                     </thead>
                                     <tbody class="checkup-dataset bg-white">
                                         <?php
-                                        if (!empty($checkupDataSet)) {
-                                            foreach ($checkupDataSet as $row) {
+                                        if (!empty($checkupDataSet)) 
+                                        {
+                                            foreach ($checkupDataSet as $row) 
+                                            {
+                                                $checkupId = $row['id'];
+                                                
+                                                // Encrypt the checkup ID
+                                                $checkupKey = Crypto::encrypt(strval($checkupId), $defuseKey);
+
                                                 $formNumber = $row['form_number'];
+
+                                                // Encrypt the form #
+                                                $formTxn = Crypto::encrypt(strval($formNumber), $defuseKey);
+
                                                 $patientName = $row['patient_name'];
                                                 $patientType = $row['patient_type'];
                                                 $illness = $row['illness'];
-                                                $checkupDate = date("M d, Y h:i A");
-
+                                                $checkupDate = date("M d, Y", strtotime($row['checkup_date']));
+                                                $checkupTime = date("h:i A", strtotime($row['checkup_time']));
                                                 echo
                                                 "<tr class=\"align-middle\">
+                                                    <td>
+                                                        <div class=\"form-check\">
+                                                            <input class=\"form-check-input\" type=\"checkbox\" value=\"\" id=\"row-check-box\" />
+                                                        </div>
+                                                    </td>
                                                     <td>$formNumber</td>
                                                     <td>$patientName</td>
                                                     <td>$patientType</td>
                                                     <td>$illness</td>
-                                                    <td>$checkupDate</td>
+                                                    <td>$checkupDate $checkupTime</td>
                                                     <td>
                                                         <div class=\"btn-group\">
-                                                            <button type=\"button\" class=\"btn btn-primary btn-record-details px-2 text-center\">Details</button>
+                                                            <button type=\"button\" class=\"btn btn-primary btn-checkup-details px-2 text-center\" onclick=\"loadCheckupDetails('$checkupKey', '$formTxn')\">Details</button>
                                                             <button type=\"button\" class=\"btn btn-primary btn-split-arrow px-0 text-center dropdown-toggle dropdown-toggle-split\" data-mdb-toggle=\"dropdown\" aria-expanded=\"false\"></button>
                                                             <ul class=\"dropdown-menu dropdown-menu-custom-light-small\">
                                                                 <li onclick=\"\" class=\"d-flex align-items-center gap-3 px-3 py-1 dropdown-item-custom-light\">
                                                                     <div class=\"dropdown-item-icon text-center\">
-                                                                        <i class=\"fas fa-edit fs-6 font-amber\"></i>
+                                                                        <i class=\"fas fa-pen fs-6 text-warning\"></i>
                                                                     </div>
                                                                     <div class=\"fs-6\">Edit</div>
                                                                 </li> 
@@ -204,11 +234,17 @@ require_once($rootCwd . "includes/inc.get-checkup-records.php");
         </main>
         <!-- MAIN CONTENT -->
 
+        <?php // Hidden form; Method=GET to preview checkup details  ?>
+        <form action="<?= Navigation::$URL_CHECKUP_DETAILS ?>" class="checkup_details_form" method="POST">
+            <input type="text" class="d-none" name="details" id="details">
+            <input type="text" class="d-none" name="txn" id="txn">
+        </form>
     </div>
     <!-- END CONTAINER -->
 
     <?php
-    require_once("components/alert-dialog/alert-dialog.php");
+    require_once($rootCwd . "components/alert-dialog/alert-dialog.php");
+    require_once($rootCwd . "layouts/patients-info-dialog.php");
     ?>
 
     <!--SCRIPTS-->
@@ -220,6 +256,7 @@ require_once($rootCwd . "includes/inc.get-checkup-records.php");
 
     <script src="assets/js/nicescroll.js"></script>
     <script src="assets/js/patient-records.js"></script>
+    <script src="assets/js/system.js"></script>
     <script src="assets/js/base-ui.js"></script>
 
     <script src="components/alert-dialog/alert-dialog.js"></script>

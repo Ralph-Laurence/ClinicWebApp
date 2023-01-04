@@ -8,15 +8,15 @@ require_once($cwd . "includes/urls.php");
 <div class="title-banner py-2 px-4 bg-base d-flex align-items-center text-white sticky-top position-absolute w-100">
 
     <div class="left-content me-auto d-flex align-items-center">
-        <img src="assets/images/logo.png" alt="logo" width="42" height="42">
+        <img src="assets/images/logo.png" alt="logo" width="45" height="45">
         <div class="ms-2 fs-6 d-flex flex-column lh-2">
-            <span class="text-uppercase title-banner-text">Clinic Inventory & Information System</span>
-            <div class="d-inline-flex align-items-center gap-2">
-                <span class="fst-italic fsz-10 font-amber">Pangasinan State University</span>
+            <span class="text-uppercase title-banner-text">Medicine Inventory & Patient's Information System</span>
+            <div class="d-inline-flex align-items-center gap-2 fst-italic">
+                <span class="fsz-10 font-amber">Pangasinan State University</span>
                 <i class="border border-start border-1 border-secondary banner-text-divider"></i>
-                <small class="fst-italic fsz-10 text-secondary">Lingayen Campus</small>
+                <small class="fsz-10 text-secondary">Lingayen Campus</small>
                 <i class="border border-start border-1 border-secondary banner-text-divider"></i>
-                <small class="fsz-10 font-bright-blue">Infirmary</small>
+                <small class="fsz-10 font-bright-blue">Dr. Marciano Cantor Jr. Infirmary</small>
             </div>
         </div>
     </div>
@@ -25,7 +25,8 @@ require_once($cwd . "includes/urls.php");
         <?php
         $avatar = "avatar_0.png";
 
-        if (isset($_SESSION['avatar'])) {
+        if (isset($_SESSION['avatar'])) 
+        {
             $icon = $_SESSION['avatar'];
             $avatar = "avatar_" . $icon . ".png";
         }

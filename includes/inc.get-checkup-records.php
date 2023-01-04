@@ -71,6 +71,7 @@ $patientTypesTable = TableNames::$patient_types;
 $db = new DbHelper($pdo);
 
 $sql = "SELECT 
+c.id,
 c.checkup_date,
 c.checkup_time,
 c.form_number,

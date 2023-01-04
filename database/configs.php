@@ -32,7 +32,7 @@ $uid = IsLocalhost()        ? "root"                : "epiz_33161880";
 $password = IsLocalhost()   ? ""                    : "0WaqnWunBVB0FM";
 
 // The Database             // For development      // For deployment
-$db = IsLocalhost()         ? "patient_infosys"     : "epiz_33161880_patient_infosys";
+$dbName = IsLocalhost()     ? "patient_infosys"     : "epiz_33161880_patient_infosys";
 
 // The development server and the deployment server uses the same PORT number
 // so, we will leave it as 3306 in here. 
@@ -46,7 +46,7 @@ $pdo = null;
 try 
 {
     // build database connection provider string / expression
-    $dsn = "mysql:host=$host;dbname=$db;port=$port";
+    $dsn = "mysql:host=$host;dbname=$dbName;port=$port";
 
     // the database connection (PDO means PHP Data Object)
     // pdo is more secure in a way that it prevents an attack

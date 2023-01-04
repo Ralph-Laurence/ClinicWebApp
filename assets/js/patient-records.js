@@ -2,10 +2,7 @@ var inputKeyword = undefined;
 var btnFind = undefined;
 var dialog = undefined;
 
-$(document).ready(() => 
-{
-    onAwake();
-});
+$(document).ready(() => onAwake());
 
 function onAwake()
 { 
@@ -44,7 +41,7 @@ function onAwake()
 
 function onBind()
 {
-    btnFind.click(() => searchRecord());
+    btnFind.click(() => searchRecord()); 
 } 
 
 function searchRecord()
@@ -65,4 +62,18 @@ function searchRecord()
 
     $(".filter-form").trigger("submit");
 }
- 
+  
+
+function loadCheckupDetails(checkupRecordKey, txn)
+{
+    if (System.isNullOrEmpty(checkupRecordKey))
+    {
+        dialog.danger("Can't preview checkup details. Please reload the page and try again." +
+        " If this error persists, please contact the administrator.");
+        return;
+    }
+
+    $("#details").val(checkupRecordKey);
+    $("#txn").val(txn);
+    $(".checkup_details_form").trigger("submit");
+}

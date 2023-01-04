@@ -126,3 +126,7 @@ div.ui-selectmenu-open
 .fsz-10 { font-size: 10px; }
 .fsz-12 { font-size: 12px; }
 .fsz-14 { font-size: 14px; }
+
+.fon-fam-tertiary {
+    font-family: var(--tertiary-font) !important;
+}

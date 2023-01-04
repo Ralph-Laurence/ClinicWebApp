@@ -94,6 +94,9 @@ function onBind()
 
     // show selected item's details in a modal window
     bindShowItemInfo();
+
+    // submit the filter form when a category is selected
+    bindCategoryOptionsOnChange();
 }
 //
 // recreate the entries dropdown filter
@@ -116,7 +119,7 @@ function createVirtualEntriesPaginator()
     $(cloned[0]).appendTo(".entries-paginator-container");
 
     $("#virtual-entries-paginator").selectmenu({
-        width: 85,
+        width: 90,
         change: function (event, ui) {
             $($(".dataTables_length").find("select")).val(ui.item.value).change();
         }
@@ -157,7 +160,14 @@ function findItemsOption(selected)
     // category filter
     if (selected == "filter-category")
     {
-        $("#category-options").selectmenu( "option", "disabled", false );
+        $("#category-options")
+        .selectmenu({
+            change: function()
+            {
+                findButton.click()
+            }
+        })
+        .selectmenu( "option", "disabled", false );
         disableInputKeyword = true;
     }
     else
@@ -179,6 +189,17 @@ function findItemsOption(selected)
         inputKeyword.prop('disabled', true);
     else
         inputKeyword.prop('disabled', false);
+}
+
+function bindCategoryOptionsOnChange()
+{
+    $("#category-options")
+    .selectmenu({
+        change: function()
+        {
+            findButton.click()
+        }
+    });
 }
 
 function searchRecord()
