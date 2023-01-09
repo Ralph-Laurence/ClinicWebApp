@@ -16,7 +16,8 @@
     --red-500: #f44336;
     --teal-500: #009688;
     --amber-400: #ffca28;
-    --amber-300: #ffd54f;
+    --amber-300: #ffd54f; 
+    --green-500: #4CAF50;
 }
 
 @font-face {
@@ -75,6 +76,10 @@ html, body
     background-color: var(--red-500) !important;
 }
 
+.bg-green {
+    background-color: var(--green-500) !important;
+}
+
 .font-document-background {
     color: var(--document-background) !important;
 }
@@ -110,6 +115,12 @@ html, body
 .border-control-2
 {
     border: 2px solid var(--control-border) !important;
+}
+
+.mdb-border-1
+{
+    border: 1px solid #bdbdbd !important;
+    border-radius: 3px;
 }
 
 div.ui-selectmenu-open 

@@ -41,11 +41,11 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
             <section class="d-flex flex-grow-1 mt-2 overflow-hidden">
 
                 <!-- NAVIGATION -->
-                <?php  
-                    // mark the active side nav link
-                    setActiveLink(Navigation::$NavIndex_Patients);
+                <?php
+                // mark the active side nav link
+                setActiveLink(Navigation::$NavIndex_Patients);
 
-                    require_once("layouts/navigation.php");
+                require_once("layouts/navigation.php");
                 ?>
 
                 <!--WORKAREA-->
@@ -143,7 +143,22 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
                             <!--DIVIDER-->
                             <div class="divider-separator border border-1 border-bottom my-3"></div>
 
-                            <h6>Total Records Found: <?php if (!empty($checkupDataSet)) echo count($checkupDataSet) ?></h6>
+                            <div class="total-records-counter d-flex align-items-center mb-2">
+                                <!-- TOTAL RECORDS COUNTER -->
+                                <div class="me-auto">
+                                    <h6>Total Records Found: <?php if (!empty($checkupDataSet)) echo count($checkupDataSet) ?></h6>
+                                </div>
+                                <!-- PAGINATOR -->
+                                <div class="d-flex align-items-center">
+                                    <div class="me-1 d-inline">Show</div> 
+                                    <div class="entries-paginator-container">
+
+                                    </div>
+                                    <div class="ms-1 d-inline">entries</div>
+                                </div>
+                            </div> 
+
+
 
                             <!-- WORKSHEET TABLE-->
                             <div class="w-100 flex-grow-1 border border-1 border-secondary mb-2 worksheet-table-wrapper" style="overflow-y: auto;">
@@ -162,6 +177,7 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
                                             <th class="fw-bold" scope="col">Illness</th>
                                             <th class="fw-bold" scope="col">Checkup Date</th>
                                             <th class="fw-bold" scope="col">Action</th>
+                                            <th class="d-none" scope="col">RecordKey</th>
                                         </tr>
                                     </thead>
                                     <tbody class="checkup-dataset bg-white">
@@ -171,7 +187,7 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
                                             foreach ($checkupDataSet as $row) 
                                             {
                                                 $checkupId = $row['id'];
-                                                
+
                                                 // Encrypt the checkup ID
                                                 $checkupKey = Crypto::encrypt(strval($checkupId), $defuseKey);
 
@@ -208,7 +224,7 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
                                                                     </div>
                                                                     <div class=\"fs-6\">Edit</div>
                                                                 </li> 
-                                                                <li onclick=\"\" class=\"d-flex align-items-center gap-3 px-3 py-1 dropdown-item-custom-light\">
+                                                                <li onclick=\"deleteRecord('$checkupKey', '$formNumber')\" class=\"d-flex align-items-center gap-3 px-3 py-1 dropdown-item-custom-light\">
                                                                     <div class=\"dropdown-item-icon text-center\">
                                                                         <i class=\"fas fa-trash fs-6 font-red\"></i>
                                                                     </div>
@@ -217,6 +233,7 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
                                                             </ul>
                                                         </div>
                                                     </td>
+                                                    <td class=\"d-none\">$checkupKey</td>
                                                 </tr>";
                                             }
                                         }
@@ -239,17 +256,86 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
             <input type="text" class="d-none" name="details" id="details">
             <input type="text" class="d-none" name="txn" id="txn">
         </form>
+
+        <?php // Hidden form; This will handle a record's DELETE action ?>
+        <form action="<?= Navigation::$ACTION_DELETE_CHECKUP_RECORD ?>" method="POST" class="frm-delete-record d-none">
+            <input type="text" name="record-key" id="record-key">
+        </form>
+
+        <?php
+        // Store multiple record keys here as AJAX string.  
+        // We will use this for getting all checked rows in table
+        ?>
+        <form action="<?= Navigation::$ACTION_DELETE_CHECKUP_RECORDS ?>" method="POST" class="frm-delete-records d-none">
+            <input type="text" name="record-keys" id="record-keys">
+        </form>
+
+        <?php
+        //
+        // SESSION: EDIT RECORD
+        //
+        //$lastUpdated_ItemName = "";
+        //$lastUpdated_ItemPage = -1;
+
+        // if (isset($_SESSION['edit_item_success'], $_SESSION['edit_updated_item_name'], $_SESSION['edit_item_page'])) {
+        //     if ($_SESSION['edit_item_success'] === true) {
+        //         $lastUpdated_ItemName = $_SESSION['edit_updated_item_name'];
+        //         $lastUpdated_ItemPage = $_SESSION['edit_item_page'];
+        //     }
+        // }
+        //
+        // SESSION: DELETE SINGLE RECORD
+        //
+        $deleteRecord_Status = "";
+
+        if (isset($_SESSION['delete-record-success'], $_SESSION['delete-record-status'])) {
+            if ($_SESSION['delete-record-success'] === true)
+                $deleteRecord_Status = $_SESSION['delete-record-status'];
+        }
+        //
+        // SESSION: DELETE MULTIPLE RECORDS
+        //
+        $deleteRecords_Status = "";
+
+        if (isset($_SESSION['delete-records-success'], $_SESSION['delete-records-status'])) {
+            if ($_SESSION['delete-records-success'] === true)
+                $deleteRecords_Status = $_SESSION['delete-records-status'];
+        }
+        ?>
+
+        <?php // Hidden fields, to hold the last updated record and it's pagination page index ?>
+        <form class="frm-session-vars">
+            <!-- <input type="text" class="d-none session-var-item-name" value="<?php //$lastUpdated_ItemName ?>">
+            <input type="text" class="d-none session-var-item-page" value="<?php //$lastUpdated_ItemPage ?>"> -->
+            <input type="text" class="d-none session-var-delete-record-status" value="<?= $deleteRecord_Status ?>">
+            <input type="text" class="d-none session-var-delete-records-status" value="<?= $deleteRecords_Status ?>">
+        </form>
+
     </div>
     <!-- END CONTAINER -->
 
     <?php
+ 
+    unset(
+        // $_SESSION['edit_item_success'],
+        // $_SESSION['edit_updated_item_name'],
+        // $_SESSION['edit_item_page'],
+        $_SESSION['delete-record-success'],
+        $_SESSION['delete-record-status'],
+        $_SESSION['delete-records-success'],
+        $_SESSION['delete-records-status']
+    );
+
     require_once($rootCwd . "components/alert-dialog/alert-dialog.php");
+    require_once($rootCwd . "components/confirm-dialog/confirm-dialog.php");
+    require_once($rootCwd . "components/snackbar/snackbar.php");
     require_once($rootCwd . "layouts/patients-info-dialog.php");
     ?>
 
     <!--SCRIPTS-->
     <script src="assets/lib/jquery/jquery-3.6.1.min.js"></script>
     <script src="assets/lib/jquery-ui-1.13.2.custom/jquery-ui.min.js"></script>
+    <script src="assets/lib/datatables/datatables.min.js"></script>
     <script src="assets/lib/mdb5/js/mdb.min.js"></script>
     <script src="assets/lib/momentjs/moment-with-locales.js"></script>
     <script src="assets/lib/jquery.nicescroll/jquery.nicescroll.min.js"></script>
@@ -260,6 +346,8 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
     <script src="assets/js/base-ui.js"></script>
 
     <script src="components/alert-dialog/alert-dialog.js"></script>
+    <script src="components/confirm-dialog/confirm-dialog.js"></script>
+    <script src="components/snackbar/snackbar.js"></script>
 
 </body>
 

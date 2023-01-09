@@ -87,7 +87,7 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
                                                 <input type="text" name="input-checkup-date" class="form-control input-checkup-date bg-white" value="<?php echo Dates::dateToday("m/d/Y") ?>" readonly required />
                                             </div>
                                             <div class="form-outline">
-                                                <input type="time" name="input-checkup-time" class="input-checkup-time py-1" value="<?php echo Dates::dateToday("H:i") ?>" required />
+                                                <input type="time" name="input-checkup-time" class="input-checkup-time py-1 mdb-border-1" value="<?php echo Dates::dateToday("H:i") ?>" required />
                                             </div>
                                             <button type="button" class="btn btn-secondary fw-bold btn-date-time-now">Now</button>
                                         </div>
@@ -181,7 +181,9 @@ $checkupFormNumber = Helpers::generateFormNumber($pdo);
                                             <label class="form-label" for="input-birthday">Birthday</label>
                                         </div>
                                         <div class="dropdown mb-3">
-                                            <button class="btn btn-outline-secondary fw-bold text-dark dropdown-toggle w-100" type="button" id="gender-dropdown-button" data-mdb-toggle="dropdown" aria-expanded="false">
+                                            <button 
+                                            class="btn btn-outline-secondary mdb-border-1 custom-mdb-dropdown fw-bold text-dark dropdown-toggle w-100" 
+                                            type="button" id="gender-dropdown-button" data-mdb-toggle="dropdown" aria-expanded="false">
                                                 Select Gender
                                             </button>
                                             <ul class="dropdown-menu" aria-labelledby="gender-dropdown-button">

@@ -214,6 +214,7 @@ $remarks = $checkupDataset['remarks'];
 
                                     <div class="row fw-bold">
                                         <div class="col-3"><small>Medicine</small></div> 
+                                        <div class="col-3"><small>Type</small></div> 
                                         <div class="col-3"><small>Amount</small></div>
                                     </div>
                                     
@@ -225,11 +226,13 @@ $remarks = $checkupDataset['remarks'];
                                         foreach($prescriptionDataset as $p)
                                         {
                                             $medicine = $p['item_name'];
+                                            $category = $p['category'];
                                             $amount = $p['amount'];
                                             $units = $p['measurement'];
 
                                             echo "<div class=\"row\">
                                                 <div class=\"col-3\"><small>$medicine</small></div> 
+                                                <div class=\"col-3\"><small>$category</small></div> 
                                                 <div class=\"col-3\"><small>$amount $units(s)</small></div>
                                             </div>";
                                         }

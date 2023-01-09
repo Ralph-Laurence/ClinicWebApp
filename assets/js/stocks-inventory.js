@@ -20,9 +20,20 @@ var sessionVar_ItemName = undefined;
 var sessionVar_ItemPage = undefined;
 var sessionVar_ItemDeleted = undefined;
 var sessionVar_ItemsDeleted = undefined;
-
+//
+//==========================================================
+// REGION: INITIALIZATION AND EVENT BINDINGS
+//==========================================================
+//
+// Initialize objects after the DOM (Document Object Model)
+// has fully loaded ... For readability purposes, the entire
+// initialization logic / code is contained in onAwake()
+//
 $(document).ready(() => onAwake());
-
+//
+// All initialization code is contained here ..
+// which is called by $(document).ready event above
+//
 function onAwake()
 {
     dialog = new AlertDialog();
@@ -65,7 +76,8 @@ function onAwake()
     .DataTable(
     {
         searching: false,
-        ordering:  false
+        ordering:  false,
+        autoWidth: false
     });
 
     // recreate the entries dropdown filter
@@ -78,7 +90,9 @@ function onAwake()
     onBind();
 }
 //
-// Bind events here after document has loaded
+// After initialization, we can now bind (attach) events
+// onto elements .. Again, for readability, we put all 
+// logic / code of event bindings in onBind() function
 //
 function onBind()
 {
@@ -97,6 +111,39 @@ function onBind()
 
     // submit the filter form when a category is selected
     bindCategoryOptionsOnChange();
+}
+//
+//==========================================================
+// REGION: RECORD PAGINATION AND DATASET / TABLE OPERATIONS
+//==========================================================
+//
+// Filter / find records with specific term
+//
+function searchRecord()
+{
+    var filter = $("#find-item-option").val();
+
+    var whiteList =
+    [
+        "filter-category",
+        "filter-critical-item",
+        "filter-soldout-item",
+        "filter-newest-item"
+    ];
+
+    if (!whiteList.includes(filter) && inputKeyword.val() == "") 
+    {
+        dialog.warn("Please enter a search term.");
+        return;
+    }
+
+    if (filter == "filter-category" && $("#category-options").val() == null)
+    {
+        dialog.warn("Please select a category.");
+        return;
+    }
+
+    $(".filter-form").trigger("submit");
 }
 //
 // recreate the entries dropdown filter
@@ -144,7 +191,45 @@ function checkAllRows(checkAll = true)
             $(checkboxColumn).prop('checked', false);
     });
 }
+//
+// change the pagination's page location given by its 
+// page index
+//
+function scrollPage(pageIndex)
+{
+    var index = parseInt(pageIndex);
 
+    if (index < 0)
+        return;
+
+    dataTable.page(index).draw(false);
+}
+//
+// get the index of the currently displayed pagination 
+// table page
+//
+function getPaginationPage()
+{ 
+    var info = dataTable.page.info();
+    return info.page;
+} 
+//
+// Immediately apply the category filter when
+// a dropdown option was selected
+// 
+function bindCategoryOptionsOnChange()
+{
+    $("#category-options")
+    .selectmenu({
+        change: function()
+        {
+            findButton.click()
+        }
+    });
+}
+//
+// Find an item by specific filter
+//
 function findItemsOption(selected)
 {
     var disableInputKeyword = false;
@@ -190,45 +275,27 @@ function findItemsOption(selected)
     else
         inputKeyword.prop('disabled', false);
 }
-
-function bindCategoryOptionsOnChange()
+//
+//==========================================================
+// REGION: C.R.U.D. (CREATE, READ, UPDATE, DELETE)
+//==========================================================
+//
+// Launch the page for editing the item
+//
+function editItem(itemKey)
 {
-    $("#category-options")
-    .selectmenu({
-        change: function()
-        {
-            findButton.click()
-        }
-    });
-}
+    var inputItemKey = $(".frm-edit-item #item-key").val(itemKey);
+    
+    $(".frm-edit-item #item-page").val(getPaginationPage());
 
-function searchRecord()
-{
-    var filter = $("#find-item-option").val();
-
-    var whiteList =
-    [
-        "filter-category",
-        "filter-critical-item",
-        "filter-soldout-item",
-        "filter-newest-item"
-    ];
-
-    if (!whiteList.includes(filter) && inputKeyword.val() == "") 
-    {
-        dialog.warn("Please enter a search term.");
+    if (inputItemKey == undefined || inputItemKey == "")
         return;
-    }
 
-    if (filter == "filter-category" && $("#category-options").val() == null)
-    {
-        dialog.warn("Please select a category.");
-        return;
-    }
-
-    $(".filter-form").trigger("submit");
+    $(".frm-edit-item").trigger("submit");
 }
-
+//
+// Delete all checked rows
+//
 function deleteAllRows()
 {
     var table = $(".stocks-table");
@@ -275,7 +342,9 @@ function deleteAllRows()
         $(".frm-delete-items").trigger("submit");
     };  
 }
-
+//
+// Delete a single record
+//
 function deleteItem(itemKey, itemName)
 {
     var inputItemKey = $(".frm-delete-item #item-key").val(itemKey);
@@ -290,7 +359,10 @@ function deleteItem(itemKey, itemName)
         $(".frm-delete-item").trigger("submit");
     };   
 }
- 
+//
+// View details and information about the 
+// selected item record
+//
 function bindShowItemInfo()
 {
     $(document).on("click", ".stocks-table .btn-item-details", function()
@@ -344,28 +416,43 @@ function bindShowItemInfo()
     });
 }
 //
-// Launch the page for editing the item
+//========================================================
+// REGION: VISUAL FEEDBACKS & USER INTERACTION / ATTENTION
+//========================================================
 //
-function editItem(itemKey)
+// Tell the user that the edit and/or delete operation has 
+// completed successfully.
+//
+function notify_OnEditDeleteSuccess()
 {
-    var inputItemKey = $(".frm-edit-item #item-key").val(itemKey);
-    
-    $(".frm-edit-item #item-page").val(getPaginationPage());
-
-    if (inputItemKey == undefined || inputItemKey == "")
+    if (!System.isNullOrEmpty(sessionVar_ItemName))
+    {
+        highlightUpdatedRow(sessionVar_ItemName, sessionVar_ItemPage);
         return;
+    }
 
-    $(".frm-edit-item").trigger("submit");
+    if (!System.isNullOrEmpty(sessionVar_ItemDeleted))
+    { 
+        snackbar.show("An item was successfully removed from the records.");
+        return;
+    }
+    else if (!System.isNullOrEmpty(sessionVar_ItemsDeleted))
+    { 
+        snackbar.show("Items were successfully removed.");
+        return;
+    }
 }
 // 
-// Highlight the recently updated row
+// Highlight the recently updated row / record in green 
+// background and move it onto the top of the table
 //
 function highlightUpdatedRow(updatedName, itemPage)
 {   
+    // Access / get all the rows found in the stocks table
+    var rows = $(".stocks-table > tbody > tr");
+
     // make sure that the datatable has rows in it.
     // otherwise, stop the execution
-    var rows = $(".stocks-table > tbody > tr");
-    
     if (rows.length < 1 || System.isNullOrEmpty(updatedName))
         return;
 
@@ -407,48 +494,11 @@ function highlightUpdatedRow(updatedName, itemPage)
             }
         });  
 
-        // we need to keep scrolling until we find the updated row
+        // we need to keep scrolling until we find the updated row.
+        // we do this by increasing the page index ..
         scrollPageIndex++;
     }
  
-    // Notify the user that the process succeeded
+    // Notify the user that the update process succeeded
     snackbar.show("Item has been successfully updated.");
-}  
-
-function notify_OnEditDeleteSuccess()
-{
-    if (!System.isNullOrEmpty(sessionVar_ItemName))
-    {
-        highlightUpdatedRow(sessionVar_ItemName, sessionVar_ItemPage);
-        return;
-    }
-
-    if (!System.isNullOrEmpty(sessionVar_ItemDeleted))
-    { 
-        snackbar.show("An item was successfully removed from the records.");
-        return;
-    }
-    else if (!System.isNullOrEmpty(sessionVar_ItemsDeleted))
-    { 
-        snackbar.show("Items were successfully removed.");
-        return;
-    }
 }
-
-// get the index of the displayed pagination table page
-function getPaginationPage()
-{ 
-    var info = dataTable.page.info();
-    return info.page;
-}
-
-// change page location given by its page index
-function scrollPage(pageIndex)
-{
-    var index = parseInt(pageIndex);
-
-    if (index < 0)
-        return;
-
-    dataTable.page(index).draw(false);
-} 

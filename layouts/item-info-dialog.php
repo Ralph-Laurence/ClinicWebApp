@@ -9,16 +9,23 @@
                     </button>
                 </div>
 
-                <div class="modal-body px-4">
-                    <div class="d-flex flex-wrap mb-2">
-                        <h5 class="font-base fw-bold lbl-item-name">Item Name</h5>
-                    </div>
+                <div class="modal-body px-4"> 
                     <div class="mb-3 d-flex align-items-center gap-2">
-                        <span class="fs-5 bg-document px-2 rounded-6 text-white lbl-category-icon"></span>
-                        <span class="fw-bold fs-6 lbl-category">Category</span>
-                    </div>
+                        <div class="bg-document px-2 rounded-6 text-white lbl-category-icon"></div>
+                        <div class="fs-5 font-base lbl-item-name flex-wrap">Item Name</div>
+                    </div> 
                     <div class="mb-2 section-item-information">
 
+                        <!--ITEM CATEGORY-->
+                        <div class="row">
+                            <div class="col-1">
+                                <i class="fas fa-layer-group text-info"></i>
+                            </div>
+                            <div class="col-3">Category:</div>
+                            <div class="col">
+                                <span class="fs-6 font-base lbl-category">Category</span>
+                            </div>
+                        </div>
                         <!--ITEM CODE-->
                         <div class="row">
                             <div class="col-1">
@@ -84,7 +91,7 @@
                         <!--DATE ADDED-->
                         <div class="row">
                             <div class="col-1">
-                                <i class="fas fa-calendar-plus font-hilight"></i>
+                                <i class="fas fa-calendar-plus font-base"></i>
                             </div>
                             <div class="col-3">Created on:</div>
                             <div class="col">

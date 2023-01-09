@@ -318,11 +318,23 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
         </main>
         <!-- MAIN CONTENT -->
 
-        <?php // Hidden form; This will handle an item's EDIT action 
-        ?>
+        <?php // Hidden form; This will handle an item's EDIT action ?>
         <form action="<?= Navigation::$URL_EDIT_ITEM ?>" method="GET" class="frm-edit-item d-none">
             <input type="text" name="item-key" id="item-key">
             <input type="text" name="item-page" id="item-page">
+        </form>
+
+        <?php // Hidden form; This will handle an item's DELETE action ?>
+        <form action="<?= Navigation::$ACTION_DELETE_ITEM ?>" method="POST" class="frm-delete-item d-none">
+            <input type="text" name="item-key" id="item-key">
+        </form>
+
+        <?php
+        // Store multiple item keys here as AJAX string.  
+        // We will use this for getting all checked rows in table
+        ?>
+        <form action="<?= Navigation::$ACTION_DELETE_ITEMS ?>" method="POST" class="frm-delete-items d-none">
+            <input type="text" name="item-keys" id="item-keys">
         </form>
 
         <?php
@@ -358,30 +370,12 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
         }
         ?>
 
-        <?php // Hidden fields, to hold the last updated item name and page index 
-        ?>
+        <?php // Hidden fields, to hold the last updated item name and page index ?>
         <form class="frm-session-vars">
             <input type="text" class="d-none session-var-item-name" value="<?= $lastUpdated_ItemName ?>">
-
             <input type="text" class="d-none session-var-item-page" value="<?= $lastUpdated_ItemPage ?>">
-
             <input type="text" class="d-none session-var-delete-item-status" value="<?= $deleteItem_Status ?>">
-
             <input type="text" class="d-none session-var-delete-items-status" value="<?= $deleteItems_Status ?>">
-        </form>
-
-        <?php // Hidden form; This will handle an item's DELETE action 
-        ?>
-        <form action="<?= Navigation::$ACTION_DELETE_ITEM ?>" method="POST" class="frm-delete-item d-none">
-            <input type="text" name="item-key" id="item-key">
-        </form>
-
-        <?php
-        // Store multiple item keys here as AJAX string.  
-        // We will use this for getting all checked rows in table
-        ?>
-        <form action="<?= Navigation::$ACTION_DELETE_ITEMS ?>" method="POST" class="frm-delete-items d-none">
-            <input type="text" name="item-keys" id="item-keys">
         </form>
 
     </div>

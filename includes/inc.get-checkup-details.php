@@ -29,9 +29,13 @@ $checkupId = Crypto::decrypt($checkupKey, $defuseKey);
 $formNumber = Crypto::decrypt($checkupTxn, $defuseKey);
  
 // reference the table names
+$itemsTable = TableNames::$items;
+$categoriesTable = TableNames::$categories;
 $checkupsTable = TableNames::$checkup;
 $patientTypes = TableNames::$patient_types;
 $illnessTable = TableNames::$illness;
+$unitsTable = TableNames::$unit_measures;
+$precriptionTable = TableNames::$prescription;
 
 // the checkup record / dataset will be  stored here
 $checkupDataset = null;
@@ -62,11 +66,13 @@ WHERE form_number =?");
         exit();
     }
 
-    $sth = $pdo->prepare("SELECT p.amount, u.measurement, i.item_name 
-    FROM `prescription` p 
-    LEFT JOIN items i ON i.id = p.item_id
-    LEFT JOIN unit_measures u ON u.id = p.unit_measure
+    $sth = $pdo->prepare("SELECT p.amount, u.measurement, i.item_name, c.name AS 'category' 
+    FROM $precriptionTable p 
+    LEFT JOIN $itemsTable i ON i.id = p.item_id 
+    LEFT JOIN $categoriesTable c ON c.id = i.item_category 
+    LEFT JOIN $unitsTable u ON u.id = p.unit_measure 
     WHERE checkup_number =?");
+
     $sth->bindValue(1, $formNumber);
     $sth->execute();
 

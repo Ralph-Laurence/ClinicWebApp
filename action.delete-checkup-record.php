@@ -29,12 +29,11 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST')
 // wraps basic sql functions like SELECT, INSERT etc..
 $db = new DbHelper($pdo);
 
-$itemsTable = TableNames::$items;
+$checkupsTable = TableNames::$checkup;
 
-// The item keys are stored as JSON string
-$itemKeys = $_POST['item-keys'] ?? "";
+$recordKey = $_POST['record-key'] ?? "";
  
-if (empty($itemKeys))
+if (empty($recordKey))
 {
     throw_response_code(400);
     exit();
@@ -42,27 +41,16 @@ if (empty($itemKeys))
 
 try
 {
-    // decode the JSON data into assoc array
-    $data = json_decode($itemKeys, true); 
+    // decrypt the item key (id) into plain text
+    $recordId = Crypto::decrypt($recordKey, $defuseKey);
+    $condition = ["id" => $recordId];
 
-    // item id(s)
-    $itemIds = array();
-
-    // every item key is encrypted .. we should
-    // decode these to plain string values 
-    foreach($data as $k => $v)
-    {
-        $itemId = Crypto::decrypt($v, $defuseKey);
-        array_push($itemIds, $itemId);
-    }
- 
-    // delete every item with matching item id
-    $db->deleteWhereIn($pdo, $itemsTable, "id", $itemIds);
+    $db->delete($pdo, $checkupsTable, $condition);
     
-    $_SESSION['delete-items-success'] = true;
-    $_SESSION['delete-items-status'] = "0x0";
+    $_SESSION['delete-record-success'] = true;
+    $_SESSION['delete-record-status'] = "0x0";
 
-    throw_response_code(200, Navigation::$URL_STOCKS_INVENTORY);
+    throw_response_code(200, Navigation::$URL_PATIENT_RECORDS);
     exit();
 }
 catch (Exception $ex)   

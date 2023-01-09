@@ -240,4 +240,25 @@ class DbHelper
 
         return !empty($count);
     }
+
+    // Get just the specific column value in a table 
+    // based on its ID and return it
+    function getValue($pdo, $table, $column, $id)
+    {
+        // Stop execution if there is no connection object
+        if ($pdo == null)
+            die("Server Error");
+ 
+        // Create the query together with the sort mode
+        // then execute the query
+        $sql = "SELECT $column FROM $table WHERE id = ?";
+        $sth = $pdo->prepare($sql);
+        $sth->bindValue(1, $id);
+        $sth->execute();
+
+        // We expect to return an array containing the records found in database.
+        $result = $sth->fetchColumn();
+
+        return $result ?? "";
+    }
 }

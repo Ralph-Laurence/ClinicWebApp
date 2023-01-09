@@ -79,6 +79,7 @@ class TableNames
     public static $configs_table    = "configurations";
     public static $users            = "users";
     public static $permissions      = "user_permissions";
+    public static $waste            = "waste";
 }
 //
 // This class describes all access levels.

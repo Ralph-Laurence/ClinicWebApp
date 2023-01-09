@@ -35,9 +35,14 @@ class Navigation
     public static $NavIndex_Categories = 9; 
     public static $NavIndex_Settings = 10; 
 
-    public static $ACTION_DELETE_ITEM          = "action.delete-item.php";
-    public static $ACTION_DELETE_ITEMS         = "action.delete-items.php";
-    public static $ACTION_EDIT_ITEM            = "action.edit-item.php";
+    public static $ACTION_DELETE_ITEM               = "action.delete-item.php";
+    public static $ACTION_DELETE_ITEMS              = "action.delete-items.php";
+    public static $ACTION_EDIT_ITEM                 = "action.edit-item.php";
+
+    public static $ACTION_DELETE_CHECKUP_RECORD     = "action.delete-checkup-record.php";
+    public static $ACTION_DELETE_CHECKUP_RECORDS    = "action.delete-checkup-records.php";
+
+    public static $ACTION_RESTOCK                   = "action.restock.php";
 }
 
 // we will use this flag / marker to identify which

@@ -1,3 +1,44 @@
+-- phpMyAdmin SQL Dump
+-- version 5.1.3
+-- https://www.phpmyadmin.net/
+--
+-- Host: 127.0.0.1
+-- Generation Time: Jan 04, 2023 at 03:13 PM
+-- Server version: 10.4.24-MariaDB
+-- PHP Version: 8.1.5
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+--
+-- Database: `patient_infosys`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `items`
+--
+
+CREATE TABLE `items` (
+  `id` int(11) NOT NULL,
+  `item_name` varchar(128) NOT NULL,
+  `item_category` int(11) NOT NULL,
+  `item_code` varchar(255) NOT NULL,
+  `unit_measure` int(11) NOT NULL,
+  `supplier_id` int(11) NOT NULL DEFAULT 0,
+  `remaining` int(11) NOT NULL,
+  `critical_level` int(11) NOT NULL,
+  `date_added` timestamp NOT NULL DEFAULT current_timestamp(),
+  `remarks` text NOT NULL,
+  `date_updated` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `items`
+--
+
 INSERT INTO `items` (`id`, `item_name`, `item_category`, `item_code`, `unit_measure`, `supplier_id`, `remaining`, `critical_level`, `date_added`, `remarks`, `date_updated`) VALUES
 (1, 'Advil Tablets', 2, 'ADV-PARA-TAB', 1, 3, 30, 50, '2022-12-16 16:00:00', '', '2022-12-16 16:00:00'),
 (2, 'Alvedon Tablets', 2, 'ALV-PARA-TAB', 1, 1, 0, 80, '2022-12-15 16:00:00', '', '2022-12-15 16:00:00'),
@@ -15,3 +56,26 @@ INSERT INTO `items` (`id`, `item_name`, `item_category`, `item_code`, `unit_meas
 (14, 'Neozep Tablets', 14, 'NEO-PARA-TAB', 1, 4, 86, 30, '2022-12-15 16:00:00', '', '2022-12-15 16:00:00'),
 (15, 'Avosoda', 1, 'AVS-URI-ALK', 7, 0, 95, 45, '2022-12-28 04:46:43', '', '2022-12-28 04:46:43'),
 (16, 'Warfarin', 5, 'WRFN', 1, 1, 130, 35, '2022-12-22 12:48:56', '', '2022-12-22 12:48:56');
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `items`
+--
+ALTER TABLE `items`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `item_name` (`item_name`),
+  ADD UNIQUE KEY `item_code` (`item_code`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `items`
+--
+ALTER TABLE `items`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+COMMIT;
