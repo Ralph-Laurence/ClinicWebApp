@@ -129,7 +129,7 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
                                             </li>
                                             <li class="d-flex align-items-center gap-3 px-3 py-1 dropdown-item-custom-light dropdown-option-delete-all-selected">
                                                 <span class="dropdown-item-icon text-center">
-                                                    <i class="fas fa-trash-alt font-red"></i>
+                                                    <i class="fas fa-trash font-red"></i>
                                                 </span>
                                                 <span class="fs-6">Delete All Selected</span>
                                             </li>

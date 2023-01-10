@@ -84,11 +84,11 @@ function echoOnclick($url)
                         <div class="col fw-bold">Patient Records</div>
                     </div>
 
-                    <div class="row side-nav-link-item px-3 py-2 <?= highlightLink(Navigation::$NavIndex_Notifications) ?>">
+                    <div class="row side-nav-link-item px-3 py-2 <?= highlightLink(Navigation::$NavIndex_Users) ?>">
                         <div class="col-2">
-                            <i class="fas fa-bell me-2 font-hilight"></i>
+                            <i class="fas fa-users me-2 font-hilight"></i>
                         </div>
-                        <div class="col fw-bold">Notifications</div>
+                        <div class="col fw-bold">Users</div>
                     </div>
 
                 </div>

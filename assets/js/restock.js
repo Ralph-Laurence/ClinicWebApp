@@ -1,4 +1,5 @@
 var dataTable = undefined;
+var wasteDataTable = undefined;
 
 var restockPlusBtn = undefined;
 var restockMinusBtn = undefined;
@@ -14,8 +15,9 @@ var cardStockoutButton = undefined;
 
 var checkboxAddToWaste = undefined; 
 
-var progressLoader  = undefined;
+var wasteForm = undefined;
 
+var progressLoader  = undefined;
 var snackbar = undefined;
 //
 //==========================================================
@@ -51,6 +53,8 @@ function onAwake()
 
     checkboxAddToWaste = $("#chk_addToWaste");
 
+    wasteForm = $("frm-waste");
+
     snackbar = new SnackBar();
 
     // force the amount input field to accept only numerics
@@ -60,6 +64,14 @@ function onAwake()
     .DataTable(
     {
         // searching: false,
+        ordering:  false,
+        autoWidth: false
+    });
+
+    wasteDataTable = $(".waste-table")
+    .DataTable(
+    {
+        // searching: true,
         ordering:  false,
         autoWidth: false
     });
@@ -187,25 +199,54 @@ function onBind()
 //
 function createVirtualEntriesPaginator() 
 {
+    /// ITEMS ENTRIES PAGINATION ///
+
     // hide the original entries paginator
-    $(".dataTables_length").hide();
+    var itemsEntriesParent = $(".items-table-wrapper > .dataTables_wrapper > .dataTables_length");
+    itemsEntriesParent.hide();
+
     $(".entries-paginator-container").empty();
 
     // copy the original entries paginator's options
     // to the virtual entries paginator
-    var cloned = $(".dataTables_length").find('select').clone(true, true)
+    var itemsEntriesCloned = itemsEntriesParent.find('select').clone(true, true)
         .removeAttr("name")
         .removeAttr("class")
         .removeAttr("aria-controls")
         .attr("id", "virtual-entries-paginator")
         .hide();
 
-    $(cloned[0]).appendTo(".entries-paginator-container");
+    $(itemsEntriesCloned[0]).appendTo(".entries-paginator-container");
 
     $("#virtual-entries-paginator").selectmenu({
         width: 90,
         change: function (event, ui) {
-            $($(".dataTables_length").find("select")).val(ui.item.value).change();
+            $(itemsEntriesParent.find("select")).val(ui.item.value).change();
+        }
+    });
+
+    // Do the same thing for the waste records
+
+    /// WASTE ENTRIES PAGINATION ///
+
+    var wasteEntriesParent = $(".waste-table-wrapper > .dataTables_wrapper > .dataTables_length");
+    wasteEntriesParent.hide();
+
+    $(".waste-entries-paginator-container").empty();
+
+    var wasteEntriesCloned = wasteEntriesParent.find('select').clone(true, true)
+        .removeAttr("name")
+        .removeAttr("class")
+        .removeAttr("aria-controls")
+        .attr("id", "waste-virtual-entries-paginator")
+        .hide();
+
+    $(wasteEntriesCloned[0]).appendTo(".waste-entries-paginator-container");
+
+    $("#waste-virtual-entries-paginator").selectmenu({
+        width: 90,
+        change: function (event, ui) {
+            $(wasteEntriesParent.find("select")).val(ui.item.value).change();
         }
     });
 }
@@ -214,19 +255,41 @@ function createVirtualEntriesPaginator()
 //
 function createVirtualPaginatorSearch()
 {
+    /// ITEMS TABLE ///
+
     // the original searchbar element
-    var searchBarParent = $(".dataTables_filter > label");
-    var searchBar = $(searchBarParent).find(":input");
+    var itemsDT_searchBarParent = $(".items-table-wrapper > .dataTables_wrapper > .dataTables_filter > label");
+    var itemsDT_searchBar = $(itemsDT_searchBarParent).find(":input");
 
     // hide the original searchbat
-    $(searchBarParent).hide();
+    itemsDT_searchBarParent.hide();
 
     // reflect the virtual searchbar's value onto the original
-    $("#pagination-search-bar").on("input", function()
+    $("#items-pagination-search-bar").on("input", function()
     {
         // the original searchbar is hidden and it only 
         // triggers on keyup, so let's trigger it manually
-        searchBar.val($(this).val()).keyup();
+        itemsDT_searchBar.val($(this).val()).keyup();
+
+        // show or hide the searchbar 'x' icon when 
+        // searchbar is not empty
+        if (System.isNullOrEmpty($(this).val()))
+            $(".items-search-trailing").hide();
+        else 
+            $(".items-search-trailing").show();
+    });
+ 
+    //------- Do the same for waste table -------//
+
+    /// WASTE TABLE ///
+    var wasteDT_searchBarParent = $(".waste-table-wrapper > .dataTables_wrapper > .dataTables_filter > label");
+    var wasteDT_searchBar = wasteDT_searchBarParent.find(":input");
+
+    wasteDT_searchBarParent.hide();
+
+    $("#waste-pagination-search-bar").on("input", function()
+    {
+        wasteDT_searchBar.val($(this).val()).keyup();
     });
 }
 //
@@ -376,4 +439,39 @@ function notify_OnRestockSuccess()
     {
         snackbar.show(restockStatus);
     }
+}
+//
+// Waste action modes: 
+// 0 -> restore
+// 1 -> dispose
+// 2 -> dispose all
+//
+function restoreWaste(itemKey)
+{
+    $(".frm-waste > #itemKey").val(itemKey);
+    $(".frm-waste > #actionMode").val(0);
+
+    $(".frm-waste").trigger("submit");
+}
+
+function disposeWaste(itemKey)
+{
+    $(".frm-waste > #itemKey").val(itemKey);
+    $(".frm-waste > #actionMode").val(1);
+
+    $(".frm-waste").trigger("submit");
+}
+
+function disposeAll()
+{
+    var table = $(".waste-table");
+    var rows = table.find("tbody tr");
+
+    if (rows.length < 1)
+        return;
+ 
+    $(".frm-waste > #itemKey").val('*');
+    $(".frm-waste > #actionMode").val(2);
+
+    $(".frm-waste").trigger("submit");
 }

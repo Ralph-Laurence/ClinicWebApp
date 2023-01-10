@@ -85,7 +85,7 @@ require_once($cwd . "includes/urls.php");
                             </a>
                         </div>
                         <div class="col text-end align-middle">
-                            <a href="<?= Navigation::$URL_LOGOUT ?>" class="bg-danger text-white p-1 px-2 rounded-5" role="button">
+                            <a href="<?= Navigation::$URL_LOGOUT ?>" class="bg-red text-white p-1 px-2 rounded-5" role="button">
                                 <i class="fas fa-times"></i>
                                 <span class="ms-1">Logout</span>
                             </a>

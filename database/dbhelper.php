@@ -261,4 +261,12 @@ class DbHelper
 
         return $result ?? "";
     }
+
+    // Clean up the the database table.
+    // Removes all records and resets the autoincrement id
+    function truncate($pdo, $table)
+    {
+        $sth = $pdo->prepare("TRUNCATE TABLE $table"); 
+        $sth->execute();
+    }
 }

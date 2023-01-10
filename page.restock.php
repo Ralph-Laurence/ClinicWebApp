@@ -75,7 +75,7 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
                             <div class="cards-parent-container d-flex flex-row flex-wrap gap-2">
                                 <!-- STOCK IN CARD -->
                                 <div class="card standard-item-card">
-                                    <div class="text-center">
+                                    <div class="text-center pt-2">
                                         <img src="assets/images/icn_stockin.png" width="96" height="96" alt="Box" />
                                     </div>
                                     <div class="card-body">
@@ -90,7 +90,7 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
                                 </div>
                                 <!-- STOCK OUT CARD -->
                                 <div class="card standard-item-card">
-                                    <div class="text-center">
+                                    <div class="text-center pt-2">
                                         <img src="assets/images/icn_stockout.png" width="96" height="96" alt="Box" />
                                     </div>
                                     <div class="card-body">
@@ -105,12 +105,12 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
                                 </div>
                                 <!-- WASTE CARD -->
                                 <div class="card standard-item-card">
-                                    <div class="text-center">
+                                    <div class="text-center pt-2">
                                         <img src="assets/images/icn_waste.png" width="96" height="96" alt="Box" />
                                     </div>
                                     <div class="card-body">
                                         <h5 class="card-title">Waste</h5>
-                                        <p class="card-text">Defective products or items will be disposed here.</p>
+                                        <p class="card-text">Defective items or stocks will be disposed here.</p>
                                     </div>
                                     <div class="card-card-footer px-4 pb-4">
                                         <button type="button" class="btn btn-success w-100" data-mdb-toggle="modal" data-mdb-target="#wasteModal">Waste</button>
@@ -150,13 +150,13 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
                             <!--SEARCHBAR-->
                             <div class="pagination-search-container">
                                 <div class="form-outline">
-                                    <input type="text" id="pagination-search-bar" class="form-control" />
-                                    <label class="form-label" for="pagination-search-bar">Find Item</label>
+                                    <input type="text" id="items-pagination-search-bar" class="form-control" />
+                                    <label class="form-label" for="items-pagination-search-bar">Find Item</label>
                                 </div>
                             </div>
                         </div>
                         <!-- ITEMS TABLE -->
-                        <div class="table-wrapper" style="overflow-y: auto; height: 400px;">
+                        <div class="table-wrapper items-table-wrapper" style="overflow-y: auto; height: 400px;">
                             <!-- PROGRESS BAR SPINNER -->
                             <div class="progress-loader-wrapper display-none">
                                 <div class="progress-loader d-flex align-items-center justify-content-center my-3">
@@ -345,41 +345,46 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
                         </button>
                     </div>
                     <div class="modal-body">
-                        <div class="control-ribbon-wrapper d-flex align-items-center mb-2 pb-3 border-bottom">
+                        <div class="control-ribbon-wrapper row mb-2 pb-3 border-bottom">
                             <!-- PAGINATOR -->
-                            <!-- <div class="d-flex align-items-center me-auto">
+                            <div class="d-flex align-items-center col-4">
                                 <div class="me-1 d-inline">Show</div>
-                                <div class="entries-paginator-container"></div>
+                                <div class="waste-entries-paginator-container"></div>
                                 <div class="ms-1 d-inline">entries</div>
-                            </div> -->
+                            </div>
                             <!--SEARCHBAR-->
-                            <!-- <div class="pagination-search-container">
+                            <div class="waste-pagination-search-container col">
                                 <div class="form-outline">
-                                    <input type="text" id="pagination-search-bar" class="form-control" />
-                                    <label class="form-label" for="pagination-search-bar">Find Item</label>
+                                    <input type="text" id="waste-pagination-search-bar" class="form-control" />
+                                    <label class="form-label" for="waste-pagination-search-bar">Find Item</label>
                                 </div>
-                            </div> -->
+                            </div>
+                            <!-- 'DISPOSE ALL' BUTTON -->
+                            <div class="col-3">
+                                <button type="button" onclick="disposeAll()" class="btn btn-link font-red btn-sm btn-rounded">
+                                    <i class="fas fa-trash me-2"></i>
+                                    Dispose All
+                                </button>
+                            </div>
                         </div>
-                        <!-- ITEMS TABLE -->
-                        <div class="table-wrapper" style="overflow-y: auto; height: 400px;">
-                             
+                        <!-- WASTE TABLE -->
+                        <div class="table-wrapper waste-table-wrapper" style="overflow-y: auto; height: 400px;">
+
                             <!-- DATA TABLE -->
-                            <table class="table table-striped table-hover items-table">
+                            <table class="table table-striped table-hover waste-table">
                                 <thead>
                                     <th class="d-none">Icon</th>
                                     <th class="d-none">Item</th>
-                                    <!-- <th class="d-none">Category</th> -->
                                     <th class="d-none">Amount</th>
-                                    <th class="d-none">Action</th> 
+                                    <th class="d-none">Action</th>
+                                    <th class="d-none">ItemKey</th>
                                 </thead>
                                 <tbody>
 
                                     <?php
 
-                                    if (!empty($wasteDataSet)) 
-                                    {
-                                        foreach ($wasteDataSet as $row) 
-                                        {
+                                    if (!empty($wasteDataSet)) {
+                                        foreach ($wasteDataSet as $row) {
                                             $icon = $row['fas_icon'];
                                             $id = $row['item_id'];
                                             $itemName = $row['item_name'];
@@ -407,15 +412,18 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
                                                     $amount $measurement
                                                 </td>
                                                 <td>
-                                                    <button type=\"button\" class=\"btn btn-primary bg-base btn-sm btn-rounded me-2\">
+                                                    <button type=\"button\" onclick=\"restoreWaste('$itemKey')\"
+                                                    class=\"btn btn-primary bg-base btn-sm btn-rounded me-2\">
                                                         <i class=\"fas fa-undo me-2\"></i>
                                                         Restore
                                                     </button>
-                                                    <button type=\"button\" class=\"btn btn-danger bg-red btn-sm btn-rounded\">
+                                                    <button type=\"button\" onclick=\"disposeWaste('$itemKey')\"
+                                                    class=\"btn btn-danger bg-red btn-sm btn-rounded\">
                                                         <i class=\"fas fa-trash me-2\"></i>
                                                         Dispose
                                                     </button>
                                                 </td>
+                                                <td class=\"d-none\">$itemKey</td>
                                             </tr>";
                                         }
                                     }
@@ -452,6 +460,13 @@ $defuseKey = Key::loadFromAsciiSafeString($defuseKey_Ascii);
         $restockActionMessage = $_SESSION['restockMessage'];
     ?>
     <input type="text" name="restock-status" class="restock-status d-none" value="<?= $restockActionMessage ?>">
+
+    <?php // Hidden form that handles inventory waste action 
+    ?>
+    <form action="<?= Navigation::$ACTION_WASTE ?>" method="post" class="frm-waste d-none">
+        <input type="text" name="itemKey" id="itemKey">
+        <input type="text" name="actionMode" id="actionMode">
+    </form>
 
     <?php
 

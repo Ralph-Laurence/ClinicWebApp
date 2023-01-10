@@ -27,9 +27,8 @@ class Navigation
     public static $NavIndex_Restock = 2; 
     public static $NavIndex_Stocks = 3; 
     public static $NavIndex_Suppliers = 4; 
-    public static $NavIndex_Patients = 5; 
-    public static $NavIndex_Notifications = 6; 
-    public static $NavIndex_Users = 7; 
+    public static $NavIndex_Patients = 5;  
+    public static $NavIndex_Users = 6; 
 
     public static $NavIndex_Illness = 8; 
     public static $NavIndex_Categories = 9; 
@@ -43,6 +42,7 @@ class Navigation
     public static $ACTION_DELETE_CHECKUP_RECORDS    = "action.delete-checkup-records.php";
 
     public static $ACTION_RESTOCK                   = "action.restock.php";
+    public static $ACTION_WASTE                     = "action.inventory-waste.php";
 }
 
 // we will use this flag / marker to identify which
