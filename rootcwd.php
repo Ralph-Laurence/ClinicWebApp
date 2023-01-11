@@ -19,5 +19,9 @@ $rootUrl = (!empty($_SERVER['HTTPS']) ? 'https' : 'http') . "://" . $dir;
 // Current Working Directory of our HOST. 
 $rootCwd = str_replace("\\", "/", dirname(__FILE__)) . "/";
 
+// Root volume directory
+$rootDir = getcwd();
+$rootDir = str_replace("\\", "/", $rootDir);
+
 // super global defines
 define('ROOT_URL', $rootUrl);

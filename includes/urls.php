@@ -15,6 +15,11 @@ class Navigation
     public static $URL_LOGIN                    = "login.php";
     public static $URL_LOGOUT                   = "logout.php";
     public static $URL_HOME                     = "page.home.php";
+    public static $URL_USERS                    = "page.users.php";
+    public static $URL_CREATE_USER              = "page.create-user.php";
+    public static $URL_CREATE_SUPER_ADMIN       = "page.create-super-admin.php";
+    public static $URL_CREATE_ADMIN             = "page.create-admin.php";
+    public static $URL_CREATE_STAFF             = "page.create-staff.php";
 
     // XHR (XMLHttpRequest) urls are prefixed with AJAX_
     public static $AJAX_ADD_NEW_ITEM            = "ajax.add-new-item.php";
