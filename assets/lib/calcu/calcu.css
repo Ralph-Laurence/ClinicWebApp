@@ -1,0 +1,160 @@
+
+@font-face {
+    font-family: 'BebasNueue';
+    src: url('BebasNeue-Regular.ttf');
+} 
+    
+.calculator-wrapper
+{
+    margin: auto;
+    width: 320px; 
+    box-shadow: 0 0 10px 4px #8a8a8a;
+    border-radius: 8px;
+    background-image: url('background.png');
+    background-repeat: repeat;
+    display: flex;
+    flex-flow: column;
+    padding: 16px;
+}
+
+
+.solar-panel
+{
+    width: 150px;
+    height: 35px;
+    background-color: rgb(36, 11, 11);
+    border-radius: 6px;
+    display: flex;
+    justify-content: space-between;
+    overflow: hidden;
+    border-width: 2px;
+    border-style: inset; 
+}
+
+.solar-cell
+{
+    width: 50px;
+    min-width: 50px;
+    height: 100%;
+    border-right: 3px solid rgb(48, 15, 15);
+}
+
+.solar-cell-start { border-left: 3px solid rgb(48, 15, 15);}
+
+.lcd-screen
+{  
+    overflow: hidden;
+    background-color: rgb(90, 104, 61);
+    border-radius: 6px;
+    margin-top: 4px;
+    margin-bottom: 14px;
+    border-style: outset;
+    border-width: 3px;
+}
+
+.lcd-screen input
+{
+    border: none !important;
+    width: 100%;
+    padding-left: 8px;
+    padding-right: 8px;
+    background: none;
+    letter-spacing: 2px;
+}
+
+.lcd-screen input:focus
+{
+    outline: none !important;
+} 
+
+.indicator-text
+{
+    display: flex;
+    justify-content: space-between;
+}
+
+.alp-indicator, .shift-indicator, .math-indicator
+{
+    font-size: 10px;
+}
+
+.expression-lcd
+{  
+    font-family: 'BebasNueue'; 
+    text-align: left;
+    font-size: 24px; 
+    max-height: 30px;
+   
+}
+
+.result-lcd
+{
+    font-family: 'BebasNueue'; 
+    text-align: right;
+    font-size: 30px; 
+    max-height: 40px;
+}
+
+/* BUTTONS */
+
+.buttons-row
+{
+    padding-top: 4px;
+    padding-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.big-key
+{
+    border: none; 
+    font-size: 20px;
+    width: 50px;
+    height: 30px;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
+    color: #1e1e1e;
+    font-family: 'BebasNueue', Arial, Helvetica, sans-serif;
+    box-shadow: 0 0 3px 1px #1e1e1e;
+}
+
+.small-key
+{
+    border: none; 
+    font-size: 14px;
+    width: 40px;
+    color: white;
+    background: rgb(41, 53, 121);
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+    font-family: 'BebasNueue', Arial, Helvetica, sans-serif;
+    box-shadow: 0 0 4px #1e1e1e;
+}
+
+.small-key:hover { background: #444797;}
+.small-key:active {background: #343783;}
+.modifier { background-color: slateblue;}
+.modifier:hover { background: #945F97;}
+.modifier:active {background: #623F64;}
+.operator { font-size: 24px; }
+.num-pad { background-color: white; } 
+.big-key:hover{background-color: #aaaaaa;}
+.big-key:active {background-color: #858585;}
+
+.action-key:hover { background-color: tomato !important; }
+.action-key:active{background-color: #AA422F !important;}
+.action-key { background: orange;}
+.special-key { background: #FF6347;}
+.special-key:hover {background-color: #945F97;}
+
+.register-reset { background: rgb(255, 0, 128);}
+.register-reset:hover { background: #FF538A;}
+.register-reset:active { background-color: rgb(196, 13, 104);}
+.math-symbol
+{
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}

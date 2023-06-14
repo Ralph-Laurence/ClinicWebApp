@@ -1,0 +1,79 @@
+/* -----------STYLES FOR SNACKBAR (BOTTOM POPUP)----------- */
+
+.snackbar {
+    display: none;
+    opacity: 0;
+    height: 40px;
+    z-index: 100;
+}
+
+.snackbar-success {
+    background-color: #20B22D;
+    color: white;
+}
+
+/* -----------STYLES FOR TOAST (BOTTOM CENTER POPUP)----------- */
+
+.itoast {
+    display: none;
+    opacity: 0;
+    bottom: 16px;
+    right: 0;
+    left: 0;
+    margin-left: auto;
+    margin-right: auto;
+    position: fixed;
+    width: 350px;
+    max-width: 350px;
+    z-index: 1060;
+    font-size: 0.875rem !important;
+    font-family: var(--special-font), sans-serif !important;
+}
+
+.itoast-header, .itoast-body {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: 0.65rem;
+    padding-bottom: 0.65rem;
+}
+
+.itoast-body {
+    word-wrap: break-word;
+    font-weight: 400 !important;
+}
+
+.itoast-primary .itoast-header {
+    border-bottom: 2px solid #C7D6F0;
+}
+
+.itoast-danger .itoast-header {
+    border-bottom: 2px solid #f4c8cf;
+}
+
+.itoast-success .itoast-header {
+    border-bottom: 2px solid #c0e7d0;
+}
+
+.itoast-warn .itoast-header {
+    border-bottom: 2px solid #f9e4be;
+}
+
+.itoast-success {
+    background-color: #D6F0E0;
+    color: #0D6831;
+}
+
+.itoast-primary {
+    background-color: #dfe7f6;
+    color: #2c58a0;
+}
+
+.itoast-danger {
+    background-color: #f9e1e5;
+    color: #af233a;
+}
+
+.itoast-warn {
+    background-color: #fbf0da;
+    color: #73510d;
+}

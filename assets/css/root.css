@@ -1,0 +1,250 @@
+:root
+{
+    --main-font: "Figtree";
+    --accent-font: "Montserrat";
+    --tertiary-font: "Scada";
+    --special-font: "Roboto";
+
+    --base-color: #192456;
+    --base-color-light: #263358;
+    --accent-color: #F48225;
+    --hilight-color: #453190;
+
+    --mdb5-purple: #583D8B;
+    --mdb5-vivid-purple: #9b51e0;
+    --mdb5-indigo: #3f51b5;
+    --mdb5-pink: #e91e63;
+    --mdb5-orange: #fd7e14;
+
+    --control-border: #ADADAD;
+    --control-background: #E1E1E1;
+    --document-background: #F0F0F0;
+
+    --bluegray-900: #263238;
+    --blue-100: #E3EBF7;
+    --blue-700: #285192;
+    --red-100: #ffcdd2;
+    --red-500: #f44336;
+    --red-900: #b71c1c;
+    --teal-500: #009688;
+    --teal-900: #005457;
+    --amber-400: #ffca28;
+    --amber-300: #ffd54f; 
+    --amber-100: #ffecb3;  
+    --green-500: #4CAF50;  
+    --indigo-50: #e8eaf6;
+    --indigo-100: #C5C9EC;
+    --indigo-200: #9fa8da;
+}
+
+@font-face {
+    font-family: "Figtree";
+    src: url('Figtree.ttf');
+}
+
+@font-face {
+    font-family: "Montserrat";
+    src: url('Montserrat.ttf');
+}
+
+@font-face {
+    font-family: "Scada";
+    src: url('Scada.ttf');
+}
+
+@font-face {
+    font-family: "Roboto";
+    src: url('Roboto-Medium.ttf');
+}
+
+* {
+    box-sizing: border-box !important;
+}
+
+html, body
+{
+    font-family: var(--main-font) !important; 
+    background-color: var(--document-background);
+    color: var(--bluegray-900);
+    height: 100%;
+    min-width: 330px;
+    scroll-behavior: smooth !important;
+}  
+ 
+.overflow-y-auto
+{
+    overflow-y: auto !important;
+}
+
+.bg-base {
+    background-color: var(--base-color) !important;
+}
+
+.bg-accent {
+    background-color: var(--accent-color) !important;
+}
+
+.bg-hilight {
+    background-color: var(--hilight-color) !important;
+}
+
+.bg-document {
+    background-color: var(--document-background) !important;
+}
+
+.bg-control {
+    background-color: var(--control-background) !important;
+}
+
+.bg-amber {
+    background-color: var(--amber-400) !important;
+}
+
+.bg-amber-300 {
+    background-color: var(--amber-300) !important;
+}
+
+.bg-amber-light {
+    background-color: var(--amber-100) !important;
+}
+  
+.bg-teal {
+    background-color: var(--teal-500) !important;
+}
+
+.bg-red {
+    background-color: var(--red-500) !important;
+}
+
+.bg-light-blue {
+    background-color: var(--blue-100) !important;
+}
+ 
+
+.bg-mdb-vivid-purple { background-color: var(--mdb5-vivid-purple) !important; }
+.bg-mdb-indigo { background-color: var(--mdb5-indigo) !important; }
+.bg-mdb-pink { background-color: var(--mdb5-pink) !important; }
+.bg-mdb-purple { background-color: var(--mdb5-purple) !important; }
+.bg-mdb-orange { background-color: var(--mdb5-orange) !important; }
+
+.style-secondary 
+{
+    background-color: #ebedef;
+    color: #40464f;
+}
+
+.bg-red-light {
+    background-color: var(--red-100) !important;
+}
+
+.bg-green {
+    background-color: var(--green-500) !important;
+}
+
+.bg-light-indigo {
+    background-color: var(--indigo-100) !important;
+}
+
+.font-document-background {
+    color: var(--document-background) !important;
+}
+
+.font-bright-blue {
+    color: #35CFF2 !important;
+}
+
+.font-red {
+    color: var(--red-500) !important;
+}
+
+.font-red-dark {
+    color: var(--red-900) !important;
+}
+
+.font-teal {
+    color: var(--teal-500) !important;
+}
+
+.font-accent {
+    color: var(--accent-color) !important;
+}
+
+.font-amber {
+    color: var(--amber-300) !important;
+}
+
+.font-hilight {
+    color: var(--hilight-color) !important;
+}
+
+.font-base {
+    color: var(--base-color) !important;
+} 
+
+.font-base-light {
+    color: var(--base-color-light) !important;
+} 
+
+.font-gray {
+    color: #565454 !important;
+}
+
+.font-green {
+    color: var(--green-500) !important;
+}
+
+.font-form-control {
+    color: #4f4f4f !important;
+}
+
+.font-indigo {
+    color: var(--mdb5-indigo) !important;
+}
+
+.font-primary-dark
+{
+    color: #0042a4 !important;
+}
+
+.border-control-2
+{
+    border: 2px solid var(--control-border) !important;
+}
+
+.mdb-border-1
+{
+    border: 1px solid #bdbdbd !important;
+    border-radius: 3px;
+}
+
+.z-10 { z-index: 10; } 
+.z-100 { z-index: 100; } 
+
+.fsz-10 { font-size: 10px; }
+.fsz-12 { font-size: 12px; }
+.fsz-14 { font-size: 14px; }
+.fsz-18 { font-size: 18px; }
+
+.fon-fam-tertiary {
+    font-family: var(--tertiary-font) !important;
+} 
+.fon-fam-special {
+    font-family: var(--special-font) !important;
+} 
+.font-sans {
+    font-family: Arial, Helvetica, sans-serif !important;
+}
+.rot-60 { transform: rotate(-60deg); }
+.rot-20 { transform: rotate(-20deg); }
+ 
+.opac-0
+{
+    opacity: 0;
+}
+
+.h-36
+{
+    min-height: 36px;
+    height: 36px !important; 
+    max-height: 36px;
+}

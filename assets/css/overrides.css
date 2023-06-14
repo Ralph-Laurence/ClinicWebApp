@@ -1,0 +1,153 @@
+/*
+=====================================================
+::::::::::::::::: NATIVE SELECT MENU ::::::::::::::::
+=====================================================
+*/
+select 
+{
+    background-color: #F6F6F6;
+    border: 1px solid #C5C5C5;
+    text-align: left;
+    white-space: nowrap;
+    width: 12em;
+    border-radius: 3px;
+    color: #454545;
+    text-decoration: none;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 1em;
+    padding: .4em 1em;
+    position: relative;
+    line-height: normal;
+    margin-right: .1em;
+    cursor: pointer;
+    vertical-align: middle;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+/*
+=====================================================
+::::::::::::::: JQUERY UI SELECT MENU :::::::::::::::
+=====================================================
+*/
+div.ui-selectmenu-open 
+{
+    position: absolute !important;
+    z-index: 65535 !important;
+}
+
+.ui-selectmenu-menu .ui-menu {max-height: 200px !important;}
+
+.ui-selectmenu-text
+{
+    margin-right: auto !important;
+}
+
+.ui-selectmenu-button
+{
+    display: flex !important;
+    align-items: center !important;
+    flex-flow: row-reverse !important;
+}
+
+/* #find-patient-option-button,
+#spec-selectmenu-button,
+#degree-selectmenu-button, 
+#filter-option-button
+{
+    min-height: 36px;
+    height: 36px;
+    margin-right: 0 !important; 
+    width: unset;
+}
+#filter-option,  */
+.combo-box + span.ui-selectmenu-button
+{
+    min-height: 36px;
+    height: 36px;
+    margin-right: 0 !important; 
+    width: unset;
+}
+/*.ui-selectmenu-button :not(#virtual-entries-filter-button.ui-selectmenu-button)*/
+/* .ui-selectmenu-button
+{
+    min-height: 36px;
+    height: 36px;
+    margin-right: 0 !important; 
+    width: unset;
+} */
+/*
+=====================================================
+::::::::::::::: SIMEPLEBAR SCROLLBARS :::::::::::::::
+=====================================================
+*/
+.simplebar-scrollbar::before {
+    background-color: var(--base-color) !important;
+}
+
+.simplebar-scrollbar.simplebar-visible:before {
+    opacity: 0.7 !important;
+}
+/*
+=====================================================
+::::::::::::::::: JQUERY DATA TABLES ::::::::::::::::
+=====================================================
+*/
+#DataTables_Table_0_paginate 
+{
+    /* margin-left: 10px;
+    margin-bottom: 20px;
+    margin-top: 10px; */
+    padding: 10px;
+    margin-top: 5px;
+}
+
+#DataTables_Table_0_paginate,
+#DataTables_Table_0_paginate>span {
+    cursor: pointer;
+    display: flex !important;
+    gap: 0.5rem;
+}
+
+#DataTables_Table_0_info {
+    padding-left: 10px;
+}
+
+.dataTables_paginate.paging_simple_numbers,
+.dataTables_paginate.paging_full_numbers
+{
+    background-color: var(--mdb-gray-100);
+    padding-top: 10px;
+    justify-content: center;
+}
+
+.paginate_button {
+    border-radius: 5px;
+    padding: 0 8px;
+}
+
+.paginate_button.current {
+    background: var(--base-color);
+    color: white;
+}
+
+.paginate_button:hover {
+    background: var(--amber-300);
+    color: var(--base-color);
+}
+
+#virtual-entries-filter-button,
+.entries-filter-container .ui-selectmenu-button {
+    height: 25px !important;
+    padding: .2rem .8rem !important; 
+} 
+
+.divider
+{
+    border-top: 0;
+    border-bottom: 1px solid #f7f7f7;
+    width: 100%;
+}
+
+textarea:focus { outline: none !important; }

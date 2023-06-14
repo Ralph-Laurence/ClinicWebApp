@@ -1,0 +1,87 @@
+.office-menubar-wrapper {
+    font-family: var(--special-font);
+    font-size: 12px;
+}
+
+.office-menubar {
+    min-height: 30px;
+    height: 30px;
+    max-height: 30px;
+    border-bottom: 1px solid #e7e7e7;
+}
+
+.office-menubar button {
+    color: var(--mdb-dark);
+    min-width: 70px;
+}
+
+.office-menubar .menubar-button.active {
+    background-color: #2B579A;
+    color: white;
+}
+
+.control-ribbon {
+    min-height: 64px;
+    height: 64px;
+    max-height: 64px;
+    font-family: var(--special-font);
+    font-size: 12px;
+}
+
+.control-ribbon-item {
+    padding: 4px;
+    width: 58px;
+    cursor: pointer;
+}
+
+.control-ribbon-item:hover {
+    border: 1px solid #2B579A;
+    background-color: #C2D5F2;
+}
+
+td, th {
+    border-bottom: 1px solid #e7e7e7;
+    border-right: 1px solid #e7e7e7;
+    border-left: 1px solid #e7e7e7; 
+}
+table
+{
+    border-spacing: 0;
+}
+
+.row-number-th
+{
+    width: 32px !important;
+    min-width: 32px !important;
+    max-width: 32px !important; 
+    padding: 4px !important;
+}
+
+.office-table-headers
+{
+    width: 150px;
+    min-width: 150px !important; 
+    padding: 4px !important;
+}
+ 
+tr, th
+{
+    min-height: 32px !important;
+    height: 32px !important;
+    max-height: 32px !important;
+}
+
+td:hover
+{ 
+    box-shadow:0px 0px 0px 2px #2B579A inset;
+}
+
+.th-active
+{
+    background-color: #D4D4D4 !important;
+}
+
+.td-no-hover:hover
+{
+    box-shadow: none;
+}

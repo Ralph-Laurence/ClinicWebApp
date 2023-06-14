@@ -1,0 +1,15 @@
+#ErrorDocument 400 http://%{HTTP_HOST}/projects/clinic/errors/400.php 
+ErrorDocument 403 http://%{HTTP_HOST}/projects/clinic/errors/403.php 
+ErrorDocument 404 http://%{HTTP_HOST}/projects/clinic/errors/404.php 
+ErrorDocument 500 http://%{HTTP_HOST}/projects/clinic/errors/500.php 
+
+# Hide Directory Listing
+Options -Indexes
+
+# Set index.php as default page
+DirectoryIndex index.php
+
+# RewriteEngine On
+# Determine if the request does not match an existing directory
+# RewriteCond %{REQUEST_FILENAME} -d
+# RewriteRule ^ - [R=404,L]
