@@ -10,28 +10,78 @@ require_once($rootCwd . "database/configs.php");
 require_once($rootCwd . "database/dbhelper.php");
 
 require_once($rootCwd . "models/Item.php");
+require_once($rootCwd . "models/Stock.php");
 
-use Models\Item; 
+use Models\Item;
+use Models\Stock;
 
 class MedicinePicker
 {     
-    private $items;
+    private $items, $stocks, $db;
 
     function __construct()
     {
         global $pdo;
-        $db = new DbHelper($pdo);
-        $this->items = new Item($db);
+
+        $this->db = new DbHelper($pdo);
+
+        $this->items = new Item($this->db);
+        $this->stocks = new Stock($this->db);
     }
 
     function getMedicines()
     { 
         try 
         { 
-            $dataset = $this->items->showAll();
+            //$dataset = $this->items->showAll();
+            $dataset = [];
+            $i = $this->items->getFields();
+
+            $tempMedicines = $this->items->showAll();
+
+            // Find the stocks
+            $s = $this->stocks->getFields();
+            $stocksTable = TableNames::stock;
+
+            $stmt_getStocks = $this->db->getInstance()->prepare
+            (
+                "SELECT 
+                    $s->id          AS 'stockId', 
+                    $s->item_id     AS 'itemId', 
+                    $s->sku         AS 'sku', 
+                    $s->quantity    AS 'qty' 
+                FROM $stocksTable
+                ORDER BY $s->expiry_date ASC"
+            );
+            $stmt_getStocks->execute();
+
+            $tempStocks = $stmt_getStocks->fetchAll(PDO::FETCH_ASSOC);
+
+            $stocks_grouped = array_reduce($tempStocks, function ($carry, $item) 
+            {
+                $carry[$item['itemId']][] = $item;
+                return $carry;
+            }, []);
+
+            $stocx = [];
+            
+            foreach ($stocks_grouped as $key => $value) 
+            { 
+                $stocx[$key] = json_encode($value);
+            }
+ 
+            foreach ($tempMedicines as $row)
+            {
+                $tempRow = $row;  
+                $tempRow['stockData'] = $stocx[ $row[$s->id] ];
+
+                $dataset[$row[$i->id]] = $tempRow;
+            }
+
+            // dump($dataset);
         } 
-        catch (\Exception $ex) { IError::Throw(500); exit;} 
-        catch (\Throwable $ex) { IError::Throw(500); exit;} 
+        catch (\Exception $ex) { echo $ex->getMessage(); exit; IError::Throw(500); exit;} 
+        catch (\Throwable $ex) { echo $ex->getMessage(); exit; IError::Throw(500); exit;} 
         
         return $dataset;
     }
@@ -53,7 +103,8 @@ class MedicinePicker
             $remaining      = $item[$fields->remaining];
             $units          = $item['units'];
             $reserve        = $item[$fields->criticalLevel];
-    
+            $stockData      = $item['stockData']; 
+
             $stock = "$remaining $units";
 
             $stockLabel = <<<DIV
@@ -106,7 +157,8 @@ class MedicinePicker
                 <td class="stock-label-wrapper">$stockLabel</td>
                 <td class="d-none max-qty">$remaining</td>
                 <td class="text-center">$actionButton</td>
-                
+                <td class="d-none stock-data">$stockData</td>
+                <td class="d-none units-label">$units</td>
             </tr>
             TR;
         }
@@ -162,6 +214,8 @@ $medicinePicker = new MedicinePicker();
                                 <th scope="col" class="fw-bold">Stock</th>
                                 <th scope="col" class="d-none">Stock Amount</th>
                                 <th scope="col" class="fw-bold text-center">Action</th>
+                                <th scope="col" class="d-none stock-data">Stock Data</th>
+                                <th scope="col" class="d-none units-label">Units Label</th>
                             </tr>
                         </thead>
                         <tbody class="medicine-picker-body">
@@ -171,6 +225,8 @@ $medicinePicker = new MedicinePicker();
                             <tr>
                                 <th></th>
                                 <th class="search-col-medicines"></th>
+                                <th></th>
+                                <th></th>
                                 <th></th>
                                 <th></th>
                                 <th></th>

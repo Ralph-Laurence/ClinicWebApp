@@ -21,6 +21,7 @@ require_once($rootCwd . "models/Prescription.php");
 require_once($rootCwd . "models/UnitMeasure.php");
 require_once($rootCwd . "models/Category.php");
 require_once($rootCwd . "models/Doctor.php");
+require_once($rootCwd . "models/Stock.php");
 
 use Models\Category;
 use Models\Checkup;
@@ -30,6 +31,7 @@ use Models\Illness;
 use Models\Item;
 use Models\Patient;
 use Models\Prescription;
+use Models\Stock;
 use Models\UnitMeasure; 
 
 require_once($rootCwd . "MasterLayout.php");
@@ -75,6 +77,7 @@ $r = Prescription::getFields();
 $u = UnitMeasure::getFields();
 $g = Category::getFields();
 $d = Doctor::getFields(); 
+$s = Stock::getFields();
 
 $doctor = new Doctor($db);
 
@@ -162,7 +165,7 @@ function getCheckupRecord($recordId)
     $degreesTable = TableNames::doctor_degrees;
  
     $g = Degrees::getFields();
- 
+
     $select_checkup = Utils::prefixJoin("c.", [$c->checkupNumber, $c->dateCreated, $c->bpSystolic, $c->bpDiastolic]);
     $select_illness = Utils::prefixJoin("i.", [$i->id, $i->name]);
     $select_patient = Utils::prefixJoin("p.", [$p->idNumber, $p->patientType, $p->firstName, $p->middleName, $p->lastName]);
@@ -191,17 +194,29 @@ function getCheckupRecord($recordId)
 
 function getPrescriptions($recordId)
 {
-    global $db, $c, $t, $g, $u, $r;
+    global $db, $c, $t, $g, $u, $r, $s;
     global $rxTable, $checkupsTable, $itemsTable, $unitsTable, $categoryTable;
+    
+    $stocksTable = TableNames::stock;
 
-    $select_items = Utils::prefixJoin("t.", [$t->id, $t->itemName, $t->itemCode, $t->remaining]);
+    $select_items = Utils::prefixJoin("t.", [$t->id, $t->itemName, $t->itemCode]); // , $t->remaining
 
-    $sql = 
-    "SELECT $select_items, g.$g->name, r.$r->amount, u.$u->measurement FROM $rxTable AS r
+    $sql = "SELECT 
+
+        $select_items, 
+        g.$g->name, 
+        r.$r->amount, 
+        u.$u->measurement,
+        s.$s->quantity,
+        s.$s->sku,
+        s.$s->id
+
+    FROM $rxTable AS r
     LEFT JOIN $checkupsTable AS c ON c.$c->id = r.$r->checkupFK
     LEFT JOIN $itemsTable    AS t ON t.$t->id = r.$r->itemId
     LEFT JOIN $categoryTable AS g ON g.$g->id = t.$t->category
     LEFT JOIN $unitsTable    AS u ON u.$u->id = t.$t->unitMeasure
+    LEFT JOIN $stocksTable   AS s ON s.$s->id = r.$r->stockFK 
     WHERE r.$r->checkupFK = $recordId";
 
     $result = $db->fetchAll($sql);
@@ -281,7 +296,7 @@ function getPhysician($info)
 function bindPrescriptions()
 { 
     global $rxDataset, $security;
-    global $t, $g, $u, $r;
+    global $t, $g, $u, $r, $s;
  
     if (!empty($rxDataset))
     {
@@ -297,21 +312,23 @@ function bindPrescriptions()
             $itemCode       = trim($row[$t->itemCode]);
             $itemId         = $security->Encrypt($row[$t->id]);
             $category       = $row[$g->name];
-            $remaining      = $row[$t->remaining];
+            $remaining      = $row[$s->quantity];//$row[$t->remaining];
             $unit           = $row[$u->measurement];
             $stock          = $remaining ." ". $unit;
             $amount         = $row[$r->amount];
-
+            $sku            = trim($row[$s->sku]);
+            $stockId        = $row[$s->id];
             // When an item is out of stock, it cannot be edited. 
             // Instead of showing the controls for amount, we will
             // show the actual AMOUNT instead.
+            $maxQty = $remaining + $amount;
             $amountControls = 
             "<div class=\"d-flex flex-row align-items-center justify-content-center gap-2\">
                 <button type=\"button\" class=\"btn btn-warning bg-accent py-1 px-2 btn-qty-minus\">
                     <i class=\"fas fa-minus\"></i>
                 </button>
                 <div>
-                    <input type=\"text\" class=\"text-center prescription-qty numeric\" data-min-qty=\"1\" value=\"$amount\" data-max-qty=\"$remaining\"/>
+                    <input type=\"text\" class=\"text-center prescription-qty numeric\" data-min-qty=\"1\" value=\"$amount\" data-max-qty=\"$maxQty\"/>
                 </div>
                 <button type=\"button\" class=\"btn btn-primary bg-teal py-1 px-2 btn-qty-plus\">
                     <i class=\"fas fa-plus\"></i>
@@ -319,7 +336,7 @@ function bindPrescriptions()
             </div>";
 
             // Check if an item's stock is still available
-            if ($row[$t->remaining] == 0)
+            if ($row[$s->quantity] == 0) // $t->remaining
             {
                 $stock = "<div class=\"stock-label-soldout d-inline-block px-2\">Out of Stock</div>";
                 $amountControls = 
@@ -328,11 +345,17 @@ function bindPrescriptions()
                 </div>";
             }
 
+            // <td class="item-name">$itemName</td>
             echo <<<TR
             <tr class="align-middle" data-tag="$itemCode" data-trait="original">
-                <td class="item-name">$itemName</td>
-                <td>$category</td>
-                <td class="stock-label">$stock</td>
+                <td class="text-truncate" style="max-width: 200px; width: 200px; py-0">
+                    <div class="d-flex justify-content-start flex-column">
+                        <div class="fw-bold">$itemName</div>
+                        <div class="text-primary">$category</div>
+                    </div>
+                </td>
+                <td class="text-center">$sku</td>
+                <td class="text-center available-stock-label">$stock</td>
                 <td class="text-center">
                     $amountControls
                 </td>
@@ -350,6 +373,8 @@ function bindPrescriptions()
                     <input type="text" class="flag-return" value="0" />
                     <input type="text" class="flag-remove" value="0" />
                     <input type="text" class="units-label" value="$unit" />
+                    <input type="text" class="remaining" value="$remaining" />
+                    <input type="text" class="rx-stock-id" value="$stockId"/>
                 </td>
             </tr>
             TR;

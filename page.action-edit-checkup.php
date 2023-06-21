@@ -212,14 +212,14 @@ require_once($rootCwd . "controllers/EditCheckupController.php");
                                                 <table class="table table-sm table-borderless table-striped table-hover prescription-table">
                                                     <thead class="style-secondary position-sticky top-0 z-10">
                                                         <tr>
-                                                            <th class="fw-bold" scope="col">Medicine</th>
-                                                            <th class="fw-bold" scope="col">Category</th>
-                                                            <th class="fw-bold" scope="col">Stock</th>
+                                                            <th class="fw-bold" scope="col"style="max-width: 200px; width: 200px;">Medicine</th>
+                                                            <th class="fw-bold text-center" scope="col" style="max-width: 200px; width: 200px;">Stock</th>
+                                                            <th class="fw-bold text-center" scope="col" style="max-width: 200px; width: 200px;">Available</th>
                                                             <th class="fw-bold text-center" scope="col" style="max-width: 200px; width: 200px;">Quantity</th>
                                                             <th class="fw-bold text-center" scope="col" style="max-width: 140px; width: 140px;">Action</th>
                                                             <th class="d-none" scope="col">ItemKey</th>
-                                                            <th class="d-none" scope="col"></th> <?php //  <-- This will hold the original amount 
-                                                                                                    ?>
+                                                            <th class="d-none" scope="col">Stock Data</th>
+                                                            <th class="d-none" scope="col"></th> <?php //  <-- This will hold the original amount ?>
                                                         </tr>
                                                     </thead>
                                                     <tbody class="prescription-body">

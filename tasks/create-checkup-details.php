@@ -12,7 +12,9 @@ require_once($rootCwd . "includes/urls.php");
 
 require_once($rootCwd . "models/Checkup.php");
 require_once($rootCwd . "models/Prescription.php");
+require_once($rootCwd . "models/PrescriptionHistory.php");
 require_once($rootCwd . "models/Item.php");
+require_once($rootCwd . "models/Stock.php");
 
 require_once($rootCwd . "includes/Auth.php");
 require_once($rootCwd . "includes/Security.php");
@@ -22,16 +24,23 @@ require_once($rootCwd . "errors/IError.php");
 use Models\Checkup;
 use Models\Item;
 use Models\Prescription;
+use Models\PrescriptionHistory;
+use Models\Stock;
 
 $security = new Security();
 $security->requirePermission(Chmod::PK_MEDICAL, Chmod::FLAG_WRITE);
 $security->checkAccess(Chmod::PK_MEDICAL, UserAuth::getId());                        
 $security->BlockNonPostRequest(); 
 
-$db = new DbHelper($pdo);                           // Db helpwer wraps CRUD operations as functions
+$db = new DbHelper($pdo);                           // Db helper wraps CRUD operations as functions
+$dbInstance     = $db->getInstance();               // Get the PDO instance from the db helper
 $checkupFields  = Checkup::getFields();             // Get the field names of Checkup Table
 $itemFields     = Item::getFields();                // Get the field names of Items Table
 $rxFields       = Prescription::getFields();        // Get the field names of Prescriptions Table
+$stocksTable    = TableNames::stock;
+$stocks         = new Stock($db);
+$stockFields    = $stocks->getFields();
+$inventoryTable = TableNames::inventory;
  
 $illness_id_raw = $_POST['illness-id']  ?? "";      // Encrypted illness ID coming from hidden input
 $patient_id_raw = $_POST['patient-key'] ?? "";      // Encrypted patient ID coming from hidden input
@@ -87,7 +96,7 @@ try
     if (empty($prescriptions)) {
         onComplete();
     }
-
+ 
     // Find the id of the newly created checkup record based on its form number.
     // We'll use this for adding prescriptions
     $checkup_id = $db->getValue(TableNames::checkup_details, $checkupFields->id, 
@@ -100,50 +109,78 @@ try
     [   
         $rxFields->checkupFK,
         $rxFields->itemId,
-        $rxFields->amount
+        $rxFields->amount,
+        $rxFields->stockFK
     ]; 
 
-    // Prescription values
+    // Query for updating the stocks
+    $stmt_update_stocks = $db->getInstance()->prepare
+    (
+        "UPDATE $stocksTable 
+            SET $stockFields->quantity = ($stockFields->quantity - ?)
+        WHERE $stockFields->id = ? AND $stockFields->item_id = ?"
+    );
+
+    // Query to update the inventory
+    $stmt_update_inventory = $dbInstance->prepare
+    ( 
+        "UPDATE $inventoryTable AS i
+        SET i.$itemFields->remaining = 
+        (
+            SELECT SUM(s.$stockFields->quantity)
+            FROM $stocksTable AS s
+            WHERE s.$stockFields->item_id = i.$itemFields->id
+        )
+        WHERE i.$itemFields->id = ?;"
+    );
+
+    $history = new PrescriptionHistory($db);
+    $rxHistory = [];
+    $rxvalues = [];
+    
+    // These are Prescription values
+    // We will use these to insert into prescriptions table
     foreach($prescriptions as $row)
     { 
+        $itemId = $security->Decrypt($row['itemId']);
+        
         $rxvalues[] = 
         [
             $checkup_id,
-            $security->Decrypt($row['itemId']),
-            $row['quantity']
+            $itemId,
+            $row['quantity'],
+            $row['stockId']
         ];
+
+        // Update the stocks table
+        $stmt_update_stocks->execute([$row['quantity'], $row['stockId'], $itemId]);
+
+        // Update the inventory table
+        $stmt_update_inventory->execute([$itemId]);
+
+        $rxHistory[] = ['stockId' => $row['stockId'], 'checkupId' => $checkup_id, 'used' => $row['quantity']];
     }
+    
+    $history->push($rxHistory);
 
     // Insert / save multiple prescription data to database
     $db->insertRange(TableNames::prescription_details, $fields, $rxvalues);
  
-    //---------------------------------------------//
-    //-----TASK 3 :: UPDATE MEDICINE INVENTORY-----//
-    //---------------------------------------------//
-  
-    $remainingStock = $itemFields->remaining;
-    $itemIdField    = $itemFields->id;
-
-    foreach($prescriptions as $row)
-    {
-        $amount = $row['quantity'];
-        $itemId = $security->Decrypt($row['itemId']);
-
-        $sql = "UPDATE " . TableNames::inventory . " SET $remainingStock = ($remainingStock - ?) WHERE $itemIdField = ?"; 
-        $sth = $pdo->prepare($sql);
-        $sth->bindValue(1, $amount);
-        $sth->bindValue(2, $itemId);
-        $sth->execute();
-    } 
 
     onComplete();
 }
-catch (\Exception $ex) { throwError(); }
-catch (\Throwable $th) { throwError(); }
+catch (\Exception $ex) { throwError($ex->getMessage() . " at " . $ex->getLine()); }
+catch (\Throwable $th) { throwError($th->getMessage() . " at " . $th->getLine()); }
 
 // Throw an Error then stop the script
-function throwError()
+function throwError($ex = "")
 {
+    if (!empty($ex))
+    {
+        echo $ex;
+        exit; 
+    }
+
     IError::Throw(500);
     exit;
 }
@@ -178,4 +215,4 @@ function onComplete()
         'checkup-success-msg'
     );
     exit;
-}
+} 

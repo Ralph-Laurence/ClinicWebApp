@@ -2,7 +2,7 @@ var sidenavDrawer = undefined;
 var sidenavChevron = undefined;
 var sidenavTrigger = undefined; 
 
-$(document).ready(() => 
+$(document).ready(function ()
 { 
     sidenavDrawer = $(".side-nav"); 
     sidenavChevron = $(".btn-hide-sidenav");

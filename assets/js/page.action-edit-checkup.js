@@ -43,12 +43,21 @@ function onBind()
     {
         var input = $(this).parent().find('.prescription-qty');
         var qty = parseInt(input.val()) || 0;
+
+        var rem = $(this).closest('tr').find('.remaining');
+        var remaining = parseInt(rem.val()) || 0;
+        var units = $(this).closest('tr').find('.units-label').val(); 
+ 
         var max = parseInt(input.attr("data-max-qty")) || 0;
 
         if (qty < max)
         {
             qty++;
+            remaining--;
+            rem.val(remaining);
+
             $(this).parent().find('.prescription-qty').val(qty);
+            //$(this).closest('tr').find('.available-stock-label').text(`${remaining} ${units}`);
         } 
     })
     //
@@ -60,10 +69,18 @@ function onBind()
         var qty = parseInt(input.val()) || 0;
         var min = parseInt(input.attr("data-min-qty")) || 0;
 
+        var rem = $(this).closest('tr').find('.remaining');
+        var remaining = parseInt(rem.val()) || 0;
+        var units = $(this).closest('tr').find('.units-label').val(); 
+
         if (qty > min)
         {
             qty--;
+            remaining++;
+            rem.val(remaining);
+
             $(this).parent().find('.prescription-qty').val(qty);
+            //$(this).closest('tr').find('.available-stock-label').text(`${remaining} ${units}`);
         } 
     })
     //
@@ -76,11 +93,26 @@ function onBind()
         var min = parseInt($(this).attr("data-min-qty")) || 0;
         var max = parseInt($(this).attr("data-max-qty")) || 0;
 
+        var rem = $(this).closest('tr').find('.remaining');
+        var remaining = parseInt(rem.val()) || 0;
+        var units = $(this).closest('tr').find('.units-label').val(); 
+   
+        remaining = max - qty;
+
         if (qty < min)
+        {
             $(this).val(min);
+            remaining = max - min; 
+        }
 
         if (qty > max)
+        {
             $(this).val(max);
+            remaining = 0;
+        }
+          
+        rem.val(remaining);
+        //$(this).closest('tr').find('.available-stock-label').text(`${remaining} ${units}`);
     })
     //
     // Dequeue (Remove) medicine from prescription table
@@ -106,6 +138,8 @@ function onBind()
         var maxQty = tr.find(".max-qty").text().trim();
         var unitsKey = tr.find(".units-key").text().trim();
         var itemCode = tr.attr("id").trim();
+        var stockData = tr.find(".stock-data").text().trim();
+        var unitsLabel = tr.find(".units-label").text().trim();
 
         var medicineData = 
         {
@@ -115,7 +149,9 @@ function onBind()
             maxQty: maxQty,
             unitsKey: unitsKey,
             itemKey: itemKey,
-            itemCode, itemCode
+            itemCode: itemCode,
+            stockData: stockData,
+            unitsLabel: unitsLabel
         };
  
         selectMedicine(medicineData);
@@ -199,17 +235,24 @@ function selectMedicine(data)
 {   
     // Build the row
     var row = 
-    `<tr class=\"align-middle\">
-        <td>${data.name}</td>
-        <td>${data.category}</td>
-        <td>${data.stock}</td>
+    `<tr class="align-middle rx-tr">
+        <td class="text-truncate" style="max-width: 200px; width: 200px; py-0">
+            <div class="d-flex justify-content-start flex-column">
+                <div class="fw-bold">${data.name}</div>
+                <div class="text-primary">${data.category}</div>
+            </div>
+        </td>
+        <td class="text-truncate text-center" style="max-width: 200px; width: 200px;">
+            <select class="stocks-selector"></select>
+        </td>
+        <td class="text-truncate text-center available-stock-label" style="max-width: 200px; width: 200px;"></td>
         <td class="text-center">
             <div class="d-flex flex-row align-items-center justify-content-center gap-2">
                 <button type="button" class="btn btn-warning bg-accent py-1 px-2 btn-qty-minus">
                     <i class="fas fa-minus"></i>
                 </button>
                 <div>
-                    <input type="text" class="text-center prescription-qty" data-min-qty="1" value="1" data-max-qty="${data.maxQty}"/>
+                    <input type="text" class="text-center prescription-qty" data-min-qty="1" value="1" data-max-qty=""/>
                 </div>
                 <button type="button" class="btn btn-primary bg-teal py-1 px-2 btn-qty-plus">
                     <i class="fas fa-plus"></i>
@@ -222,14 +265,55 @@ function selectMedicine(data)
                 <span>Remove</span>
             </button>
         </td> 
-        <td class=\"d-none\">${data.unitsKey}</td>
-        <td class=\"d-none\">
-            <input type=\"text\" class=\"item-key\" value=\"${data.itemKey}\" />
+        <td class="d-none">${data.unitsKey}</td>
+        <td class="d-none stock-data">${data.stockData}</td>
+        <td class="d-none">
+            <input type="text" class="item-key" value="${data.itemKey}" />
+            <input type="text" class="rx-stock-id" />
         </td>
     </tr>`;
 
     // Insert (append) the medicine into the prescription table
     $(".prescription-body").append(row);
+
+    var newlyAppendedRow = $(".prescription-body .rx-tr:last");
+
+    if (data.stockData)
+    {
+        var json = jQuery.parseJSON(data.stockData);
+
+        $.each(json, function(index, item)
+        {
+            if (item.qty > 0)
+                $(newlyAppendedRow).find(".stocks-selector").append
+                (
+                    `<option value="${item.stockId}" data-stock="${item.stockId}" data-qty="${item.qty}" data-units="${data.unitsLabel}">
+                        Stock #${item.stockId} - ${item.sku}
+                    </option>`
+                ); 
+        }); 
+    }
+
+    $('.stocks-selector').selectmenu({
+        width: "100%",
+        change: function(event, ui)
+        {
+            var tr = $(this).closest('tr');
+            var option = tr.find(":selected");
+             
+            tr.find(".available-stock-label")
+            .text(`${option.attr('data-qty')} ${option.attr('data-units')}`);
+
+            tr.find('.prescription-qty').val('1').attr('data-max-qty', option.attr('data-qty'));
+            tr.find('.rx-stock-id').val(option.attr("data-stock"));
+        }
+    });
+
+    // Default values of newly added prescription
+    var defaultOption = $(newlyAppendedRow).find('.stocks-selector option:selected'); 
+    $(newlyAppendedRow).find('.available-stock-label').text(`${defaultOption.attr('data-qty')} ${defaultOption.attr('data-units')}`);
+    $(newlyAppendedRow).find('.prescription-qty').attr('data-max-qty', defaultOption.attr('data-qty'));
+    $(newlyAppendedRow).find('.rx-stock-id').val(defaultOption.attr('data-stock'));
 
     // Hide the selected Row from picker
     $(".medicine-picker-body").find(`tr#${data.itemCode}`).hide();
@@ -454,12 +538,14 @@ function collectPrescriptions()
         var qty = $(this).find('.prescription-qty').val();
         var flagReturn = $(this).find('.flag-return').val();
         var flagRemove = $(this).find('.flag-remove').val();
+        var stockId    = $(this).find(".rx-stock-id").val();
 
         prescriptionObj.push({
             itemKey: itemKey,
             quantity: qty,
             flagReturn: flagReturn,
-            flagRemove: flagRemove
+            flagRemove: flagRemove,
+            stockId: stockId
         });
     }); 
 

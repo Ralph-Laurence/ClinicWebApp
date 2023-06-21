@@ -112,8 +112,9 @@ class TableNames
     public const patients             = "patients";
     public const permissions          = "user_permissions";
     public const prescription_details = "prescription_details";
+    public const prescription_history = "prescription_history";
     public const settings             = "general_settings";
-    public const stock                = "stock";
+    public const stock                = "stocks";
     public const suppliers            = "suppliers";
     public const unit_measures        = "unit_measures";
     public const users                = "users";

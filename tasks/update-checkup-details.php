@@ -10,21 +10,25 @@ require_once($rootCwd . "includes/urls.php");
 require_once($rootCwd . "database/dbhelper.php");
 require_once($rootCwd . "models/Checkup.php");
 require_once($rootCwd . "models/Prescription.php");
+require_once($rootCwd . "models/PrescriptionHistory.php");
 require_once($rootCwd . "models/Item.php");
+require_once($rootCwd . "models/Stock.php");
 
 require_once($rootCwd . "includes/Auth.php");
 require_once($rootCwd . "includes/Security.php");
  
 use Models\Checkup;
 use Models\Item;
-use Models\Prescription; 
+use Models\Prescription;
+use Models\PrescriptionHistory;
+use Models\Stock;
 
 $security = new Security();
 $security->requirePermission(Chmod::PK_MEDICAL, Chmod::FLAG_WRITE);
 $security->checkAccess(Chmod::PK_MEDICAL, UserAuth::getId());
 $security->BlockNonPostRequest();               // Do not run this script when not accessed with POST
 
-$db = new DbHelper($pdo);                       // Db helpwer wraps CRUD operations as functions
+$db = new DbHelper($pdo);                       // Db helper wraps CRUD operations as functions
  
 $checkupModel = new Checkup();                  // Model will hold values as object
 $checkupFields = $checkupModel->getFields();
@@ -32,8 +36,13 @@ $checkupFields = $checkupModel->getFields();
 $rxModel    = new Prescription();
 $rxFields   = $rxModel->getFields();
 $rxTable    = TableNames::prescription_details; 
+$inventory  = TableNames::inventory;
 
 $inventoryModel = new Item($db); 
+$invFields      = $inventoryModel->getFields();
+
+$stocks = new Stock($db);
+$prescriptionHistory = new PrescriptionHistory($db);
 
 // Post the record ID and Illness ID
 $illness_id_raw = $_POST['illness-id'] ?? "";
@@ -62,162 +71,123 @@ if (!empty($prescriptions_raw))
 try
 {  
     $record_id  = $security->Decrypt($record_id_raw);
+
+    //================================================//
+    //         TASK 1: UPDATE CHECKUP DETAILS         //
+    //================================================//
+
     $illness_id = $security->Decrypt($illness_id_raw);
     $doctor_id  = $security->Decrypt($doctor_id_raw);
 
-    //==========================================//
-    //      TASK 1: UPDATE CHECKUP DATA         //
-    //==========================================//
-
     $db->update( TableNames::checkup_details, 
+    // Values
     [
         $checkupFields->illnessId   => $illness_id,
         $checkupFields->bpSystolic  => $bp_systolic,
         $checkupFields->bpDiastolic => $bp_diastolic,
         $checkupFields->doctorId    => $doctor_id
     ],
+    // Conditions
     [ $checkupFields->id => $record_id ]);
  
-    //==========================================//
-    //      TASK 2: UPDATE PRESCRIPTION         //
-    //==========================================//
+    //================================================//
+    //         TASK 2: UPDATE PRESCRIPTION            //
+    //================================================//
 
     // If no prescription data is available, just exit after update
     if (empty($prescriptions))
         onComplete();
+ 
+    // The update values for prescriptions will be stored here
+    $updatePrescriptionDataSource = [];
 
-    $updateItems = [];              // Items to update the qty from, which is coming from POST
-    $removeItems = [];              // ID of each of the Item that we want to remove
+    // Store newly added prescriptions here
+    $newPrescriptionDataSource = [];
 
-    $incrementStock  = [];          // Returned medicines including  qty that were decreased during edit  
-    $decrementStock  = [];          // Newly added medicines including qty that were increased during edit
-    $update_prescriptionQty = [];   // Edited medicine quantities for prescription
+    // Store IDs of removed medicines here
+    $removedMedicines = [];
 
-    // Field names of Prescription table
-    $fields = [ $rxFields->checkupFK, $rxFields->itemId, $rxFields->amount ];
-
-    // To tell if an item is original, It should have the flagReturn and flagRemove key.
-    // NEW ITEMS will be inserted
-    // DEFAULT ITEMS will be updated or removed, depending on the flag applied
+    // Store the IDs and amounts of returned medicines
+    $returnedMedicineStocks = [];
+ 
     foreach ($prescriptions as $obj)
     { 
         // Decrypt item id
-        $itemKey = $security->Decrypt($obj['itemKey']);
+        $itemId = $security->Decrypt($obj['itemKey']);
  
-        // ORIG ITEMS
+        // This check is for identifying which prescriptions are newly added or
+        // has been there before. Usually, new prescriptions do not have the
+        // "flagReturn" and/or "flagRemove" keys.
+
+        // Task: Check if a medicine item will be returned or removed. These
+        // values are from the prescriptions table on the checkup form
         if (array_key_exists("flagReturn", $obj) && array_key_exists("flagRemove", $obj))
-        { 
-            // Get all items keys that will be removed
+        {
+            // Get all medicine items keys that will be removed from prescription.
+            // If Medicine is just removed [flag remove = 1], and [flag return = 0],
+            // it will not be returned to stocks.
             if ($obj['flagRemove'] == 1)
-                array_push($removeItems, $itemKey);
-
-            // Get all items that will be returned to inventory
-            if ($obj['flagReturn'] == 1)
-            { 
-                // INCREMENT STOCK | RETURN BACK
-                array_push($incrementStock, 
+                $removedMedicines[] = $itemId;
+            //
+            // When a medicine was removed [flag remove=1] from the prescriptions,
+            // and the user wants to return the medicine, [flag return=1], Get all 
+            // medicine ids with quantities that will be returned back to stocks. 
+            //
+            // This comes from UI, there is an pop-up option for user if he will 
+            // return the stock or not.
+            if ($obj['flagReturn'] == 1) 
+            {
+                $returnedMedicineStocks[] = 
                 [
-                    'id'     => $itemKey,
-                    'amount' => $obj['quantity']
-                ]);
+                    'itemId'    => $itemId,
+                    'quantity'  => $obj['quantity'],
+                    'stockId'   => $obj['stockId']
+                ];
             }
+             
+            // Update the stocks of a prescription from the UI prescriptions table
+            // Collect all the values for update. 
+            $updatePrescriptionDataSource[$itemId] = 
+            [
+                'itemId'    => $itemId,
+                'stockId'   => $obj['stockId'],
+                'quantity'  => $obj['quantity']
+            ];  
 
-            // We will grab a reference to every original item's 
-            // ID and Quantity. We will use this later to check
-            // If an item's qty was updated.
-            $updateItems["item_" . $itemKey] = $obj['quantity'];
- 
-            // continue with Next iteration and skip adding new items below
+            // Items with flag remove or return are automatically
+            // ignored and not considered new item. So we continue
+            // with the Next iteration and skip adding 
+            // this current item as a New item
             continue;
         }
 
-        // Newly added prescriptions will be stored here as Objects
-        $newItems[] = array ( $record_id, $itemKey, $obj['quantity'] );
-
-        // NEW ITEMS will be decremented in inventory
-        array_push($decrementStock, [ 'id' => $itemKey, 'amount' => $obj['quantity'] ]);
+        // Collect the newly added prescriptions 
+        $newPrescriptionDataSource[] = 
+        [
+            $rxFields->checkupFK  => $record_id,        //  'checkupFK' 
+            $rxFields->itemId     => $itemId,           // 'itemId'
+            $rxFields->amount     => $obj['quantity'],  // 'quantity'
+            $rxFields->stockFK    => $obj['stockId']    // 'stockId'
+        ];  
     }
 
-    // INSERT NEW PRESCRIPTIONS
-    if (!empty($newItems))
-    { 
-        $db->insertRange($rxTable, $fields, $newItems);
-    }
+    // Update the quantities used in each prescriptions
+    updatePrescriptions($record_id, $updatePrescriptionDataSource);
 
-    // REMOVE AN ITEM FROM PRESCRIPTION RECORD
-    if (!empty($removeItems))
-    {
-        $sql = "DELETE FROM $rxTable WHERE $fields[0] = $record_id AND $fields[1] IN (" . implode(",", $removeItems) . ");";
-        $db->query($sql); 
-    }
-     
-    //==========================================//
-    //      TASK 4: UPDATE INVENTORY            //
-    //==========================================//
+    // Add the newly added prescriptions
+    insertNewPrescriptions($record_id, $newPrescriptionDataSource);
 
-    // TRACK FOR UPDATED VALUES OF PRESCRIPTION ITEM'S QTY
-    if (!empty($updateItems))
-    {  
-        // Load the actual prescription data from database.
-        // We can use this to tell if there were newly added medicines
-        $actualValues = getActualPrescriptions($fields[0], $fields[1], $fields[2]);
+    // Just Remove prescriptions without returning the stocks
+    onRemovePrescriptions($record_id, $removedMedicines);
 
-        if (!empty($actualValues))
-        {
-            foreach($updateItems as $k => $v)
-            {
-                if (array_key_exists($k, $actualValues))
-                { 
-                    // Remove prefix from item id
-                    $item_id = str_replace("item_", "", $k);
-    
-                    // DECREASE USED AMOUNT OF NEW ITEMS INTO INVENTORY
-                    if ($actualValues[$k] < $v)
-                    {  
-                        array_push($decrementStock,
-                        [
-                            'id'     => $item_id,
-                            'amount' => ($v - $actualValues[$k])
-                        ]);
-                    }
-                    // INCREMENT STOCK | RETURN BACK TO INVENTORY
-                    else if ($actualValues[$k] > $v)
-                    {  
-                        array_push($incrementStock, 
-                        [
-                            'id'     => $item_id,
-                            'amount' => ($actualValues[$k] - $v)
-                        ]); 
-                    }
-    
-                    array_push($update_prescriptionQty,
-                    [
-                        'checkupFK' => $record_id, 
-                        'itemId'    => $item_id, 
-                        'amount'    => $v
-                    ]);
-                }
-            }
-        }
-    }
-
-    // INCREMENT STOCK | RETURN AN ITEM BACK TO INVENTORY
-    if (!empty($incrementStock))
-        updateStocks($incrementStock, $pdo, $inventoryModel->getFields(), 1);
-    
-    // DECREMENT STOCK | PULL OUT AN ITEM's STOCK IN INVENTORY
-    if (!empty($decrementStock))
-        updateStocks($decrementStock, $pdo, $inventoryModel->getFields(), 0);
-
-    // UPDATE THE AMOUNT/QTY USED IN EACH PRESCRIPTION
-    if (!empty($update_prescriptionQty))
-        updatePrescriptionQty($pdo, $update_prescriptionQty, $rxFields);
+    // Return the stocks of removed medicines
+    onReturnStocks($returnedMedicineStocks);
 
     // Exit and return a success message
     onComplete();
 }
 //catch (\Throwable $ex) {  onError(); }
-catch (\Exception $ex) {  onError(); }
+catch (\Exception $ex) { echo "{$ex->getMessage()} {$ex->getLine()}"; exit; onError(); }
 
 function onComplete()
 {
@@ -232,78 +202,247 @@ function onError()
     exit;
 }
 
-/**
- * Load the actual prescription data from database
- */
-function getActualPrescriptions($checkupIdField, $itemIdField, $amountField)
-{
-    global $db, $record_id;
+//====================================================================
+// ::::::::::::::::::::::::: REVISED FUNCTIONS :::::::::::::::::::::::
+//====================================================================
 
-    // Load the real/actual values from the prescription database
-    $values = $db->select(
-        TableNames::prescription_details, 
-        [ $itemIdField, $amountField ],         // Fields to select 
-        [ $checkupIdField => $record_id ]       // Condition
+function updatePrescriptions($checkupFK, array $updateDataSource)
+{
+    if (empty($updateDataSource))
+        return;
+
+    global $db, $stocks, $prescriptionHistory, $rxTable, $rxFields, $inventory, $invFields;
+
+    $rxhistoryTable = TableNames::prescription_history;
+    $rxHistoryFields = $prescriptionHistory->getFields();
+
+    $stocksTable = TableNames::stock;
+    $stockFields = $stocks->getFields();
+
+    // Prepare query to Load the prescription history
+    $stmt_get_rxHistory = $db->getInstance()->prepare
+    (
+        "SELECT $rxHistoryFields->quantityUsed
+        FROM    $rxhistoryTable
+        WHERE   $rxHistoryFields->checkupFK = ? AND $rxHistoryFields->stockId = ?"
     );
-     
-    if (!empty($values))
-    {
-        $result = array();
 
-        foreach($values as $obj)
-        {
-            $result["item_" . $obj[$itemIdField]] = $obj[$amountField]; 
-        }
- 
-        ksort($result);
+    // Prepare query to load the current quantity of a stock
+    $stmt_get_stock_qty = $db->getInstance()->prepare
+    (
+        "SELECT $stockFields->quantity
+        FROM    $stocksTable
+        WHERE   $stockFields->item_id = ? AND $stockFields->id = ?"
+    );
 
-        return $result;
-    }
- 
-    return [];
-}
-/**
- * Increase or Decrease an item's stock.
- * @param int $mode 0 = Subtract, 1 = Add
- */
-function updateStocks($dataset, $pdo, $invenFields, $mode = -1)
-{ 
-    if (!in_array($mode, [0,1]))
-        return;
-
-    $operation = $mode == 1 ? "($invenFields->remaining + ?)" : "($invenFields->remaining - ?)";
-
-    $sql = "UPDATE " . TableNames::inventory .
-    " SET $invenFields->remaining = $operation WHERE $invenFields->id = ?";
-
-    $sth = $pdo->prepare($sql);
-
-    foreach ($dataset as $obj)
-    {
-        $sth->bindValue(1, $obj['amount']);
-        $sth->bindValue(2, $obj['id']);
-        $sth->execute(); 
-    }
-} 
-/**
- * Update the amount of each medicine used in prescription.
- */
-function updatePrescriptionQty($pdo, $dataset, $fields)
-{
-    if (empty($dataset))
-        return;
-
-    $sql = "UPDATE ". TableNames::prescription_details 
-    ." SET $fields->amount = ? WHERE $fields->itemId = ? AND $fields->checkupFK = ?";
-
-    $sth = $pdo->prepare($sql);
+    // Prepare query to update quantity of a stock
+    $stmt_update_stock_qty = $db->getInstance()->prepare
+    (
+        "UPDATE $stocksTable SET $stockFields->quantity = ? 
+        WHERE   $stockFields->item_id = ? AND $stockFields->id = ?"
+    );
     
-    foreach ($dataset as $obj)
+    // Preapre the query to udate the amount in prescriptions history
+    $stmt_update_rx_history = $db->getInstance()->prepare
+    (
+        "UPDATE $rxhistoryTable
+            SET $rxHistoryFields->quantityUsed = ? 
+        WHERE $rxHistoryFields->checkupFK = ? AND $rxHistoryFields->stockId = ?"
+    );
+
+    // Prepare the query for updating the amount of each prescription
+    $stmt_update_prescription = $db->getInstance()->prepare
+    (
+        "UPDATE $rxTable 
+            SET $rxFields->amount = ? 
+        WHERE $rxFields->itemId = ? AND $rxFields->checkupFK = ?"
+    );
+
+    // Prepare the query to update the inventory table's quantities
+    // which are the total quantities of each stocks with matching
+    // item Id from the stocks table  
+    $stmt_update_inventory = $db->getInstance()->prepare
+    ( 
+        "UPDATE $inventory AS i
+        SET i.$invFields->remaining = 
+        (
+            SELECT SUM(s.$stockFields->quantity)
+            FROM $stocksTable AS s
+            WHERE s.$stockFields->item_id = i.$invFields->id
+        )
+        WHERE i.$invFields->id = ?;"
+    ); 
+
+    foreach ($updateDataSource as $k => $obj)
+    {  
+        $itemId     = $obj['itemId'];
+        $updateQty  = $obj['quantity'];
+        $stockFk    = $obj['stockId'];
+
+        // Load the prescriptions history
+        $stmt_get_rxHistory->execute([$checkupFK, $stockFk]);
+
+        // Load the last saved quantity from history
+        $lastQty = $stmt_get_rxHistory->fetchColumn();
+
+        // Load original stock
+        $stmt_get_stock_qty->execute([$itemId, $stockFk]);
+
+        $stox = $stmt_get_stock_qty->fetchColumn();
+
+        $originalStocks = $stox + $lastQty;
+
+        // Get the new amount
+        $newQty = $originalStocks - $updateQty;
+
+        // Update stock qty
+        $stmt_update_stock_qty->execute([$newQty, $itemId, $stockFk]);
+
+        // Update prescription history
+        $stmt_update_rx_history->execute([$updateQty, $checkupFK, $stockFk]);
+
+        // Update prescription details 
+        $stmt_update_prescription->execute([$updateQty, $itemId, $checkupFK]);
+
+        // Update the inventory table
+        $stmt_update_inventory->execute([$itemId]);
+    }
+}
+
+function insertNewPrescriptions($checkupFK, array $insertDataSource)
+{ 
+    if (empty($insertDataSource))
+        return;
+
+    global $db, $stocks, $rxFields, $inventory, $invFields;
+ 
+    $stocksTable = TableNames::stock;
+    $stockFields = $stocks->getFields();
+
+    // Query for updating the stocks
+    $stmt_update_stocks = $db->getInstance()->prepare
+    (
+        "UPDATE $stocksTable 
+            SET $stockFields->quantity = ($stockFields->quantity - ?)
+        WHERE $stockFields->id = ? AND $stockFields->item_id = ?"
+    );
+
+    // Prepare the query to update the inventory table's quantities
+    // which are the total quantities of each stocks with matching
+    // item Id from the stocks table  
+    $stmt_update_inventory = $db->getInstance()->prepare
+    ( 
+        "UPDATE $inventory AS i
+        SET i.$invFields->remaining = 
+        (
+            SELECT SUM(s.$stockFields->quantity)
+            FROM $stocksTable AS s
+            WHERE s.$stockFields->item_id = i.$invFields->id
+        )
+        WHERE i.$invFields->id = ?;"
+    );
+
+    $history    = new PrescriptionHistory($db);
+    $rxHistory  = [];
+    $rxValues   = [];
+
+    foreach($insertDataSource as $obj)
     {
-        $sth->bindValue(1, $obj['amount']);
-        $sth->bindValue(2, $obj['itemId']);
-        $sth->bindValue(3, $obj['checkupFK']);
-     
-        $sth->execute();
-    } 
+        
+        $itemId     = $obj[ $rxFields->itemId  ];
+        $qty        = $obj[ $rxFields->amount  ];
+        $stockId    = $obj[ $rxFields->stockFK ]; 
+
+        $rxValues[] = 
+        [
+            $checkupFK,
+            $itemId,
+            $qty,
+            $stockId
+        ];
+
+        // Update the stocks table
+        $stmt_update_stocks->execute([$qty, $stockId, $itemId]);
+
+        // Update the inventory table
+        $stmt_update_inventory->execute([$itemId]);
+
+        // Collect prescription history data
+        $rxHistory[] = ['stockId' => $stockId, 'checkupId' => $checkupFK, 'used' => $qty]; 
+    }
+
+    // Save prescriptions history
+    $history->push($rxHistory);
+
+    // Save the new prescriptions into database
+    $db->insertRange(TableNames::prescription_details,
+        [   
+            $rxFields->checkupFK,
+            $rxFields->itemId,
+            $rxFields->amount,
+            $rxFields->stockFK
+        ],
+        $rxValues
+    );
+}
+
+function onRemovePrescriptions($checkupFK, array $itemIds)
+{
+    if (empty($itemIds))
+        return;
+
+    global $db, $rxTable, $rxFields;
+
+    $bindings = $db->generateBinders($itemIds);
+ 
+    $stmt_delete_rx = $db->getInstance()->prepare
+    (
+        "DELETE FROM $rxTable WHERE $rxFields->checkupFK = ? AND $rxFields->itemId IN ($bindings)"
+    ); 
+    
+    $stmt_delete_rx->execute(array_merge([ $checkupFK ], $itemIds));
+}
+
+function onReturnStocks(array $dataSource)
+{
+    global $db, $stocks, $inventory, $invFields;
+
+    $stocksTable = TableNames::stock;
+    $stockFields = $stocks->getFields();
+
+    // Prepare the query to return the stock
+    $stmt_restore_stock = $db->getInstance()->prepare
+    (
+        "UPDATE $stocksTable 
+            SET $stockFields->quantity = ($stockFields->quantity + ?)
+        WHERE $stockFields->item_id = ? AND $stockFields->id = ?"
+    );
+
+    // Prepare the query to update the inventory table's quantities
+    // which are the total quantities of each stocks with matching
+    // item Id from the stocks table  
+    $stmt_update_inventory = $db->getInstance()->prepare
+    ( 
+        "UPDATE $inventory AS i
+        SET i.$invFields->remaining = 
+        (
+            SELECT SUM(s.$stockFields->quantity)
+            FROM $stocksTable AS s
+            WHERE s.$stockFields->item_id = i.$invFields->id
+        )
+        WHERE i.$invFields->id = ?;"
+    );
+
+    foreach ($dataSource as $obj)
+    {
+        $itemId     = $obj['itemId'];
+        $quantity   = $obj['quantity'];
+        $stockId    = $obj['stockId'];
+        
+        // Return the quantity back to stocks table
+        $stmt_restore_stock->execute([ $quantity, $itemId, $stockId ]);
+
+        // Update the inventory
+        $stmt_update_inventory->execute([ $itemId ]);
+    }
 }

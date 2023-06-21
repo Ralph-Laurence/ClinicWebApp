@@ -15,11 +15,12 @@ namespace Models
         {
             $obj = (object) [];
 
-            $obj->id = "id";
-            $obj->checkupFK = "checkup_fk_id";
-            $obj->itemId = "item_id";
-            $obj->amount = "amount";
-            $obj->unitMeasure = "unit_measure";
+            $obj->id            = "id";
+            $obj->checkupFK     = "checkup_fk_id";
+            $obj->itemId        = "item_id";
+            $obj->amount        = "amount";
+            $obj->unitMeasure   = "unit_measure";
+            $obj->stockFK       = "stock_fk_id";
         
             return $obj;
         }
