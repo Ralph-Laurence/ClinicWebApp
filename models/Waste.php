@@ -8,6 +8,7 @@ namespace Models
 
     require_once("rootcwd.inc.php");
     require_once($rootCwd . "models/Item.php");
+    require_once($rootCwd . "models/Stock.php");
     require_once($rootCwd . "models/UnitMeasure.php");
     require_once($rootCwd . "models/SettingsIni.php");
   
@@ -37,7 +38,7 @@ namespace Models
             $obj->amount        = "amount";
             $obj->reason        = "reason";
             $obj->dateCreated   = "date_created";
-            $obj->sku           = "sku";
+            $obj->sku           = "sku"; 
         
             return $obj;
         }
@@ -49,13 +50,15 @@ namespace Models
             $i = Item::getFields();
             $c = Category::getFields();
             $u = UnitMeasure::getFields();
-            $w = self::getFields();
+            $w = self::getFields(); 
+
             $year = $this->getRecordYear();
 
             $categories = TableNames::categories;
             $items = TableNames::inventory;
             $units = TableNames::unit_measures;
             $waste = TableNames::waste;
+            $stox  = TableNames::stock;
 
             $sql = 
             "SELECT 
@@ -66,12 +69,13 @@ namespace Models
                 i.$i->category      AS 'categoryID',
                 c.$c->name          AS 'category',
                 c.$c->icon          AS 'icon',
-                u.$u->measurement   AS 'units'
+                u.$u->measurement   AS 'units',
+                w.$w->sku           AS 'sku'
 
             FROM $waste AS w
             LEFT JOIN $items        AS i ON i.$i->id = w.$w->itemId
             LEFT JOIN $categories   AS c ON c.$c->id = i.$i->category
-            LEFT JOIN $units        AS u ON u.$u->id = i.$i->unitMeasure
+            LEFT JOIN $units        AS u ON u.$u->id = i.$i->unitMeasure 
             
             WHERE w.$w->dateCreated LIKE '$year%'
             ORDER BY w.$w->dateCreated DESC";

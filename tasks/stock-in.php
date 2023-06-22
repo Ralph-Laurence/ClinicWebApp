@@ -58,23 +58,32 @@ function onError()
 }
 
 try 
-{
+{   
     $id = $security->Decrypt($itemId);
 
-    $exp = "";
+    // $exp = "";
 
-    // Expiry date (Optional) 
-    if (!empty($expiryDate))
-        $exp = Dates::toString($exp);
+    // // Expiry date (Optional) 
+    // if (!empty($expiryDate) && strtotime($expiryDate) != '0000-00-00')
+    //     $exp = Dates::toString($expiryDate);
 
-    // Insert stock 
-    $db->insert($stocksTable, 
+    $insertData = 
     [
         $stockFields->quantity     => $stockQty,
         $stockFields->item_id      => $id,
-        $stockFields->sku         => $sku,
-        $stockFields->expiry_date  => $exp
-    ]); 
+        $stockFields->sku         => $sku
+    ];
+
+    if (!isset($_POST['expiry-check']) && !empty($expiryDate))
+    { 
+        $expDate = date("Y-m-d", strtotime($expiryDate));
+
+        if (!Dates::isPast($expDate))
+            $insertData[$stockFields->expiry_date] = $expDate;
+    } 
+
+    // Insert stock 
+    $db->insert($stocksTable, $insertData); 
 
     // Prepare the query to update the inventory table's quantities
     // which are the total quantities of each stocks with matching

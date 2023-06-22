@@ -38,13 +38,13 @@ try
     $dataset = $waste->showAll();
     $totalRecords = count($dataset);
     $recordYear = $waste->getRecordYear();
-
+  
     // For waste record truncate 
     $truncKey = IString::random(8);
     $_SESSION['waste-truncate-key'] = $truncKey;
 }
 catch (Exception $ex)
-{ 
+{  
     IError::Throw(500);
     exit;
 }
@@ -56,7 +56,7 @@ function bindDataset()
 
     if (empty($dataset))
         return;
-     
+
     $filter = getFilter()['filter'];
     $query  = getFilter()['query'];
 
@@ -90,6 +90,7 @@ function bindDataset()
         $code           = $obj['code'];
         $category       = $obj['category'];
         $icon           = $obj['icon']; 
+        $sku            = $obj['sku'];
 
         $id     = $security->Encrypt($obj[$wasteFields->id]);
         $amount = $obj[$wasteFields->amount] ." ". $obj['units'];
@@ -122,7 +123,7 @@ function bindDataset()
                     <div class="ms-auto flex-fill flex-column text-wrap d-flex text-truncate">
                         <div class="fs-6 font-base fw-bold td-item-name text-truncate">$item</div>
                         <div class="fsz-12 text-muted fst-italic text-truncate text-uppercase td-category">$category</div>
-                        <div class="fsz-12 font-teal fst-italic text-truncate text-uppercase td-item-code">$code</div>
+                        <div class="fsz-12 font-teal fst-italic text-truncate text-uppercase td-item-code">$sku</div>
                     </div>
                 </div>
             </td>

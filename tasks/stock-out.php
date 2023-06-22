@@ -77,7 +77,7 @@ try
     {
         $reasonId = $security->Decrypt($disposeReason);
 
-        $reason = Item::StockoutReasons[$reasonId];
+        $reason = Item::StockoutReasons[$reasonId]['reason'];
     }
 
     // Rules:
@@ -87,25 +87,23 @@ try
     // Otherwise, subtract from the input amount
 
     $stoxTable = TableNames::stock;
-    $wasteTable = TableNames::waste;
     
     $s = Stock::getFields();
-    $w = Waste::getFields();
 
-    $stmt_move_toWaste = $db->getInstance()->prepare
-    (
-        "INSERT INTO $wasteTable($w->itemId, $w->amount, $w->reason, $w->sku) VALUES(?,?,?,?)"
-    );
-
-    $stmt_get_sku = $db->getInstance()->prepare
-    (
-        "SELECT $s->sku WHERE $s->id = ? AND $s->item_id = ?"
-    );
+    // Data for holding the value that is needed to be saved into waste
+    //$wasteDataset = [];
+    $wasteDataset =
+    [
+        'itemId' => $itemId,
+        'stockId' => $stockId,
+        'amount' => $amount,
+        'reason' => $reason
+    ];
 
     switch($pulloutAll)
     {
         case 0: // FALSE
-            
+             
             // Stockout
             $stmt_stockout = $db->getInstance()->prepare
             (
@@ -114,8 +112,13 @@ try
                 WHERE $s->item_id = ? AND $s->id = ?"
             );
 
+            // Waste
+            if (!empty($reason)) {
+                moveToWaste($wasteDataset);
+            }
+
             $stmt_stockout->execute([$amount, $itemId, $stockId]);
- 
+  
             break;
         
         case 1: // TRUE
@@ -129,6 +132,11 @@ try
                 $s->id => $stockId
             ]);
 
+            // Waste
+            if (!empty($reason)) {
+                moveToWaste($wasteDataset);
+            }
+ 
             // Delete stock from records
             $db->delete($db->getInstance(), $stoxTable, 
             [
@@ -136,19 +144,7 @@ try
             ]);
  
             break;
-    }
-
-    // Waste
-    if (!empty($reason)) 
-    {
-        // Find the SKU of the stock given by itemID and stockID
-        $stmt_get_sku->execute([$itemId, $stockId]);
-
-        $sku = $stmt_get_sku->fetchColumn();
-
-        $stmt_move_toWaste->execute([$itemId, $amount, $reason, $sku]);
-    }
-
+    }  
     // Prepare the query to update the inventory table's quantities
     // which are the total quantities of each stocks with matching
     // item Id from the stocks table  
@@ -169,52 +165,6 @@ try
     );
 
     $stmt_update_inventory->execute([$itemId]);
-
-    // $inventory  = TableNames::inventory;
-    // $itemFields = Item::getFields();
-    // $unitFields = UnitMeasure::getFields();
- 
-    // // MOVE THE STOCK ONTO THE WASTE. 
-    // // This also decrease the inventory stock
-    // if ( isset($_POST['moveToWaste']) && $_POST['moveToWaste'] == '1' )
-    // { 
-    //     // STOCKOUT REASON
-    //     $reasonKey  = $_POST['wasteReason'] ?? "";
-    //     $reason = "Other";
-
-    //     if (!empty($reasonKey)) 
-    //     {
-    //         $reasonId = $security->Decrypt($reasonKey);
-    //         $reason   = Item::getStockoutReason($reasonId);
-    //     } 
-
-    //     $waste = new Waste($db);
-    //     $waste->moveStockToWaste($id, $stockQty, $reason);
-    // }
-    // else
-    // { 
-    //     // DECREASE THE INVENTORY STOCK
-    //     $sql = "UPDATE $inventory SET $itemFields->remaining = ($itemFields->remaining - ?) WHERE $itemFields->id = ?";
-    //     $sth = $pdo->prepare($sql)->execute([$stockQty, $id]);
-    // }
-
-    // // SUCCESS MESSAGE
-    // $sql = "SELECT i.$itemFields->itemName, u.$unitFields->measurement FROM $inventory AS i ".
-    // " LEFT JOIN ". TableNames::unit_measures ." AS u ON u.$unitFields->id = i.$itemFields->unitMeasure". 
-    // " WHERE i.$itemFields->id = $id";
-
-    // $itemInfo = $db->fetchAll($sql, true);
-
-    // $response = "&minus;$stockQty stock(s) pulled out from an item.";
-
-    // if (!empty($itemInfo))
-    // {
-    //     $itemName = $itemInfo[$itemFields->itemName];
-    //     $measures = $itemInfo[$unitFields->measurement];
-
-    //     $grammar  = $stockQty == 1 ? "$measures was" : "$measures(s) were";
-    //     $response = "&minus;$stockQty $grammar pulled out from $itemName.";
-    // }
 
     Response::Redirect
     (
@@ -239,4 +189,26 @@ function onError()
 {
     IError::Throw(500);
     exit;
+}
+
+function moveToWaste($datasource)
+{
+    global $db, $s;
+
+    $itemId = $datasource['itemId'];
+    $stockId = $datasource['stockId'];
+    $amount = $datasource['amount']; 
+    $reason = $datasource['reason'];
+
+    $wasteTable = TableNames::waste;
+    $w = Waste::getFields();
+
+    $stmt_move_toWaste = $db->getInstance()->prepare
+    (
+        "INSERT INTO $wasteTable($w->itemId, $w->amount, $w->reason, $w->sku) VALUES(?,?,?,?)"
+    ); 
+
+    $sku = $db->getValue(TableNames::stock, $s->sku, [$s->id => $stockId, $s->item_id => $itemId]);
+
+    $stmt_move_toWaste->execute([$itemId, $amount, $reason, $sku]);
 }

@@ -25,7 +25,7 @@ function onAwake()
 
 function onBind()
 {
-    $(".i-stockout-btn").click(function()
+    $(document).on("click", ".dataset-body tr .i-stockout-btn", function()
     {
         var tr = $(this).closest('tr');
         var itemKey = tr.find(".item-key").val();

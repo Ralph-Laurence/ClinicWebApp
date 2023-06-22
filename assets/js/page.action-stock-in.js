@@ -7,7 +7,13 @@ function onAwake()
     $(".input-expiry").datepicker({
         changeMonth: true,
         changeYear: true,
-        yearRange: 'c:c+10'
+        yearRange: 'c:c+10',
+        // beforeShow: function (i) 
+        // {
+        //     if ($(i).attr('readonly')) {
+        //         return false;
+        //     }
+        // }
     });
     
     // Force all numeric textboxes to accept only integers
@@ -25,6 +31,20 @@ function onBind()
 
         if (valid)
             $(".frm-stockin").trigger("submit");
+    });
+
+    $("#expiry-check").change(function()
+    { 
+        var hasExpiry = $(this).is(":checked");
+
+        if (hasExpiry)
+        {
+            $(".input-expiry").val('').attr("disabled", true);
+        }
+        else 
+        {
+            $(".input-expiry").removeAttr("disabled");
+        }
     });
 }
 

@@ -221,7 +221,7 @@
                         </th>
                         <th scope="col" data-orderable="false" class="fw-bold th-200 px-1">
                             <div class="d-flex align-items-center">
-                                <span class="label me-auto">Medicine / Medical Supply</span>
+                                <span class="label me-auto">Stock / Medical Supply</span>
                                 <img class="sort-icon display-none" src="" width="16" height="16">
                             </div>
                         </th>

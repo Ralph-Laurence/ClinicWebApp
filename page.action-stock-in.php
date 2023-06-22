@@ -73,7 +73,7 @@
                             <input type="text" class="form-control input-expiry bg-white" name="expiry" aria-describedby="basic-addon3" required readonly />
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="" id="expiry-check" />
+                            <input class="form-check-input" type="checkbox" value="" id="expiry-check" name="expiry-check" />
                             <label class="form-check-label" for="expiry-check">No expiry date</label>
                         </div>
                         <div class="error-box display-none bg-red-light font-red-dark fsz-14 p-2 rounded-2 mb-2">

@@ -92,7 +92,7 @@ function onBind()
             $(".payload").val(payloadsValidation);
             $(".frm-stockout").trigger("submit");
         }
-    });
+    }); 
 }
 
 function validate()

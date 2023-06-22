@@ -190,14 +190,19 @@ function getStockOnHand()
         {
             $sku = $obj[$s->sku];
             $qty = $obj[$s->quantity]." ".$units;
-            $exp = Dates::toString($obj[$s->expiry_date], "M. d, Y");
+
+            $exp = "No expiry";
+            
+            if (!empty($obj[$s->expiry_date]))
+                $exp = Dates::toString($obj[$s->expiry_date], "M. d, Y");
 
             $bestBefore = "<div class=\"text-muted fsz-12\">$exp</div>";
 
-            // Expired
-            if (Dates::isPast($exp))
+            if (!empty($obj[$s->expiry_date]) && Dates::isPast($exp))
+            { 
                 $bestBefore = "<div class=\"font-red fsz-12\">Expired</div>";
-
+            }
+            
             echo <<<TR
             <tr class="align-middle">
                 <td class="text-truncate ">

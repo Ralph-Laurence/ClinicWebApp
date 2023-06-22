@@ -189,14 +189,30 @@ function getStockOnHand()
             $sku = $obj[$s->sku];
             $qty_raw = $obj[$s->quantity];
             $qty = $qty_raw." ".$units;
-            $exp = Dates::toString($obj[$s->expiry_date], "M. d, Y");
+            //$exp = Dates::toString($obj[$s->expiry_date], "M. d, Y");
             $stockKey = $security->Encrypt($obj[$s->id]);
 
-            $bestBefore = "<div class=\"text-muted best-before fsz-12\"  data-expired=\"0\" >$exp</div>";
+            //$bestBefore = "<div class=\"text-muted best-before fsz-12\"  data-expired=\"0\" >$exp</div>";
 
             // Expired
-            if (Dates::isPast($exp))
-                $bestBefore = "<div class=\"font-red best-before fsz-12\" data-expired=\"1\">Expired</div>";
+            // if (Dates::isPast($exp))
+            //     $bestBefore = "<div class=\"font-red best-before fsz-12\" data-expired=\"1\">Expired</div>";
+
+            $exp = "No expiry";
+            
+            if (!empty($obj[$s->expiry_date]))
+                $exp = Dates::toString($obj[$s->expiry_date], "M. d, Y");
+ 
+            $bestBefore = <<<DIV
+            <div class="text-muted best-before fsz-12" data-expired="0">$exp</div>
+            DIV;
+
+            if (!empty($obj[$s->expiry_date]) && Dates::isPast($exp))
+            {  
+                $bestBefore = <<<DIV
+                <div class="font-red fsz-12 best-before" data-expired="1">Expired</div>
+                DIV;
+            }
 
             echo <<<TR
             <tr class="align-middle stock-list-tr">
