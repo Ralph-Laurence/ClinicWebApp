@@ -209,7 +209,8 @@ function getPrescriptions($recordId)
         u.$u->measurement,
         s.$s->quantity,
         s.$s->sku,
-        s.$s->id
+        s.$s->id AS 'stockFK',
+        t.$t->id
 
     FROM $rxTable AS r
     LEFT JOIN $checkupsTable AS c ON c.$c->id = r.$r->checkupFK
@@ -317,7 +318,7 @@ function bindPrescriptions()
             $stock          = $remaining ." ". $unit;
             $amount         = $row[$r->amount];
             $sku            = trim($row[$s->sku]);
-            $stockId        = $row[$s->id];
+            $stockId        = $row['stockFK'];//$row[$s->id];
             // When an item is out of stock, it cannot be edited. 
             // Instead of showing the controls for amount, we will
             // show the actual AMOUNT instead.

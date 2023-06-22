@@ -97,7 +97,7 @@ try
     // If no prescription data is available, just exit after update
     if (empty($prescriptions))
         onComplete();
- 
+  
     // The update values for prescriptions will be stored here
     $updatePrescriptionDataSource = [];
 
@@ -404,7 +404,7 @@ function onRemovePrescriptions($checkupFK, array $itemIds)
 }
 
 function onReturnStocks(array $dataSource)
-{
+{ 
     global $db, $stocks, $inventory, $invFields;
 
     $stocksTable = TableNames::stock;
