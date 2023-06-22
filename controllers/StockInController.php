@@ -113,7 +113,7 @@ function bindDataset()
         $stockLabel = $stockText;
 
         $actionButton = <<<BTN
-        <button type="button" class="btn btn-secondary fw-bold py-1 px-2 action-btn">Stock In</button>
+        <button type="button" class="btn btn-secondary fw-bold py-1 px-2 i-stockin-btn">Stock In</button>
         BTN; 
  
         // Sold out 
@@ -168,9 +168,11 @@ function bindDataset()
                 $icon = "assets/images/icons/icn_no_image.png";
         } 
  
+        // <td class="text-primary fw-bold fsz-12 text-truncate th-150">$itemCode</td>
+        // <div class="fsz-12 text-muted fst-italic text-truncate text-uppercase">$category</div>
         echo <<<TR
         <tr class="align-middle">
-            <td class="text-primary fw-bold fsz-12 text-truncate th-150">$itemCode</td>
+            <td class="text-primary fw-bold fsz-12 text-truncate text-uppercase th-150">$category</td>
             <td class="th-280 text-truncate">
                 <div class="d-flex align-items-center">
                     <div class="ms-0">
@@ -178,7 +180,6 @@ function bindDataset()
                     </div>
                     <div class="ms-auto flex-fill flex-column text-wrap d-flex text-truncate">
                         <div class="font-base fw-bold td-item-name text-truncate">$itemName</div>
-                        <div class="fsz-12 text-muted fst-italic text-truncate text-uppercase">$category</div>
                     </div>
                 </div>
             </td>

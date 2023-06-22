@@ -37,6 +37,7 @@ namespace Models
             $obj->amount        = "amount";
             $obj->reason        = "reason";
             $obj->dateCreated   = "date_created";
+            $obj->sku           = "sku";
         
             return $obj;
         }
@@ -123,7 +124,7 @@ namespace Models
 
             $this->db->query($sql);
         }
-
+  
         public function getRecordYear()
         {
             return $this->recordYear;

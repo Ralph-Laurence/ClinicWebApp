@@ -135,8 +135,10 @@ class Pages
     public const REGISTER_SUPPLIER    = "page.action-register-supplier.php";
     public const CREATE_USER          = "page.action-create-user.php";
     
-    public const STOCK_IN             = "page.action-stock-in.php";
-    public const STOCK_OUT            = "page.action-stock-out.php";
+    public const STOCK_IN             = "page.transaction-stock-in.php";
+    public const ACTION_STOCK_IN      = "page.action-stock-in.php";
+    public const STOCK_OUT            = "page.transaction-stock-out.php";
+    public const ACTION_STOCK_OUT     = "page.action-stock-out.php";
     public const WASTE                = "page.waste.php";
 
     public const EDIT_USER            = "page.action-edit-user.php";    

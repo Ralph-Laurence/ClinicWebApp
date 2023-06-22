@@ -26,6 +26,7 @@ namespace Models
             $obj->quantity      = "quantity";
             $obj->sku           = "sku";
             $obj->expiry_date   = "expiry_date"; 
+            $obj->dateCreated   = "date_created";
 
             return $obj;
         }      

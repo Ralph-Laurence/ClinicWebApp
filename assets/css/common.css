@@ -956,3 +956,13 @@
     width: 30px;
     display: none;
 }
+
+.stock-list-tr:hover td
+{
+    background-color: var(--blue-100) !important;
+}
+
+.stock-list-tr.active td
+{
+    background-color: var(--indigo-100) !important;
+}

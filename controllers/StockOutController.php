@@ -105,8 +105,11 @@ function bindDataset()
         $stockLabel = $stockText;
  
         $actionButton = <<< BTN
-        <button type="button" class="btn shadow-1-soft btn-light-red fw-bold py-1 px-2 action-btn">Stock Out</button>
+        <button type="button" class="btn shadow-1-soft btn-light-red fw-bold py-1 px-2 i-stockout-btn">Stock Out</button>
         BTN;
+        // $actionButton = <<< BTN
+        // <button type="button" class="btn shadow-1-soft btn-light-red fw-bold py-1 px-2 action-btn">Stock Out</button>
+        // BTN;
  
         // Sold out 
         if ($stock <= 0)
