@@ -141,7 +141,7 @@ require_once($rootCwd . "controllers/RegisterItemController.php");
 
                         <div class="d-flex align-items-center gap-3">
                             <div class="form-outline me-auto mb-3 flex-fill">
-                                <input type="text" name="expiry-date" class="form-control expiry-date bg-white" value="<?php //= loadLastInput(Fields::$birthDay) ?>" readonly required />
+                                <input type="text" name="expiry-date" class="form-control expiry-date bg-white" value="" readonly required />
                                 <label class="form-label" for="expiry-date">Expiry Date *</label>
                             </div>
                             <div class="form-check mb-2">
@@ -225,6 +225,7 @@ require_once($rootCwd . "controllers/RegisterItemController.php");
     <script src="assets/js/system.js"></script>
     <script src="assets/js/base-ui.js"></script>
     <script src="assets/js/page.action-register-item.js"></script>
+    <script src="assets/js/extension.action-register-item.js"></script>
 
     <script src="components/alert-dialog/alert-dialog.js"></script>
     <script src="components/confirm-dialog/confirm-dialog.js"></script>

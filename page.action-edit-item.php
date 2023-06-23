@@ -144,7 +144,7 @@ require_once($rootCwd . "controllers/EditItemController.php");
                             You can't change the current stock here. Head over to the <a class="text-decoration-underline fw-bold font-primary-dark" href="<?= Pages::RESTOCK ?>">'Restock'</a> page instead.
                         </div>
 
-                        <div class="d-flex align-items-center gap-3">
+                        <!-- <div class="d-flex align-items-center gap-3">
                             <div class="form-outline me-auto mb-3 flex-fill">
                                 <input type="text" name="expiry-date" class="form-control expiry-date bg-white" value="<?= loadExpiry() ?>" readonly required <?= hasExpiry() ? "" : "disabled" ?>/>
                                 <label class="form-label" for="expiry-date">Expiry Date *</label>
@@ -153,7 +153,7 @@ require_once($rootCwd . "controllers/EditItemController.php");
                                 <input class="form-check-input" type="checkbox" value="" name="no-expiry" id="chk-expiry" <?= hasExpiry() ? "" : "checked" ?>/>
                                 <label class="form-check-label fsz-14" for="chk-expiry">No Expiry</label>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                     <div class="col p-2"></div>
                 </div>

@@ -71,6 +71,7 @@ class Tasks
     public const DELETE_ITEM              = "tasks/delete-item.php";
     public const DELETE_ITEMS             = "tasks/delete-items.php";
     public const DISCARD_ITEM             = "tasks/discard-item.php";
+    public const DISCARD_STOCK            = "tasks/discard-stock.php";
 
     public const DELETE_WASTE_ITEM        = "tasks/delete-waste.php";
     public const DELETE_WASTE_RECORDS     = "tasks/delete-waste-records.php";

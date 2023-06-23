@@ -966,3 +966,25 @@
 {
     background-color: var(--indigo-100) !important;
 }
+
+.expired-filter
+{
+    background-color: var(--red-500) !important;
+    color: white !important;
+    cursor: pointer;
+}
+
+.expired-filter:hover
+{
+    background-color: #FFCDD2 !important;
+    color: var(--red-900) !important;
+}
+
+.expired-show-all { cursor: pointer; }
+
+.expired-show-all:hover
+{
+    border-color: #619BEE !important;
+    background-color: #e3ebf7;
+    color: #285192;
+}

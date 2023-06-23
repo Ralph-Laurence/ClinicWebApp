@@ -1,6 +1,7 @@
 <?php
 
 use Models\Item;
+use Models\Stock;
 
 @session_start();
 
@@ -13,6 +14,7 @@ require_once($rootCwd . "includes/utils.php");
 require_once($rootCwd . "includes/urls.php");
 
 require_once($rootCwd . "models/Item.php");
+require_once($rootCwd . "models/Stock.php");
 
 require_once($rootCwd . "includes/Auth.php");
 require_once($rootCwd . "includes/Security.php");
@@ -25,18 +27,40 @@ $security = new Security();
 $security->requirePermission(Chmod::PK_INVENTORY, Chmod::FLAG_WRITE);
 $security->checkAccess(Chmod::PK_INVENTORY, UserAuth::getId());
 
-$db = new DbHelper($pdo);
-$items = new Item($db);
-$itemFields = Item::getFields();
+$db             = new DbHelper($pdo);
+$items          = new Item($db);
+$itemFields     = Item::getFields();
 
-$totalSoldout = 0;
-$totalCritical = 0;
-$totalExpired = 0;
+$totalSoldout   = 0;
+$totalCritical  = 0;
+$totalExpired   = 0;
 $totalMedicines = 0;
 
 try
 { 
     $dataset = $items->showAll();
+
+    $stockFields = Stock::getFields();
+    $stox = TableNames::stock;
+
+    // Tell if an item has expired stocks
+    // Collect item IDs and store them here
+    $stmt_expired_stox = $db->getInstance()->prepare
+    (
+        "SELECT $stockFields->item_id FROM $stox WHERE $stockFields->expiry_date <= CURRENT_DATE GROUP BY $stockFields->item_id;"
+    );
+    $stmt_expired_stox->execute();
+    
+    //$res_expiredStocks = $stmt_expired_stox->fetchAll(PDO::FETCH_ASSOC);
+    $expiredStocks = [];
+
+    while($row = $stmt_expired_stox->fetch(PDO::FETCH_ASSOC))
+    { 
+        $expiredStocks[] = $row[$stockFields->item_id];
+    }
+
+    $totalExpired = count($expiredStocks);
+
     //dump($dataset);
     $totalMedicines   = count($dataset);
 }
@@ -49,7 +73,7 @@ catch (Exception $ex)
 // Bind the dataset's rows into the UI table
 function bindDataset()
 {  
-    global $dataset, $itemFields, $security, $totalCritical, $totalSoldout, $totalExpired;
+    global $dataset, $itemFields, $security, $totalCritical, $totalSoldout, $expiredStocks;
 
     if (empty($dataset))
         return;
@@ -61,6 +85,8 @@ function bindDataset()
 
     foreach ($dataset as $obj) 
     {  
+        $id_raw = $obj[$itemFields->id];
+
         $critical   = $obj[$itemFields->criticalLevel];
         $stock      = $obj[$itemFields->remaining];
 
@@ -68,12 +94,23 @@ function bindDataset()
             continue;
 
         // Expired
-        if ($filter == 'x')
-        {
-            if (empty($obj['expiryDate']))
-                continue;
+        // if ($filter == 'x')
+        // {
+        //     if (empty($obj['expiryDate']))
+        //         continue;
 
-            $isExpired = (strtotime(date('Y-m-d')) > strtotime($obj['expiryDate']));
+        //     $isExpired = (strtotime(date('Y-m-d')) > strtotime($obj['expiryDate']));
+
+        //     if ($isExpired && $stock == 0)
+        //         continue;
+
+        //     if (!$isExpired)
+        //         continue;
+        // }
+        // Expired
+        if ($filter == 'x')
+        { 
+            $isExpired = in_array($id_raw, $expiredStocks);
 
             if ($isExpired && $stock == 0)
                 continue;
@@ -131,28 +168,41 @@ function bindDataset()
         }
 
         // Expired
-        if (Dates::isPast($obj['expiryDate']))
-        { 
-            if ($stock > 0)
-            {
-                $stockLabel = <<<DIV
-                <div class="stock-label stock-label-expired" data-mdb-toggle="tooltip" data-mdb-html="true" data-mdb-placement="top" title="<span class='tooltip-title tooltip-title-amber'>Expired</span><br>$stock $units are no longer safe to use and must be discarded.">
-                    <i class="fas fa-info-circle me-1"></i>
-                    Expired
-                    <span class="expired-stock-units d-none">$stock $units</span>
-                </div>
-                DIV;
+        // if (Dates::isPast($obj['expiryDate']))
+        // { 
+        //     if ($stock > 0)
+        //     {
+        //         $stockLabel = <<<DIV
+        //         <div class="stock-label stock-label-expired" data-mdb-toggle="tooltip" data-mdb-html="true" data-mdb-placement="top" title="<span class='tooltip-title tooltip-title-amber'>Expired</span><br>$stock $units are no longer safe to use and must be discarded.">
+        //             <i class="fas fa-info-circle me-1"></i>
+        //             Expired
+        //             <span class="expired-stock-units d-none">$stock $units</span>
+        //         </div>
+        //         DIV;
 
-                $actionButton = <<<BTN
-                <button type="button" class="btn btn-secondary bg-red text-white fw-bold py-1 px-2 discard-btn">Discard</button>
-                BTN; 
+        //         $actionButton = <<<BTN
+        //         <button type="button" class="btn btn-secondary bg-red text-white fw-bold py-1 px-2 discard-btn">Discard</button>
+        //         BTN; 
 
-                $totalExpired++;
-            } 
-            else if ($stock == 0)
-            {
-                $collectExpiredIds[] = $obj[$itemFields->id];
-            }
+        //         $totalExpired++;
+        //     } 
+        //     else if ($stock == 0)
+        //     {
+        //         $collectExpiredIds[] = $obj[$itemFields->id];
+        //     }
+        // }
+        if (in_array($id_raw, $expiredStocks))
+        {
+            $stockLabel = <<<DIV
+            <div class="stock-label stock-label-expired" data-mdb-toggle="tooltip" data-mdb-html="true" data-mdb-placement="top" title="<span class='tooltip-title tooltip-title-amber'>Expired</span><br>There are stocks that are no longer safe to use and must be discarded.">
+                <i class="fas fa-info-circle me-1"></i>
+                Expired
+            </div>
+            DIV;
+
+            $actionButton = <<<BTN
+            <button type="button" class="btn btn-secondary bg-red text-white fw-bold py-1 px-2 i-discard-btn">Discard</button>
+            BTN; 
         }
         
         $image = $obj[$itemFields->itemImage];

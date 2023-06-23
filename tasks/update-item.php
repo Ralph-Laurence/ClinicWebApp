@@ -76,15 +76,15 @@ foreach (array_values($data) as $v)
 $data[$fields->remarks] = $_POST['description']     ?? "";
 $supplierLabel          = $_POST['supplier-label']  ?? "";
 $supplierKey            = $_POST['supplier-key']    ?? "";
-$expiryDate             = $_POST['expiry-date']     ?? "";
+// $expiryDate             = $_POST['expiry-date']     ?? "";
  
-if (!empty($expiryDate) && ( Dates::isPast($expiryDate) || (Dates::toString($expiryDate) == Dates::dateToday()) ))
-{
-    writeError("Expiration date should NOT be a past date or equal to the current date.");
-    exit;
-} 
+// if (!empty($expiryDate) && ( Dates::isPast($expiryDate) || (Dates::toString($expiryDate) == Dates::dateToday()) ))
+// {
+//     writeError("Expiration date should NOT be a past date or equal to the current date.");
+//     exit;
+// } 
 
-$data[$fields->expiryDate] = $expiryDate; 
+//$data[$fields->expiryDate] = $expiryDate; 
 
 try
 {

@@ -92,10 +92,10 @@
                         </div>
                         <div class="input-group mb-2">
                             <span class="input-group-text input-group-text-bg" id="basic-addon2" style="width: 100px; max-width: 100px;">Amount</span>
-                            <input type="text" class="form-control input-qty numeric initial-lock" name="qty" aria-describedby="basic-addon2" required maxlength="5" disabled/>
+                            <input type="text" class="form-control input-qty numeric initial-lock" name="qty" aria-describedby="basic-addon2" required maxlength="5" disabled />
                             <div class="input-group-text">
                                 <div class="form-check">
-                                    <input class="form-check-input initial-lock" type="checkbox" value="" id="check-all-qty" disabled/>
+                                    <input class="form-check-input initial-lock" type="checkbox" value="" id="check-all-qty" disabled />
                                     <label class="form-check-label" for="check-all-qty">All</label>
                                 </div>
                             </div>
@@ -103,7 +103,7 @@
                         <div class="input-group mb-2">
                             <div class="input-group-text" id="basic-addon2">
                                 <div class="form-check">
-                                    <input class="form-check-input initial-lock" type="checkbox" value="" id="check-disposal" disabled/>
+                                    <input class="form-check-input initial-lock" type="checkbox" value="" id="check-disposal" disabled />
                                     <label class="form-check-label" for="check-disposal">Dispose</label>
                                 </div>
                             </div>
@@ -113,7 +113,7 @@
                             </select>
                         </div>
                         <div class="help-wrapper">
-                            <small class="text-primary fst-italic">
+                            <small class="text-primary fst-italic" data-mdb-toggle="modal" data-mdb-target="#helpModal">
                                 <i class="fas fa-question-circle"></i>
                                 Help
                             </small>
@@ -128,6 +128,60 @@
                         <input type="hidden" name="input-stock-key" class="input-stock-key" value="">
                         <textarea name="payload" class="d-none payload"></textarea>
                     </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="helpModal" tabindex="-1" aria-labelledby="helpModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header py-2">
+                    <h6 class="modal-title" id="helpModalLabel">
+                        <i class="fas fa-question-circle text-primary"></i>
+                        Help
+                    </h6>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted">
+                        The "Stocks list" shows all stocks of the current item.
+                    </p>
+                    <ul class="list-unstyled">
+                        <li class="mb-1"><i class="fas fa-dot-circle me-2 text-primary"></i><span class="font-base">Click on each row item from the list.</span><br> 
+                            <ul class="list-unstyled ms-5">
+                                <li class="mb-1">
+                                    <i class="fas fa-chevron-right me-2 text-primary"></i><span class="text-muted">Note: You cannot restock an expired stock</span>
+                                </li>
+                                <li class="mb-1">
+                                    <i class="fas fa-chevron-right me-2 text-primary"></i><span class="text-muted">Upon selecting, the selected stock will be loaded into "Pull out stock" tab.</span>
+                                </li> 
+                            </ul> 
+                        </li>
+                        <li class="mb-1"><i class="fas fa-dot-circle me-2 text-primary"></i><span class="font-base">Enter the desired amount from the "Pull out stock" tab.</span>
+                            <ul class="list-unstyled ms-5">
+                                <li class="mb-1">
+                                    <i class="fas fa-chevron-right me-2 text-primary"></i><span class="text-muted">To pullout the entire amount, click on "All"</span>
+                                </li>
+                                <li class="mb-1">
+                                    <i class="fas fa-chevron-right me-2 text-primary"></i><span class="text-muted">To dispose of the stock with given a amount, click on "Dispose". (optional)</span>
+                                </li>
+                                <li class="mb-1">
+                                    <i class="fas fa-chevron-right me-2 text-primary"></i><span class="text-muted">Then select a reason for disposal.</span>
+                                </li>
+                            </ul> 
+                        </li>
+                        <li class="mb-1"><i class="fas fa-dot-circle me-2 text-primary"></i><span class="font-base">Click "Save" to apply your changes.</span><br>
+                            <ul class="list-unstyled ms-5">
+                                <li class="mb-1">
+                                    <i class="fas fa-chevron-right me-2 text-primary"></i><span class="text-muted">If you disposed a stock, you can view it in "Waste" page.</span>
+                                </li> 
+                            </ul> 
+                        </li>
+                    </ul>
+                </div>
+                <div class="modal-footer py-2">
+                    <button type="button" class="btn btn-base btn-secondary" data-mdb-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>

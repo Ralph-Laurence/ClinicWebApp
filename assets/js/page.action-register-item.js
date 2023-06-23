@@ -13,8 +13,6 @@ var isResetUnits = false;
 var lastSupplierLabel = "";
 var isResetSupplier = false;
 
-var expiryDate = undefined;
-
 // the required fields
 let validation = 
 [
@@ -40,12 +38,6 @@ function onAwake()
 
     errorBox = $(".error-message");
     errorLabel = $(".error-label");
-
-    expiryDate = $(".expiry-date").datepicker({
-        changeMonth: true,
-        changeYear: true,
-        yearRange: 'c:c+5'
-    });  
 
     $("#icn-category").val( $("#category-icon").attr('src') );
 
@@ -113,21 +105,6 @@ function onBind()
     // Preview the uploaded image
     $("#item-image").on('change', () => getImgData());
 
-    // Date picker for expiry date
-    $(".expiry-date").on("change", function() {
-        $(this).focus().blur();
-    });
-
-    $("#chk-expiry").change(function () 
-    {
-        var isChecked = $(this).is(":checked");
-        
-        if (!isChecked)
-            $(".expiry-date").prop('disabled', false).focus();
-        else 
-            $(".expiry-date").val('').blur().prop('disabled', true);
-    });
-
     $("#findCategoryModal").on("show.mdb.modal", function()
     { 
         if ($(".categories-tbody tr").length < 1)
@@ -174,19 +151,20 @@ function handleSubmit()
             return;
         }
     }
-
+ 
     // Expiry Date
-    if ( !($("#chk-expiry").is(":checked")) )
+    if ($("#chk-expiry").length > 0 && $(".expiry-date").length > 0)
     {
-        var expiry = $(".expiry-date");
-
-        if ( System.isNullOrEmpty(expiry.val()) )
-        {  
-            focusOnError("Please select an expiration date!", expiry);
-            return;
+        if (!($("#chk-expiry").is(":checked"))) {
+            var expiry = $(".expiry-date");
+    
+            if (System.isNullOrEmpty(expiry.val())) {
+                focusOnError("Please select an expiration date!", expiry);
+                return;
+            }
         }
     }
- 
+
     $("#register-form").trigger("submit");
     $(".btn-save").prop('disabled', true);
 }

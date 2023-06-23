@@ -59,37 +59,39 @@ require_once($rootCwd . "controllers/ItemDetailsController.php");
                                                 <i class="fas fa-info-circle me-1"></i>
                                                 <?= loadDescription() ?>
                                             </div>
-                                            <div class="fsz-14 d-flex flex-row align-items-center">
-                                                <div class="ms-0" style="width: 80px;">Item Code:</div>
-                                                <div class="text-muted flex-fill text-wrap ms-1"><?= loadItemCode() ?></div> 
-                                            </div> 
+                                             
                                             <div class="fsz-14 mb-2 d-flex flex-row align-items-center">
                                                 <div class="ms-0" style="width: 80px;">Supplier:</div>
-                                                <div class="text-muted flex-fill text-wrap ms-1"><?= loadSupplier() ?></div> 
+                                                <div class="text-muted flex-fill text-wrap font-base ms-1 me-auto"><?= loadSupplier() ?></div> 
+                                                <?php loadCondition() ?> 
                                             </div> 
-                                            <hr class="hr my-3">
-                                            <h6>Stock Details</h6>
-                                            <div class="d-flex align-items-center flex-row gap-2">
-                                                <div class="input-group mb-3">
-                                                    <span class="input-group-text" >Stock</span>
-                                                    <span class="input-group-text stock-amount-text"><?= loadStock() ?></span>
-                                                </div>
-                                                <div class="input-group mb-3">
-                                                    <span class="input-group-text fsz-12">Restock At</span>
-                                                    <span class="input-group-text" ><?= loadReserve() ?></span>
-                                                </div> 
+                                            <hr class="hr my-2">
+                                            <div class="d-flex gap-3">
+                                                <h6 class="rounded-7 px-2 py-1 border border-control-2">Stock Details</h6>
+                                                <h6 class="rounded-7 px-2 py-1 border border-control-2">
+                                                    <span class="text-primary"><?= loadStock() ?>(s)</span><span class="text-muted ms-1">Total</span>
+                                                </h6>
+                                                <h6 class="rounded-7 px-2 py-1 border border-control-2">
+                                                    <span class="text-primary"><?= loadReserve() ?>(s)</span><span class="text-muted ms-1">Reserved</span>
+                                                </h6>
                                             </div>
                                             <div class="d-flex align-items-center flex-row gap-2">
-                                                <div class="input-group mb-3">
-                                                    <span class="input-group-text" >Status</span>
-                                                    <?= loadStatus() ?>
-                                                </div>
-                                                <div class="input-group mb-3">
-                                                    <span class="input-group-text">Expiry</span>
-                                                    <span class="input-group-text"><?= loadExpiry() ?></span>
-                                                </div> 
+                                                <table class="table table-striped table-hover table-fixed">
+                                                    <thead>
+                                                        <tr> 
+                                                            <td class="fw-bold" style="width: 20%;">Entry Date</td>
+                                                            <td class="fw-bold" style="width: 30%">Stock Code</td>
+                                                            <td class="fw-bold" style="width: 10%">Quantity</td>
+                                                            <td class="fw-bold" style="width: 20%">Expiry Date</td> 
+                                                            <td class="fw-bold" style="width: 15%">Action</td> 
+                                                            <td class="d-none"></td> 
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody class="stocks-dataset-body">
+                                                        <?php loadStocks() ?>
+                                                    </tbody>
+                                                </table> 
                                             </div>
-                                            <?= loadExpireMessage(); ?>
                                         </div>
                                     </div>
                                 </div>
@@ -99,7 +101,7 @@ require_once($rootCwd . "controllers/ItemDetailsController.php");
                     </div>
                 </div>
 
-                <div class="col-3"></div>
+                <div class="col-1"></div>
 
             </div>
 
@@ -108,13 +110,23 @@ require_once($rootCwd . "controllers/ItemDetailsController.php");
     <form action="<?= Pages::EDIT_ITEM ?>" method="POST" class="frm-edit d-none">
         <input type="text" name="item-key" class="item-key" value="<?= $itemKey ?>">
     </form>
-    <form action="<?= Tasks::DISCARD_ITEM ?>" method="post" class="frm-discard d-none">
+    <form action="<?= Tasks::DISCARD_STOCK ?>" method="post" class="frm-discard d-none">
+        <input type="text" name="item-key" class="item-key" value="<?= $itemKey ?>">
+        <input type="text" name="stock-key" class="stock-key" value="">
+        <input type="text" name="sender-key" value="<?= setSenderKey() ?>">
+    </form>
+    <textarea class="success-msg d-none"><?= getSuccessMessage(); ?></textarea>
+    <!-- <form action="<?php //= Tasks::DISCARD_ITEM ?>" method="post" class="frm-discard d-none">
         <input type="text" name="item-key" class="item-key" value="<?= $itemKey ?>">
         <input type="text" name="sender-key" value="<?= setSenderKey() ?>">
+    </form> -->
+    <form action="<?= Pages::ITEM_DETAILS ?>" class="frm-details d-none" method="POST">
+        <input type="text" name="details-key" id="details-key" value="<?= getItemKey() ?>">
+        <input type="text" name="filter" id="filter">
     </form>
     <?php
     $masterPage->endWorkarea(); //END WORKAREA LAYOUT 
-    $masterPage->includeDialogs(true, true, false, false);
+    $masterPage->includeDialogs(true, true, true, false);
     ?>
 
     <!--SCRIPTS-->
@@ -133,6 +145,7 @@ require_once($rootCwd . "controllers/ItemDetailsController.php");
 
     <script src="components/alert-dialog/alert-dialog.js"></script> 
     <script src="components/confirm-dialog/confirm-dialog.js"></script> 
+    <script src="components/snackbar/snackbar.js"></script> 
 
 </body>
 

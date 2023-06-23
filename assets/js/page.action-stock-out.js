@@ -93,6 +93,20 @@ function onBind()
             $(".frm-stockout").trigger("submit");
         }
     }); 
+
+    // Amount input should not go more than the maximum
+    $(".input-qty").on('input', function()
+    {  
+        var maxValue = parseInt($(this).attr('data-total-qty'), 10);
+        var minValue = 1;
+
+        if ($(this).val() > maxValue) {
+            $(this).val(maxValue);
+        }
+        else if ($(this).val() < minValue) {
+            $(this).val(minValue);
+        }
+    });
 }
 
 function validate()

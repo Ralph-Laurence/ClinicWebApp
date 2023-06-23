@@ -12,6 +12,7 @@ require_once($rootCwd . "includes/utils.php");
 require_once($rootCwd . "library/semiorbit-guid.php");  
 
 require_once($rootCwd . "models/Item.php");
+require_once($rootCwd . "models/Stock.php");
 
 require_once($rootCwd . "includes/Auth.php");
 require_once($rootCwd . "includes/Security.php");
@@ -20,7 +21,8 @@ require_once($rootCwd . "errors/IError.php");
 require_once($rootCwd . "MasterLayout.php");
 require_once($rootCwd . "layout-header.php");
 
-use Models\Item; 
+use Models\Item;
+use Models\Stock;
 
 $security   = new Security();
 $security->requirePermission(Chmod::PK_INVENTORY, Chmod::FLAG_READ);
@@ -38,6 +40,28 @@ $totalSoldout   = 0;
 try 
 {
     $dataset = $items->showAll();
+
+    $stockFields = Stock::getFields();
+    $stox = TableNames::stock;
+
+    // Tell if an item has expired stocks
+    // Collect item IDs and store them here
+    $stmt_expired_stox = $db->getInstance()->prepare
+    (
+        "SELECT $stockFields->item_id FROM $stox WHERE $stockFields->expiry_date <= CURRENT_DATE GROUP BY $stockFields->item_id;"
+    );
+    $stmt_expired_stox->execute();
+    
+    //$res_expiredStocks = $stmt_expired_stox->fetchAll(PDO::FETCH_ASSOC);
+    $expiredStocks = [];
+
+    while($row = $stmt_expired_stox->fetch(PDO::FETCH_ASSOC))
+    { 
+        $expiredStocks[] = $row[$stockFields->item_id];
+    }
+
+    $totalExpired = count($expiredStocks);
+    // dump(in_array(48, $expiredStocks)); exit;
  
     $totalMedicines = count($dataset);
 } 
@@ -78,7 +102,7 @@ function getErrorMessage()
 
 function bindDataset()
 {
-    global $dataset, $itemFields, $security, $items, $totalCritical, $totalSoldout, $totalExpired;
+    global $dataset, $itemFields, $security, $items, $totalCritical, $totalSoldout, $expiredStocks;
 
     if (empty($dataset))
         return;
@@ -87,9 +111,11 @@ function bindDataset()
     $query  = getFilter()['query'];
 
     $collectExpiredIds = [];
-    
+ 
     foreach ($dataset as $obj) 
     {
+        $id_raw = $obj[$itemFields->id];
+
         $critical  = $obj[$itemFields->criticalLevel];
         $remaining = $obj[$itemFields->remaining];
 
@@ -98,11 +124,8 @@ function bindDataset()
 
         // Expired
         if ($filter == 'x')
-        {
-            if (empty($obj['expiryDate']))
-                continue;
-
-            $isExpired = (strtotime(date('Y-m-d')) > strtotime($obj['expiryDate']));
+        { 
+            $isExpired = in_array($id_raw, $expiredStocks);
 
             if ($isExpired && $remaining == 0)
                 continue;
@@ -152,23 +175,14 @@ function bindDataset()
         }
 
         // Expired
-        if (Dates::isPast($obj['expiryDate']))
-        { 
-            if ($remaining > 0)
-            {
-                $stockLabel = <<<DIV
-                <div class="stock-label stock-label-expired" data-mdb-toggle="tooltip" data-mdb-html="true" data-mdb-placement="top" title="<span class='tooltip-title tooltip-title-amber'>Expired</span><br>$stock are no longer safe to use and must be discarded.">
+        if (in_array($id_raw, $expiredStocks))
+        {
+            $stockLabel = <<<DIV
+                <div class="stock-label stock-label-expired" data-mdb-toggle="tooltip" data-mdb-html="true" data-mdb-placement="top" title="<span class='tooltip-title tooltip-title-amber'>Expired</span><br>There are stocks that are no longer safe to use and must be discarded.">
                     <i class="fas fa-info-circle me-1"></i>
                     Expired
                 </div>
                 DIV;
-
-                $totalExpired++;
-            } 
-            else if ($remaining == 0)
-            {
-                $collectExpiredIds[] = $obj[$itemFields->id];
-            }
         }
  
         $image = $obj[$itemFields->itemImage];

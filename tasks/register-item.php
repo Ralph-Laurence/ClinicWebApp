@@ -17,12 +17,14 @@ require_once($rootCwd . "includes/Security.php");
 
 require_once($rootCwd . "errors/IError.php");
 require_once($rootCwd . "models/Item.php");
+require_once($rootCwd . "models/Stock.php");
 require_once($rootCwd . "models/Category.php");
 require_once($rootCwd . "models/UnitMeasure.php");
 require_once($rootCwd . "models/Supplier.php");
 
 use Models\Category;
 use Models\Item;
+use Models\Stock;
 use Models\Supplier;
 use Models\UnitMeasure;
 use SemiorbitGuid\Guid;
@@ -38,6 +40,8 @@ $fields = Item::getFields();
 $supplierTable = TableNames::suppliers;
 $categoryTable = TableNames::categories;
 $unitsTable    = TableNames::unit_measures;
+$stocksTable   = TableNames::stock;
+$stockFields   = Stock::getFields();
 
 // Required Data
 $data = 
@@ -67,6 +71,12 @@ foreach (array_values($data) as $v)
     }
 }
 
+$stocksData = 
+[
+    $stockFields->sku       => $data[$fields->itemCode],
+    $stockFields->quantity  => $data[$fields->remaining]
+];
+ 
 // Optional Data 
 $data[$fields->remarks] = $_POST['description']     ?? "";
 $supplierLabel          = $_POST['supplier-label']  ?? "";
@@ -91,7 +101,8 @@ if (empty($noExpiry))
         return;
     }
 
-    $data[$fields->expiryDate] = $expiryDate;
+    //$data[$fields->expiryDate] = $expiryDate;
+    $stocksData[$stockFields->expiry_date] = date("Y-m-d", strtotime($expiryDate));
 }
     
 try
@@ -173,6 +184,13 @@ try
     // Save all data to the database
     $db->insert(TableNames::inventory, $data);
 
+    $lastId = $db->getInstance()->lastInsertId();
+
+    $stocksData[$stockFields->item_id] = $lastId;
+
+    // save the stock
+    $db->insert(TableNames::stock, $stocksData);
+
     Response::Redirect( (ENV_SITE_ROOT . Pages::MEDICINE_INVENTORY),
         Response::Code200, 
         "An item was successfully added.",
@@ -182,7 +200,9 @@ try
 }
 catch (\Exception $ex) 
 { 
-    $error = $ex->getMessage();
+    echo $ex->getMessage(); exit;
+
+    $error = $ex->getMessage(); 
     
     // cacheLastInputs($data);
  
