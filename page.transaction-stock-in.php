@@ -230,10 +230,20 @@
         <input type="text" name="item-key" id="item-key">  
     </form> 
 
-    <form action="<?= Tasks::DISCARD_ITEM ?>" method="post" class="frm-discard d-none">
+    <!-- <form action="<?php //= Tasks::DISCARD_ITEM ?>" method="post" class="frm-discard d-none">
         <input type="text" name="item-key" class="item-key">
-        <input type="text" name="sender-key" value="<?= setSenderKey() ?>">
+        <input type="text" name="sender-key" value="<?php //= setSenderKey() ?>">
+    </form> -->
+
+    <form action="<?= Pages::ITEM_DETAILS ?>" class="frm-discard-details d-none" method="POST">
+        <input type="text" name="details-key" id="details-key" value=""> 
+        <input type="text" name="filter" id="filter" value="x">
     </form>
+
+    <!-- <form action="<?php //= Tasks::DISCARD_ITEM ?>" method="post" class="frm-discard d-none">
+        <input type="text" name="item-key" class="item-key">
+        <input type="text" name="sender-key" value="<?php //= setSenderKey() ?>">
+    </form> -->
 
     <div class="d-none">
         <textarea class="server-response"><?php getSuccessMessage(); ?></textarea>

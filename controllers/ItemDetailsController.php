@@ -37,7 +37,7 @@ $inventory = new Item($db);
 $goBack = (ENV_SITE_ROOT . Pages::MEDICINE_INVENTORY);
 
 $itemKey = $_POST['details-key'] ?? "";
-
+ 
 if (isset($_SESSION['item-details-key']))
 {
     $itemKey = $_SESSION['item-details-key'];
@@ -62,7 +62,7 @@ try
 
     if (isset($_POST['filter']) && $_POST['filter'] == 'x')
     {
-        $filterShowExpired = " AND $stockFields->expiry_date <= CURRENT_DATE";
+        $filterShowExpired = " AND $stockFields->expiry_date <= CURRENT_DATE  AND $stockFields->quantity > 0";
     }
 
     $stmt_load_stox = $db->getInstance()->prepare
@@ -258,7 +258,7 @@ function setSenderKey()
 
 function loadCondition()
 {
-    global $stocksDataset, $stockFields, $dataset; 
+    global $stocksDataset, $stockFields, $dataset, $filterShowExpired; 
 
     $reserve = $dataset['reserve'];
     $remaining = $dataset['stock'];
@@ -268,7 +268,7 @@ function loadCondition()
 
     foreach($stocksDataset as $row)
     {
-        if (Dates::isPast($row[$stockFields->expiry_date]))
+        if (Dates::isPast($row[$stockFields->expiry_date]) && !empty($row[$stockFields->quantity]))
         {
             $status = 2;
             break;
@@ -302,11 +302,17 @@ function loadCondition()
                 <i class="fas fa-exclamation-triangle fs-6"></i>
                 <div class="fs-6 ms-2">Item has expired stocks</div>
             </div>
-            <div class="ms-3 py-1 px-2 border border-2 rounded-7 expired-show-all">
-                <i class="fas fa-undo me-1"></i>
-                Show All
-            </div>
             FAS;
+
+            if (!empty($filterShowExpired))
+            {
+                echo <<<DIV
+                <div class="ms-3 py-1 px-2 border border-2 rounded-7 expired-show-all">
+                    <i class="fas fa-undo me-1"></i>
+                    Show All
+                </div>
+                DIV;
+            }
             break;
     } 
 }
@@ -316,19 +322,61 @@ function loadStocks()
     global $stocksDataset, $stockFields, $dataset, $security;
 
     foreach($stocksDataset as $row)
-    {
+    { 
+        $stockKey = $security->Encrypt($row[$stockFields->id]);
+
         $sku = $row[$stockFields->sku];
         $qty = $row[$stockFields->quantity];
         $date = Dates::toString($row[$stockFields->dateCreated], "M. d, Y");
         $expiry = !empty($row[$stockFields->expiry_date]) ? Dates::toString($row[$stockFields->expiry_date], "M. d, Y") : "None";
-        
+
+        $strikeThrough = "";
+        $mutedRow = "muted-row";
+ 
         $action = <<<BTN
-        <button type="button" class="btn btn-edit-expiry px-2 py-1 rounded-5 btn-secondary">Edit</button>
+        <div class="btn-group dropup">
+            <button type="button" class="btn btn-edit-expiry px-2 py-1 rounded-5 btn-secondary dropdown-toggle" 
+              data-mdb-toggle="dropdown" data-mdb-auto-close="false" aria-expanded="false">
+              Edit
+            </button>
+            <div class="dropdown-menu shadow p-3 border" style="width: 300px;">
+                <div class="d-flex align-items-center">
+                    <h6 class="mb-0 font-primary-dark">
+                        <i class="fas fa-calendar-times font-red me-2"></i>
+                        Change expiration date
+                    </h6>
+                    <div class="i-close-expiry-menu align-items-center justify-content-center d-flex rounded-circle border ms-auto" style="width: 26px; height: 26px;">
+                        <i class="fas fa-times"></i>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <div class="form-outline mb-2">
+                        <input type="text" class="form-control i-date-picker" placeholder="Select expiry date" readonly/>
+                    </div>
+                    <div class="text-muted fs-12 edit-expiry-warning display-none">
+                        <div class="my-1">Are you sure you want to change the expiration date of the stock <span class="fw-bold font-primary-dark">"$sku"</span>?</div>
+                        <div class="bg-amber-300 p-2 rounded-4 font-brown mb-2">
+                            <i class="fas fa-exclamation-triangle me-1"></i>
+                            Please note that providing an incorrect expiration date 
+                            may result in inaccurate inventory tracking and could compromise the safety of patients.
+                        </div>
+                        <div class="text-end">
+                            <button type="button" class="btn btn-close-expiry btn-sm btn-secondary">Cancel</button>
+                            <button type="button" class="btn btn-save-expiry btn-base btn-sm btn-primary" data-target-stock="$stockKey" disabled>Save</button>
+                        </div>
+                    </div>
+                    <div class="text-muted fs-12 edit-expiry-error display-none">
+                        <div class="bg-red-light p-2 rounded-4 font-red-dark mb-2">
+                            <i class="fas fa-exclamation-triangle me-1"></i>
+                            Expiry date must NOT be a past date or equal to today's date.
+                        </div>
+                    </div>
+                </div> 
+            </div>
+        </div>
         BTN;
 
-        $totalQty = $qty." ".$dataset['measurement'];
-
-        if (Dates::isPast($row[$stockFields->expiry_date]))
+        if (Dates::isPast($row[$stockFields->expiry_date]) && !empty($qty))
         {
             $expiry = <<<SPAN
             <span class="bg-red text-white rounded-5 px-2 py-1">Expired</span>
@@ -336,17 +384,31 @@ function loadStocks()
 
             $action = <<<BTN
             <button type="button" class="btn btn-discard px-2 py-1 rounded-5 bg-red-light font-red-dark">Discard</button>
-            BTN;
+            BTN; 
+        } 
+
+        if (empty($qty))
+        {
+            $action = "";
+            $strikeThrough = <<<P
+            class='text-decoration-line-through'
+            P;
+
+            $mutedRow = <<<I
+            class='muted-row'
+            I;
         }
 
-        $stockKey = $security->Encrypt($row[$stockFields->id]);
+        $totalQty = $qty." ".$dataset['measurement'];
 
         echo <<<TR
-        <tr>
+        <tr $mutedRow>
             <td>$date</td>
             <td class="item-sku">$sku</td>
             <td>$qty</td>
-            <td>$expiry</td>
+            <td>
+                <p $strikeThrough>$expiry</p>
+            </td>
             <td>$action</td>
             <td class="d-none">
                 <input type="text" class="item-qty" value="$totalQty" />
@@ -361,10 +423,23 @@ function getSuccessMessage()
 {
     $message = "";
 
-    if (isset($_SESSION['discard-action-success']))
+    if (isset($_SESSION['view-item-action-success']))
     {
-        $message = $_SESSION['discard-action-success'];
-        unset($_SESSION['discard-action-success']);
+        $message = $_SESSION['view-item-action-success'];
+        unset($_SESSION['view-item-action-success']);
+    }
+
+    echo $message;
+}
+
+function getErrorMessage()
+{
+    $message = "";
+
+    if (isset($_SESSION['view-item-action-error']))
+    {
+        $message = $_SESSION['view-item-action-error'];
+        unset($_SESSION['view-item-action-error']);
     }
 
     echo $message;

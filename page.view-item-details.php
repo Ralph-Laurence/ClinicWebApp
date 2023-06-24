@@ -62,7 +62,7 @@ require_once($rootCwd . "controllers/ItemDetailsController.php");
                                              
                                             <div class="fsz-14 mb-2 d-flex flex-row align-items-center">
                                                 <div class="ms-0" style="width: 80px;">Supplier:</div>
-                                                <div class="text-muted flex-fill text-wrap font-base ms-1 me-auto"><?= loadSupplier() ?></div> 
+                                                <div class="text-muted flex-fill text-wrap font-base ms-1 me-auto w-25"><?= loadSupplier() ?></div> 
                                                 <?php loadCondition() ?> 
                                             </div> 
                                             <hr class="hr my-2">
@@ -107,6 +107,11 @@ require_once($rootCwd . "controllers/ItemDetailsController.php");
 
         </div>
     </div>
+    <form action="<?= Tasks::UPDATE_STOCK_EXPIRY ?>" method="POST" class="frm-edit-expiry d-none">
+        <input type="text" name="item-key" class="item-key" value="<?= $itemKey ?>">
+        <input type="text" name="stock-key" class="stock-key" value="">
+        <input type="text" name="new-expiry" class="new-expiry" value="">
+    </form>
     <form action="<?= Pages::EDIT_ITEM ?>" method="POST" class="frm-edit d-none">
         <input type="text" name="item-key" class="item-key" value="<?= $itemKey ?>">
     </form>
@@ -115,10 +120,11 @@ require_once($rootCwd . "controllers/ItemDetailsController.php");
         <input type="text" name="stock-key" class="stock-key" value="">
         <input type="text" name="sender-key" value="<?= setSenderKey() ?>">
     </form>
-    <textarea class="success-msg d-none"><?= getSuccessMessage(); ?></textarea>
+    <textarea class="success-message d-none"><?= getSuccessMessage(); ?></textarea>
+    <textarea class="error-message d-none"><?= getErrorMessage(); ?></textarea>
     <!-- <form action="<?php //= Tasks::DISCARD_ITEM ?>" method="post" class="frm-discard d-none">
-        <input type="text" name="item-key" class="item-key" value="<?= $itemKey ?>">
-        <input type="text" name="sender-key" value="<?= setSenderKey() ?>">
+        <input type="text" name="item-key" class="item-key" value="<?php //= $itemKey ?>">
+        <input type="text" name="sender-key" value="<?php //= setSenderKey() ?>">
     </form> -->
     <form action="<?= Pages::ITEM_DETAILS ?>" class="frm-details d-none" method="POST">
         <input type="text" name="details-key" id="details-key" value="<?= getItemKey() ?>">

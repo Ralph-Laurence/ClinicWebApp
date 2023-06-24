@@ -112,8 +112,8 @@
                                 <?= getWasteReasons() ?>
                             </select>
                         </div>
-                        <div class="help-wrapper">
-                            <small class="text-primary fst-italic" data-mdb-toggle="modal" data-mdb-target="#helpModal">
+                        <div class="help-link-label d-flex">
+                            <small class="fst-italic px-2 py-1 rounded-6" data-mdb-toggle="modal" data-mdb-target="#helpModal">
                                 <i class="fas fa-question-circle"></i>
                                 Help
                             </small>
@@ -151,7 +151,7 @@
                         <li class="mb-1"><i class="fas fa-dot-circle me-2 text-primary"></i><span class="font-base">Click on each row item from the list.</span><br> 
                             <ul class="list-unstyled ms-5">
                                 <li class="mb-1">
-                                    <i class="fas fa-chevron-right me-2 text-primary"></i><span class="text-muted">Note: You cannot restock an expired stock</span>
+                                    <i class="fas fa-chevron-right me-2 text-primary"></i><span class="text-muted">Note: You can't select an empty or expired stock</span>
                                 </li>
                                 <li class="mb-1">
                                     <i class="fas fa-chevron-right me-2 text-primary"></i><span class="text-muted">Upon selecting, the selected stock will be loaded into "Pull out stock" tab.</span>

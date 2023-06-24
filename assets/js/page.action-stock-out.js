@@ -37,11 +37,18 @@ function onBind()
             return;
         }
 
-        // Get the reference to the stock by caching its key
-        var stockKey = $(this).find(".stock-key").val();
- 
         // Get total qty. We will use this value whenever the "All" checkbox was ticked
         var qty = $(this).closest('tr').find(".stock-total-qty").val();
+
+        // Do not allow stock out when qty is 0
+        if (qty < 1)
+        {
+            dialog.danger(`Cannot pullout from an empty stock.\n\nStock / SKU:\n${sku}`);
+            return;
+        }
+
+        // Get the reference to the stock by caching its key
+        var stockKey = $(this).find(".stock-key").val();
 
         // Bind the values onto the fields
         $(".input-sku").val(sku).change(); 

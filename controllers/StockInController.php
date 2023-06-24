@@ -43,11 +43,15 @@ try
     $stockFields = Stock::getFields();
     $stox = TableNames::stock;
 
-    // Tell if an item has expired stocks
+    // Tell if an item has expired stocks.
+    // Exclude out of stock from being tracked as expired
     // Collect item IDs and store them here
     $stmt_expired_stox = $db->getInstance()->prepare
     (
-        "SELECT $stockFields->item_id FROM $stox WHERE $stockFields->expiry_date <= CURRENT_DATE GROUP BY $stockFields->item_id;"
+        "SELECT $stockFields->item_id 
+        FROM $stox 
+            WHERE $stockFields->expiry_date <= CURRENT_DATE AND $stockFields->quantity > 0
+        GROUP BY $stockFields->item_id;"
     );
     $stmt_expired_stox->execute();
     
@@ -93,20 +97,6 @@ function bindDataset()
         if ($filter == "s0" && $stock > 0)
             continue;
 
-        // Expired
-        // if ($filter == 'x')
-        // {
-        //     if (empty($obj['expiryDate']))
-        //         continue;
-
-        //     $isExpired = (strtotime(date('Y-m-d')) > strtotime($obj['expiryDate']));
-
-        //     if ($isExpired && $stock == 0)
-        //         continue;
-
-        //     if (!$isExpired)
-        //         continue;
-        // }
         // Expired
         if ($filter == 'x')
         { 
@@ -168,29 +158,6 @@ function bindDataset()
         }
 
         // Expired
-        // if (Dates::isPast($obj['expiryDate']))
-        // { 
-        //     if ($stock > 0)
-        //     {
-        //         $stockLabel = <<<DIV
-        //         <div class="stock-label stock-label-expired" data-mdb-toggle="tooltip" data-mdb-html="true" data-mdb-placement="top" title="<span class='tooltip-title tooltip-title-amber'>Expired</span><br>$stock $units are no longer safe to use and must be discarded.">
-        //             <i class="fas fa-info-circle me-1"></i>
-        //             Expired
-        //             <span class="expired-stock-units d-none">$stock $units</span>
-        //         </div>
-        //         DIV;
-
-        //         $actionButton = <<<BTN
-        //         <button type="button" class="btn btn-secondary bg-red text-white fw-bold py-1 px-2 discard-btn">Discard</button>
-        //         BTN; 
-
-        //         $totalExpired++;
-        //     } 
-        //     else if ($stock == 0)
-        //     {
-        //         $collectExpiredIds[] = $obj[$itemFields->id];
-        //     }
-        // }
         if (in_array($id_raw, $expiredStocks))
         {
             $stockLabel = <<<DIV
@@ -247,10 +214,10 @@ function bindDataset()
         TR;
     }
 
-    if (!empty($collectExpiredIds))
-    {
-        $itemFields->resetExpiryDates($collectExpiredIds);
-    }
+    // if (!empty($collectExpiredIds))
+    // {
+    //     $itemFields->resetExpiryDates($collectExpiredIds);
+    // }
 }
 
 function includeRestockModal($action)

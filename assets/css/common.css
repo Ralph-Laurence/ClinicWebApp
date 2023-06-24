@@ -988,3 +988,31 @@
     background-color: #e3ebf7;
     color: #285192;
 }
+
+.i-close-expiry-menu:hover
+{
+    color: var(--mdb-blue) !important;
+}
+
+.muted-row td
+{
+    color: #888888 !important;
+}
+
+.help-link-label small
+{
+    color: #0042A4;
+    cursor: pointer;
+}
+
+.help-link-label:hover small
+{
+    background-color: #0042A4;
+    color: white;
+}
+
+/* .edit-expiry-warning-content
+{
+    text-align: justify;
+    text-justify: inter-word;
+} */

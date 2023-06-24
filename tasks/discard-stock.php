@@ -95,7 +95,7 @@ try
   
     $_SESSION['item-details-key'] = $itemKey; 
     
-    Response::Redirect( (ENV_SITE_ROOT . Pages::ITEM_DETAILS), 200, 'Stock successfully discarded', 'discard-action-success');
+    Response::Redirect( (ENV_SITE_ROOT . Pages::ITEM_DETAILS), 200, 'Stock successfully discarded', 'view-item-action-success');
 } 
 catch (\Exception $ex) 
 {

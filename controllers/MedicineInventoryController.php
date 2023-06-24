@@ -44,11 +44,15 @@ try
     $stockFields = Stock::getFields();
     $stox = TableNames::stock;
 
-    // Tell if an item has expired stocks
+    // Tell if an item has expired stocks.
+    // Exclude out of stock from being tracked as expired
     // Collect item IDs and store them here
     $stmt_expired_stox = $db->getInstance()->prepare
     (
-        "SELECT $stockFields->item_id FROM $stox WHERE $stockFields->expiry_date <= CURRENT_DATE GROUP BY $stockFields->item_id;"
+        "SELECT $stockFields->item_id 
+        FROM $stox 
+            WHERE $stockFields->expiry_date <= CURRENT_DATE AND $stockFields->quantity > 0
+        GROUP BY $stockFields->item_id;"
     );
     $stmt_expired_stox->execute();
     

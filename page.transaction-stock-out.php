@@ -231,6 +231,10 @@
         <input type="text" name="item-key" class="item-key">
         <input type="text" name="sender-key" value="<?= setSenderKey() ?>">
     </form>
+    <form action="<?= Pages::ITEM_DETAILS ?>" class="frm-discard-details d-none" method="POST">
+        <input type="text" name="details-key" id="details-key" value=""> 
+        <input type="text" name="filter" id="filter" value="x">
+    </form>
 
     <div class="d-none">
         <textarea class="server-response"><?php getSuccessMessage(); ?></textarea>

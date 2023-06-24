@@ -200,7 +200,10 @@ function getStockOnHand()
 
             if (!empty($obj[$s->expiry_date]) && Dates::isPast($exp))
             { 
-                $bestBefore = "<div class=\"font-red fsz-12\">Expired</div>";
+                if ($obj[$s->quantity] > 0)
+                    $bestBefore = "<div class=\"font-red fsz-12\">Expired</div>";
+                else 
+                    $bestBefore = "<div class=\"font-red fsz-12\">$exp</div>";
             }
             
             echo <<<TR

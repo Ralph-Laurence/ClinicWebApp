@@ -40,6 +40,21 @@ function onBind()
         }
 
         $(".frm-stockin").trigger("submit");
+    })
+    .on("click", ".dataset-body tr .i-discard-btn", function()
+    {
+        var tr = $(this).closest('tr');
+        var itemKey = tr.find(".item-key").val();
+
+        $(".frm-discard-details #details-key").val(itemKey);
+        
+        if ( !$(".frm-discard-details #details-key").val() )
+        {
+            dialog.danger("This action can't be completed. Please reload the page and try again.");
+            return;
+        }
+
+        $(".frm-discard-details").trigger("submit");
     });
 
     $(".btn-find").click(() => searchRecord()); 
@@ -164,3 +179,4 @@ function selectCategory(key)
     $(".filter-form #query").val(key);
     $(".filter-form").trigger('submit');
 }
+ 

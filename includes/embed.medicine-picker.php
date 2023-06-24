@@ -17,7 +17,7 @@ use Models\Stock;
 
 class MedicinePicker
 {     
-    private $items, $stocks, $db;
+    private $items, $stocks, $db, $expiredMedicines = [];
 
     function __construct()
     {
@@ -30,7 +30,7 @@ class MedicinePicker
     }
 
     function getMedicines()
-    { 
+    {  
         try 
         { 
             //$dataset = $this->items->showAll();
@@ -49,7 +49,8 @@ class MedicinePicker
                     $s->id          AS 'stockId', 
                     $s->item_id     AS 'itemId', 
                     $s->sku         AS 'sku', 
-                    $s->quantity    AS 'qty' 
+                    $s->quantity    AS 'qty',
+                    $s->expiry_date AS 'expiration'
                 FROM $stocksTable
                 ORDER BY $s->expiry_date ASC"
             );
@@ -62,6 +63,21 @@ class MedicinePicker
                 $carry[$item['itemId']][] = $item;
                 return $carry;
             }, []);
+
+            // get all expired medicine ids
+            //$expiredMedicines = [];
+
+            foreach ($tempStocks as $row)
+            {
+                $expiry = $row['expiration'];
+                $itemId = $row['itemId'];
+
+                if (!empty($expiry) && (Dates::isPast($expiry) || Dates::toString($expiry) == Dates::dateToday()))
+                {
+                    if (!in_array($itemId, $this->expiredMedicines))
+                        $this->expiredMedicines[] = $itemId;
+                }
+            }
 
             $stocx = [];
             
@@ -78,7 +94,7 @@ class MedicinePicker
                 $dataset[$row[$i->id]] = $tempRow;
             }
 
-            // dump($dataset);
+            // dump($expiredMedicines);
         } 
         catch (\Exception $ex) { echo $ex->getMessage(); exit; IError::Throw(500); exit;} 
         catch (\Throwable $ex) { echo $ex->getMessage(); exit; IError::Throw(500); exit;} 
@@ -88,6 +104,8 @@ class MedicinePicker
 
     function bindDataset()
     {
+        global $expiredMedicines;
+
         $security   = new Security();
         $fields     = Item::getFields(); 
         $medicines  = $this->getMedicines();
@@ -96,6 +114,8 @@ class MedicinePicker
             return;
 
         $collectExpiredIds = [];
+
+        // dump($medicines);
 
         foreach ($medicines as $item) 
         {
@@ -130,21 +150,32 @@ class MedicinePicker
             }
   
             // Expired
-            if (Dates::isPast($item['expiryDate'])) 
+            // if (Dates::isPast($item['expiryDate'])) 
+            // {
+            //     if ($remaining > 0) 
+            //     {
+            //         $stockLabel = <<<DIV
+            //         <div class="stock-label stock-label-expired" data-mdb-toggle="tooltip" data-mdb-html="true" data-mdb-placement="top" title="<span class='tooltip-title tooltip-title-amber'>Expired</span><br>$stock are no longer safe to use and must be discarded.">
+            //             <i class="fas fa-info-circle me-1"></i>
+            //             Expired
+            //         </div>
+            //         DIV;
+            //     } 
+            //     else if ($remaining == 0) 
+            //     {
+            //         $collectExpiredIds[] = $item[$fields->id];
+            //     }
+
+            //     $actionButton = "";
+            // }
+            if (in_array($item[$fields->id], $this->expiredMedicines) && $remaining > 0)
             {
-                if ($remaining > 0) 
-                {
-                    $stockLabel = <<<DIV
-                    <div class="stock-label stock-label-expired" data-mdb-toggle="tooltip" data-mdb-html="true" data-mdb-placement="top" title="<span class='tooltip-title tooltip-title-amber'>Expired</span><br>$stock are no longer safe to use and must be discarded.">
-                        <i class="fas fa-info-circle me-1"></i>
-                        Expired
-                    </div>
-                    DIV;
-                } 
-                else if ($remaining == 0) 
-                {
-                    $collectExpiredIds[] = $item[$fields->id];
-                }
+                $stockLabel = <<<DIV
+                <div class="stock-label stock-label-expired" data-mdb-toggle="tooltip" data-mdb-html="true" data-mdb-placement="top" title="<span class='tooltip-title tooltip-title-amber'>Expired</span><br>$stock are no longer safe to use and must be discarded.">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Expired
+                </div>
+                DIV;
 
                 $actionButton = "";
             }
