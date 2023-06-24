@@ -277,21 +277,22 @@ function searchRecord()
     clearColSearchFields();
 
     // Identify which filter to apply.
-    var option = $(".combo-box").val();
+    //var option = $(".combo-box").val();
 
     // Then Reflect the search terms in specific column filter inputboxes found in table's <tfoot>.
     // The original searchbar is hidden and it only triggers on keyup, so let's trigger it manually 
     // using keyup().
 
-    switch (option)
-    { 
-        case '1':    
-            $("tfoot .search-col-sku").find(":input").val(keyword).keyup();
-            break;
-        case '0': 
-            $("tfoot .search-col-name").find(":input").val(keyword).keyup();
-            break;
-    }
+    // switch (option)
+    // { 
+    //     case '1':    
+    //         $("tfoot .search-col-sku").find(":input").val(keyword).keyup();
+    //         break;
+    //     case '0': 
+    //         $("tfoot .search-col-name").find(":input").val(keyword).keyup();
+    //         break;
+    // }
+    $("tfoot .search-col-name").find(":input").val(keyword).keyup();
 
     // Show the search keyword in a badge
     $(".capsule-badge-search-keyword").text(keyword);

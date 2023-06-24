@@ -29,12 +29,7 @@ require_once($rootCwd . "controllers/MedicineInventoryController.php");
                             <input type="text" class="form-control searchbar" maxlength="32" />
                             <label class="form-label" for="form12">Find Medicines</label>
                         </div>
-                        <div class="selectmenu-wrapper">
-                            <select class="combo-box">
-                                <option value="0">By Name</option>
-                                <option value="1">By Code/SKU</option>
-                            </select>
-                        </div>
+ 
                         <button type="button" class="btn btn-secondary btn-find px-3">
                             <i class="fas fa-search"></i>
                         </button>
@@ -45,6 +40,38 @@ require_once($rootCwd . "controllers/MedicineInventoryController.php");
                 </div>
                 <div class="right-half">
                     <div class="control-elements d-flex flex-row gap-2 flex-wrap">
+                        <div class="dropdown actionbar-sort">
+                            <button class="btn btn-secondary fw-bold dropdown-toggle btn-summarize" type="button" id="summarize-dropdown-button" data-mdb-toggle="dropdown" aria-expanded="false">
+                                Export
+                            </button>
+                            <ul class="dropdown-menu shadow-3-strong dropdown-menu-custom-light py-2" aria-labelledby="summarize-dropdown-button ul-li-pointer">
+
+                                <li class="d-flex align-items-center gap-3 px-3 py-1">
+                                    <div class="dropdown-item-icon text-center">
+                                        <img src="assets/images/icons/icn_export_inven.png" width="24" height="24">
+                                    </div>
+                                    <small class="fw-bold text-uppercase font-base">Choose data to export</small>
+                                </li>
+                                <li>
+                                    <a href="<?= Pages::MED_DIST_REP ?>" class="d-flex align-items-center gap-3 px-3 py-1 dropdown-item-custom-light">
+                                        <div class="dropdown-item-icon text-center"></div>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <img src="assets/images/icons/icn_handout.png" width="20" height="20">
+                                            <div class="fs-6">Distribution</div>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="<?= Pages::STOCKS_REPORT ?>" class="d-flex align-items-center gap-3 px-3 py-1 dropdown-item-custom-light">
+                                        <div class="dropdown-item-icon text-center"></div>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <img src="assets/images/icons/icn_stock_list.png" width="18" height="18">
+                                            <div class="fs-6">Stocks List</div>
+                                        </div>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
                         <div class="dropdown actionbar-sort">
                             <button class="btn btn-secondary fw-bold dropdown-toggle btn-sort" type="button" id="sort-dropdown-button" data-mdb-toggle="dropdown" aria-expanded="false">
                                 Sort
@@ -61,7 +88,7 @@ require_once($rootCwd . "controllers/MedicineInventoryController.php");
                                     <div class="dropdown-item-icon text-center"></div>
                                     <div class="d-flex align-items-center gap-2">
                                         <img src="assets/images/icons/sort-up.png" width="18" height="18">
-                                        <div class="fs-6">Code/SKU</div>
+                                        <div class="fs-6">Category</div>
                                     </div>
                                 </li>
                                 <li onclick="sortBy(7, 1, 2)" class="d-flex align-items-center gap-3 px-3 py-1 dropdown-item-custom-light">
@@ -84,7 +111,7 @@ require_once($rootCwd . "controllers/MedicineInventoryController.php");
                                     <div class="dropdown-item-icon text-center"></div>
                                     <div class="d-flex align-items-center gap-2">
                                         <img src="assets/images/icons/sort-down.png" width="18" height="18">
-                                        <div class="fs-6">Code/SKU</div>
+                                        <div class="fs-6">Category</div>
                                     </div>
                                 </li>
                                 <li onclick="sortBy(7, -1, 2)" class="d-flex align-items-center gap-3 px-3 py-1 dropdown-item-custom-light">
@@ -218,7 +245,7 @@ require_once($rootCwd . "controllers/MedicineInventoryController.php");
                         </th>
                         <th scope="col" data-orderable="false" class="fw-bold th-150">
                             <div class="d-flex align-items-center">
-                                <span class="label me-auto">Code/SKU</span>
+                                <span class="label me-auto">Category</span>
                                 <img class="sort-icon display-none" src="" width="16" height="16">
                             </div>
                         </th>

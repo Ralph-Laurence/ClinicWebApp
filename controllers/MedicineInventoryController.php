@@ -202,7 +202,7 @@ function bindDataset()
             if (empty($obj['icon']))
                 $icon = "assets/images/icons/icn_no_image.png";
         }
-        
+        // <div class="fsz-12 text-muted fst-italic text-truncate text-uppercase">$category</div>
         echo <<<TR
         <tr class="align-middle tr-inventory">
             <td class="px-2 text-center mx-0 row-check-parent">
@@ -210,7 +210,7 @@ function bindDataset()
                     <input class="form-check-input px-0 mx-0" type="checkbox" id="row-check-box" value="" />
                 </div>
             </td>
-            <td class="th-150 text-primary fw-bold text-truncate text-uppercase fsz-12">$itemCode</td>
+            <td class="th-150 text-primary fw-bold text-truncate text-uppercase fsz-12">$category</td>
             <td class="th-280 text-truncate">
                 <div class="d-flex align-items-center">
                     <div class="ms-0">
@@ -218,7 +218,6 @@ function bindDataset()
                     </div>
                     <div class="ms-auto flex-fill flex-column text-wrap d-flex text-truncate">
                         <div class=" font-base fw-bold td-item-name text-truncate">$itemName</div>
-                        <div class="fsz-12 text-muted fst-italic text-truncate text-uppercase">$category</div>
                     </div>
                 </div>
             </td>

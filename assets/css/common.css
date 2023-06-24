@@ -845,8 +845,8 @@
 .tr-inventory td
 {
     max-height: 62px;
-    min-height: 62px;
-    height: 62px;
+    min-height: 52px;
+    height: 52px;
 }
 
 .input-group button, .input-group-text-bg

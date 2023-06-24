@@ -246,13 +246,13 @@ function bindRowCheckOption()
     {
         optionMenuClosed = false;
 
-        $("#sort-dropdown-button").prop("disabled", true);
+        $("#sort-dropdown-button, #summarize-dropdown-button").prop("disabled", true);
         $(".row-check-parent").fadeIn('fast');
 
     })
     .on('hidden.bs.dropdown', function()
     {
-        $("#sort-dropdown-button").prop("disabled", false);
+        $("#sort-dropdown-button, #summarize-dropdown-button").prop("disabled", false);
 
         if (countCheckedRows() > 0 && !optionMenuClosed)
             return false;

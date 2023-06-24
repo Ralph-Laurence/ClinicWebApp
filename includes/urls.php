@@ -156,6 +156,9 @@ class Pages
     public const MY_PROFILE           = "page.my-profile.php";
     public const EDIT_MY_PROFILE      = "page.edit-my-profile.php";
 
+    public const MED_DIST_REP         = "page.medicine-distribution-report.php";
+    public const STOCKS_REPORT        = "page.medicine-stocks-report.php";
+
     public static $CSV_IMPORTER       = "page.csv-importer.php";
 }
 

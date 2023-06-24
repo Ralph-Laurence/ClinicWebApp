@@ -21,6 +21,7 @@ namespace Models
             $obj->amount        = "amount";
             $obj->unitMeasure   = "unit_measure";
             $obj->stockFK       = "stock_fk_id";
+            $obj->dateCreated   = "date_created";
         
             return $obj;
         }
