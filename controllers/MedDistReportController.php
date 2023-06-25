@@ -58,6 +58,8 @@ $totalTeachers  = 0;
 try 
 {
     // $ini = $set->Read();
+    // Load the RECORD YEAR from settings
+    $RECORD_YEAR = $set->GetValue($set->sect_General, $set->iniKey_RecordYear);
 
     // Find all medicine names and ids
     $temp_medicines = $db->select($items, [$i->id, $i->itemName], [], $db->ORDER_MODE_ASC, $i->itemName);
@@ -86,7 +88,7 @@ try
         ORDER BY i.$i->itemName ASC "
     );
 
-    $stmt_get_meds->execute([2023]);
+    $stmt_get_meds->execute([$RECORD_YEAR]);
     $medsList = $stmt_get_meds->fetchAll(PDO::FETCH_ASSOC);
     //
     // Update the subarray values of medicines result set.

@@ -1,6 +1,6 @@
 <?php
 require_once("rootcwd.php");
-require_once($rootCwd . "controllers/MedDistReportController.php");
+require_once($rootCwd . "controllers/MedStocksReportController.php");
 ?>
 
 <body class="position-relative">
@@ -19,8 +19,8 @@ require_once($rootCwd . "controllers/MedDistReportController.php");
             <img src="assets/images/icons/icn_export_inven.png" width="20" height="20">
             <div class="ms-2 fw-bold fs-6">Documents</div>
             <div class="breadcrumb-arrow fsz-12 fas fa-play mx-3"></div>
-            <img src="assets/images/icons/icn_handout.png" width="20" height="20">
-            <div class="ms-2 fw-bold fs-6">Medicine Distribution</div>
+            <img src="assets/images/icons/icn_stock_list.png" width="20" height="20">
+            <div class="ms-2 fw-bold fs-6">Medicine Stocks</div>
         </div>
 
         <!--DIVIDER-->
@@ -47,48 +47,34 @@ require_once($rootCwd . "controllers/MedDistReportController.php");
                         <table class="table table-sm table-striped">
                             <thead>
                                 <tr>
-                                    <th class="text-center text-uppercase font-base" colspan="4">Medicine Distribution Report</th>
+                                    <th class="text-center text-uppercase font-base" colspan="5">Medicines and Supplies List</th>
                                 </tr>
                                 <tr class="border">
-                                    <th class="text-center font-base" colspan="4"><?= Dates::dateToday("F d, Y") ?></th>
+                                    <th class="text-center font-base" colspan="5"><?= Dates::dateToday("F d, Y") ?></th>
                                 </tr>
                                 <tr class="border">
-                                    <th class="bg-document" colspan="4"></th>
+                                    <th class="bg-document" colspan="5"></th>
                                 </tr>
                                 <tr class="text-uppercase border">
-                                    <th scope="col" style="width: 50%;">Medicines Distributed</th>
-                                    <th scope="col" class="border-start border-end">Students</th>
-                                    <th scope="col">Faculty</th>
-                                    <th scope="col" class="border-start">Staff</th>
+                                    <th scope="col" style="width: 30%;">Medicine / Supply</th>
+                                    <th scope="col" style="width: 5%;" class="border-start border-end">Qty.</th>
+                                    <th scope="col" style="width: 18%;">Units</th>
+                                    <th scope="col" style="width: 12%;" class="border-start px-1 text-center">Expiry Date</th>
+                                    <th scope="col" style="width: 15%;" class="border-start">Remarks</th>
                                 </tr>
                             </thead>
                             <tbody class="border">
                                 <?php bindDataset(); ?>
-                            </tbody>
-                            <tfoot>
-                                <tr class="border">
-                                    <th class="fw-bold font-base">No. Medicines Given</th>
-                                    <th class="fw-bold font-base border-start border-end""><?= getTotal(PatientTypes::$STUDENT) ?></th>
-                                    <th class=" fw-bold font-base"><?= getTotal(PatientTypes::$TEACHER) ?></th>
-                                    <th class="fw-bold font-base border-start"><?= getTotal(PatientTypes::$STAFF) ?></th>
-                                </tr>
-                            </tfoot>
+                            </tbody> 
                         </table>
                     </div>
                     <div class="foot mt-4">
-                        <div class="text-center mb-5">
-                            <h6 class="font-primary-dark">Total No. Medicines Given: <?= getOverall() ?></h6>
-                        </div>
-                        <div class="row mt-4 mb-2">
+                        <div class="row mb-2">
+                            <div class="col"></div>
                             <div class="col text-center">
                                 <small class="d-block text-capitalize text-muted mb-2">Prepared by:</small>
                                 <small class="d-block text-capitalize"><?= getPreparedBy('name') ?></small>
                                 <small class="text-muted d-block"><?= getPreparedBy() ?></small>
-                            </div>
-                            <div class="col text-center">
-                                <small class="d-block text-capitalize text-muted mb-2">Approved by:</small>
-                                <small class="d-block text-capitalize"><?= getApprovedBy() ?></small>
-                                <small class="text-muted d-block">University Physician</small>
                             </div>
                         </div>
                     </div>

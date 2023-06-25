@@ -1011,8 +1011,44 @@
     color: white;
 }
 
-/* .edit-expiry-warning-content
+.fab-print
 {
-    text-align: justify;
-    text-justify: inter-word;
-} */
+    background-color: var(--base-color);
+    color: white;
+    transition: background-color 0.12s ease;
+}
+
+.fab-print:hover
+{
+    background-color: var(--mdb-blue);
+    color: white;
+}
+
+.fab-print:active
+{
+    background-color: var(--amber-300);
+    color: #212121;
+}
+
+.expiry-badge-sm
+{
+    padding-top: 2px;
+    padding-bottom: 2px;
+    padding-left: 4px;
+    padding-right: 4px; 
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    box-shadow: inset 0 0 0 30px #e8e8ea;
+}
+
+.expiry-badge-sm-red
+{
+    padding-top: 2px;
+    padding-bottom: 2px;
+    padding-left: 4px;
+    padding-right: 4px;
+    color: white !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    box-shadow: inset 0 0 0 30px #F44336;
+}
